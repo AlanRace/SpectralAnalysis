@@ -1,0 +1,2 @@
+classdef SparseDataInMemory < DataInMemory
+end
