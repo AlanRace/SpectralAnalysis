@@ -24,7 +24,7 @@ function addJARsToClassPath()
         
         if(~found)
             exception = MException('addJARsToClassPath:FailedToAddJAR', ...
-       ['Failed to add JAR file ''' pathstr filesep 'jimzMLParser/' jimzMLParserJar ''', please ensure that it exists.']);
+       ['Failed to add JAR file '''  'jimzMLParser/' jimzMLParserJar ''', please ensure that it exists.']);
             throw(exception);
         end
     end
@@ -43,7 +43,7 @@ function addJARsToClassPath()
         
         if(~found)
             exception = MException('addJARsToClassPath:FailedToAddJAR', ...
-       ['Failed to add JAR file ''' pathstr filesep 'JSpectralAnalysis/JSpectralAnalysis.jar' ''', please ensure that it exists.']);
+       ['Failed to add JAR file ''' strrep([pathstr filesep], '\', '\\') 'JSpectralAnalysis/JSpectralAnalysis.jar' ''', please ensure that it exists.']);
             throw(exception);
         end
     end

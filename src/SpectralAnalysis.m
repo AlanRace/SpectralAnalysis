@@ -21,6 +21,6 @@ catch err
     if(strcmp(err.identifier, 'MATLAB:class:undefinedMethod') && ~isempty(strfind(err.message, 'Figure')))
         disp(['ERROR: Missing MOOGL. Download from https://github.com/AlanRace/MOOGL and place in src/gui folder']);
     else
-        throw err
+        throw(err);
     end
 end

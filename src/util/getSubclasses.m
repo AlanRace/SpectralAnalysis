@@ -8,7 +8,7 @@ function [classFiles classNames] = getSubclasses(superclass, includeNone)
     
     % This file is located within ./util folder so go to parent directory
     % and start the search
-    fileList = getmFilesFromAllFolders([spectralAnalysisPath filesep '..']);
+    fileList = getmFilesFromAllFolders([spectralAnalysisPath filesep '..' filesep]);
     
     % Check if we are including the option of 'None' for a class name -
     % used in some preprocessing lists
