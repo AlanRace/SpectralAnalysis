@@ -1,6 +1,6 @@
-classdef PreprocessingWorkflowEditor < handle
+classdef PreprocessingWorkflowEditor < Editor
     properties (SetAccess = private)
-        figureHandle = 0;
+%         handle = 0;
         
         beforeSpectrumDisplay;
         afterSpectrumDisplay;
@@ -8,9 +8,9 @@ classdef PreprocessingWorkflowEditor < handle
         preprocessingWorkflow;
     end
     
-    events
-        FinishedEditingPreprocessingWorkflow;
-    end
+%     events
+%         FinishedEditingPreprocessingWorkflow;
+%     end
     
     properties (Access = private)
         % Store handles of each child interface element
@@ -51,7 +51,7 @@ classdef PreprocessingWorkflowEditor < handle
         normalisationAddButton;
         normalisationMethodFiles;
         
-        okButton;
+%         okButton;
         
         preprocessingMethodEditor;
     end
@@ -65,13 +65,13 @@ classdef PreprocessingWorkflowEditor < handle
             
             obj.createFigure();
             
-            obj.beforeSpectrumDisplay = SpectrumDisplay(obj.beforeAxis, spectrum);
+            obj.beforeSpectrumDisplay = SpectrumDisplay(obj, spectrum);
             
             afterSpectrum = SpectralData(obj.beforeSpectrumDisplay.data.spectralChannels,obj.beforeSpectrumDisplay.data.intensities);
-            obj.afterSpectrumDisplay = SpectrumDisplay(obj.afterAxis, afterSpectrum);
+            obj.afterSpectrumDisplay = SpectrumDisplay(obj, afterSpectrum);
             
-            set(obj.figureHandle, 'WindowButtonMotionFcn', @(src,evnt)obj.mouseMovedCallback());
-            set(obj.figureHandle, 'WindowButtonUpFcn', @(src, evnt)obj.mouseButtonUpCallback());
+            set(obj.handle, 'WindowButtonMotionFcn', @(src,evnt)obj.mouseMovedCallback());
+            set(obj.handle, 'WindowButtonUpFcn', @(src, evnt)obj.mouseButtonUpCallback());
 
             if(nargin > 1 && isa(preprocessingWorkflow, 'PreprocessingWorkflow'))
                 obj.preprocessingWorkflow = preprocessingWorkflow.copy();
@@ -93,139 +93,16 @@ classdef PreprocessingWorkflowEditor < handle
             obj.afterSpectrumDisplay.mouseButtonUpCallback();
         end
         
-        function createFigure(obj)
-            if(~obj.figureHandle)
-                obj.figureHandle = figure(...
-                    'Name', 'Preprocessing Workflow Editor', 'NumberTitle','off',...
-                    'Units','characters',...
-                    'MenuBar','none',...
-                    'Toolbar','none', ...
-                    'CloseRequestFcn', @(src, evnt)obj.closeRequest());
-                
-                if(isprop(obj.figureHandle, 'SizeChangedFcn'))
-                    set(obj.figureHandle, 'SizeChangedFcn', @(src, evnt)obj.sizeChanged());
-                else
-                    set(obj.figureHandle, 'ResizeFcn', @(src, evnt)obj.sizeChanged());
-                end                   
-                
-                obj.createContextMenu();
-                set(obj.figureHandle, 'uicontextmenu', obj.contextMenu);
-                
-                obj.beforeLabel = uicontrol(obj.figureHandle, 'Style', 'text', 'Units', 'normalized', ...
-                    'Position', [0.2 0.90 0.15 0.05], 'String', 'Before');
-                obj.beforeAxis = axes('Parent', obj.figureHandle, 'Position', [.1 .55 .35 .35]);
-                obj.afterLabel = uicontrol(obj.figureHandle, 'Style', 'text', 'Units', 'normalized', ...
-                    'Position', [0.65 0.90 0.15 0.05], 'String', 'After');
-                obj.afterAxis = axes('Parent', obj.figureHandle, 'Position', [.55 .55 .35 .35]);
-                
-                obj.preprocessingWorkflowList = uicontrol(obj.figureHandle, 'Style', 'listbox', ...
-                    'Units', 'normalized', 'Position', [0.1 0.1 0.25 0.35]);
-
-                obj.moveUpButton = uicontrol(obj.figureHandle, 'String', '^', ...
-                    'Units', 'normalized', 'Position', [0.36 0.35 0.05 0.05], 'Callback', @(src, evnt)obj.moveUpButtonCallback());
-                obj.moveDownButton = uicontrol(obj.figureHandle, 'String', 'v', ...
-                    'Units', 'normalized', 'Position', [0.36 0.2 0.05 0.05], 'Callback', @(src, evnt)obj.moveDownButtonCallback());
-                obj.removeButton = uicontrol(obj.figureHandle, 'String', '-', ...
-                    'Units', 'normalized', 'Position', [0.36 0.275 0.05 0.05], 'Callback', @(src, evnt)obj.removeButtonCallback());
-                
-                obj.zeroFillingLabel = uicontrol(obj.figureHandle, 'Style', 'text', 'Units', 'normalized', ...
-                    'Position', [0.48 0.4 0.22 0.04], 'String', 'Zero filling', 'HorizontalAlignment', 'left');
-                obj.zeroFillingSelectionPopup = uicontrol(obj.figureHandle, 'Style', 'popup', 'Units', 'normalized', ...
-                    'Position', [0.7 0.4 0.2 0.04], 'String', 'None');
-                obj.zeroFillingAddButton = uicontrol(obj.figureHandle, 'Units', 'normalized', ...
-                    'Position', [0.9 0.4 0.04 0.04], 'String', '+', ...
-                    'Callback', @(src, evnt)obj.addPreprocessingMethodCallback('zeroFilling'));
-                
-                obj.smoothingLabel = uicontrol(obj.figureHandle, 'Style', 'text', 'Units', 'normalized', ...
-                    'Position', [0.48 0.35 0.22 0.04], 'String', 'Smoothing', 'HorizontalAlignment', 'left');
-                obj.smoothingSelectionPopup = uicontrol(obj.figureHandle, 'Style', 'popup', 'Units', 'normalized', ...
-                    'Position', [0.7 0.35 0.2 0.04], 'String', 'None');
-                obj.smoothingAddButton = uicontrol(obj.figureHandle, 'Units', 'normalized', ...
-                    'Position', [0.9 0.35 0.04 0.04], 'String', '+', ...
-                    'Callback', @(src, evnt)obj.addPreprocessingMethodCallback('smoothing'));
-                
-                obj.baselineCorrectionLabel = uicontrol(obj.figureHandle, 'Style', 'text', 'Units', 'normalized', ...
-                    'Position', [0.48 0.3 0.22 0.04], 'String', 'Baseline Correction', 'HorizontalAlignment', 'left');
-                obj.baselineCorrectionSelectionPopup = uicontrol(obj.figureHandle, 'Style', 'popup', 'Units', 'normalized', ...
-                    'Position', [0.7 0.3 0.2 0.04], 'String', 'None');
-                obj.baselineCorrectionAddButton = uicontrol(obj.figureHandle, 'Units', 'normalized', ...
-                    'Position', [0.9 0.3 0.04 0.04], 'String', '+', ...
-                    'Callback', @(src, evnt)obj.addPreprocessingMethodCallback('baselineCorrection'));
-                
-%                 obj.peakDetectionLabel = uicontrol(obj.figureHandle, 'Style', 'text', 'Units', 'normalized', ...
-%                     'Position', [0.48 0.25 0.22 0.04], 'String', 'Peak Detection', 'HorizontalAlignment', 'left');
-%                 obj.peakDetectionSelectionPopup = uicontrol(obj.figureHandle, 'Style', 'popup', 'Units', 'normalized', ...
-%                     'Position', [0.7 0.25 0.2 0.04], 'String', 'None');
-%                 obj.peakDetectionAddButton = uicontrol(obj.figureHandle, 'Units', 'normalized', ...
-%                     'Position', [0.9 0.25 0.04 0.04], 'String', '+', ...
-%                     'Callback', @(src, evnt)obj.addPreprocessingMethodCallback('peakDetection'));
-                
-                obj.normalisationLabel = uicontrol(obj.figureHandle, 'Style', 'text', 'Units', 'normalized', ...
-                    'Position', [0.48 0.25 0.22 0.04], 'String', 'Normalisation', 'HorizontalAlignment', 'left');
-                obj.normalisationSelectionPopup = uicontrol(obj.figureHandle, 'Style', 'popup', 'Units', 'normalized', ...
-                    'Position', [0.7 0.25 0.2 0.04], 'String', 'None');
-                obj.normalisationAddButton = uicontrol(obj.figureHandle, 'Units', 'normalized', ...
-                    'Position', [0.9 0.25 0.04 0.04], 'String', '+', ...
-                    'Callback', @(src, evnt)obj.addPreprocessingMethodCallback('normalisation'));
-                
-                obj.okButton = uicontrol(obj.figureHandle, 'String', 'OK', ...
-                    'Units', 'normalized', 'Position', [0.8 0.05 0.15 0.05], 'Callback', @(src, evnt)obj.okButtonCallback());
-                
-                obj.updatePreprocessingPopups();
-            end
-        end
         
-        function sizeChanged(obj, src, evnt)
-            if(obj.figureHandle ~= 0)
-                oldUnits = get(obj.figureHandle, 'Units');
-                set(obj.figureHandle, 'Units', 'pixels');
-            
-                newPosition = get(obj.figureHandle, 'Position');
-
-                axisOldUnits = get(obj.beforeAxis, 'Units');
-                set(obj.beforeAxis, 'Units', 'pixels');
-                set(obj.beforeAxis, 'Position', [50 newPosition(4)/2 newPosition(3)/2-80 newPosition(4)/2-30]);
-                set(obj.beforeAxis, 'Units', axisOldUnits);
-
-                axisOldUnits = get(obj.afterAxis, 'Units');
-                set(obj.afterAxis, 'Units', 'pixels');
-                set(obj.afterAxis, 'Position', [newPosition(3)/2+40 newPosition(4)/2 newPosition(3)/2-80 newPosition(4)/2-30]);
-                set(obj.afterAxis, 'Units', axisOldUnits);
-
-                % Sort out the 'Before' label
-                labelOldUnits = get(obj.beforeLabel, 'Units');
-                set(obj.beforeLabel, 'Units', 'pixels');
-                labelOldPosition = get(obj.beforeLabel, 'Position');
-                set(obj.beforeLabel, 'Position', [labelOldPosition(1) newPosition(4)-28 labelOldPosition(3) 20]);
-                set(obj.beforeLabel, 'Units', labelOldUnits);
-                
-                % Sort out the 'After' label
-                labelOldUnits = get(obj.afterLabel, 'Units');
-                set(obj.afterLabel, 'Units', 'pixels');
-                labelOldPosition = get(obj.afterLabel, 'Position');
-                set(obj.afterLabel, 'Position', [labelOldPosition(1) newPosition(4)-28 labelOldPosition(3) 20]);
-                set(obj.afterLabel, 'Units', labelOldUnits);
-
-                set(obj.figureHandle, 'Units', oldUnits);
-            end
-        end
         
-        function createContextMenu(obj)
-            % Set up the context menu
-            obj.contextMenu = uicontextmenu();
-            %exportDataMenu = uimenu(obj.contextMenu, 'Label', 'Export Data', 'Callback', []);
-            %uimenu(exportDataMenu, 'Label', 'To workspace', 'Callback', @(src,evnt)obj.b.exportToWorkspace());
-            
-            exportWorkflowMenu = uimenu(obj.contextMenu, 'Label', 'Export Workflow', 'Callback', []);
-            uimenu(exportWorkflowMenu, 'Label', 'To workspace', 'Callback', @(src,evnt)obj.preprocessingWorkflow.exportToWorkspace());
-        end
+        
         
         function addPreprocessingMethodCallback(obj, preprocessingType)
             % Check if we have already opened the
             % PreprocessingWorkflowEditor and if so if it is still a valid
             % instance of the class. If so show it, otherwise recreate it
             if(isa(obj.preprocessingMethodEditor, 'PreprocessingMethodEditor') && isvalid(obj.preprocessingMethodEditor))
-                figure(obj.preprocessingMethodEditor.figureHandle);
+                figure(obj.preprocessingMethodEditor.handle);
             else
                 if(strcmp(preprocessingType, 'zeroFilling'))
                     index = get(obj.zeroFillingSelectionPopup, 'Value');
@@ -259,7 +136,7 @@ classdef PreprocessingWorkflowEditor < handle
 
                 if(isa(obj.preprocessingMethodEditor, 'PreprocessingMethodEditor'))
                     % Add a listener for updating preprocessingMethod list
-                    addlistener(obj.preprocessingMethodEditor, 'FinishedEditingPreprocessingMethod', @(src, evnt)obj.finishedEditingPreprocessingMethod());
+                    addlistener(obj.preprocessingMethodEditor, 'FinishedEditing', @(src, evnt)obj.finishedEditingPreprocessingMethod());
                 end
             end
         end
@@ -401,21 +278,155 @@ classdef PreprocessingWorkflowEditor < handle
             set(obj.normalisationSelectionPopup, 'String', normalisationClasses);
         end
         
-        function okButtonCallback(obj)
-            notify(obj, 'FinishedEditingPreprocessingWorkflow'); %, obj.preprocessingMethod);
-            
-            obj.delete();
-        end
+%         function okButtonCallback(obj)
+%             notify(obj, 'FinishedEditingPreprocessingWorkflow'); %, obj.preprocessingMethod);
+%             
+%             obj.delete();
+%         end
         
         function delete(obj)
-            delete(obj.figureHandle);
-            obj.figureHandle = 0;
+            delete(obj.handle);
+            obj.handle = 0;
         end
     end
     
     methods (Access = protected)
-        function closeRequest(obj)
-            obj.delete();
+        function createFigure(obj)
+%             if(~obj.handle)
+%                 obj.handle = figure(...
+%                     'Name', 'Preprocessing Workflow Editor', 'NumberTitle','off',...
+%                     'Units','characters',...
+%                     'MenuBar','none',...
+%                     'Toolbar','none', ...
+%                     'CloseRequestFcn', @(src, evnt)obj.closeRequest());
+%                 
+%                 if(isprop(obj.handle, 'SizeChangedFcn'))
+%                     set(obj.handle, 'SizeChangedFcn', @(src, evnt)obj.sizeChanged());
+%                 else
+%                     set(obj.handle, 'ResizeFcn', @(src, evnt)obj.sizeChanged());
+%                 end                   
+%                 
+%                 obj.createContextMenu();
+%                 set(obj.handle, 'uicontextmenu', obj.contextMenu);
+
+            if(isempty(obj.handle) || ~obj.handle)
+                createFigure@Editor(obj);
+                
+                obj.beforeLabel = uicontrol(obj.handle, 'Style', 'text', 'Units', 'normalized', ...
+                    'Position', [0.2 0.90 0.15 0.05], 'String', 'Before');
+%                 obj.beforeAxis = axes('Parent', obj.handle, 'Position', [.1 .55 .35 .35]);
+                obj.afterLabel = uicontrol(obj.handle, 'Style', 'text', 'Units', 'normalized', ...
+                    'Position', [0.65 0.90 0.15 0.05], 'String', 'After');
+%                 obj.afterAxis = axes('Parent', obj.handle, 'Position', [.55 .55 .35 .35]);
+                
+                obj.preprocessingWorkflowList = uicontrol(obj.handle, 'Style', 'listbox', ...
+                    'Units', 'normalized', 'Position', [0.1 0.1 0.25 0.35]);
+
+                obj.moveUpButton = uicontrol(obj.handle, 'String', '^', ...
+                    'Units', 'normalized', 'Position', [0.36 0.35 0.05 0.05], 'Callback', @(src, evnt)obj.moveUpButtonCallback());
+                obj.moveDownButton = uicontrol(obj.handle, 'String', 'v', ...
+                    'Units', 'normalized', 'Position', [0.36 0.2 0.05 0.05], 'Callback', @(src, evnt)obj.moveDownButtonCallback());
+                obj.removeButton = uicontrol(obj.handle, 'String', '-', ...
+                    'Units', 'normalized', 'Position', [0.36 0.275 0.05 0.05], 'Callback', @(src, evnt)obj.removeButtonCallback());
+                
+                obj.zeroFillingLabel = uicontrol(obj.handle, 'Style', 'text', 'Units', 'normalized', ...
+                    'Position', [0.48 0.4 0.22 0.04], 'String', 'Zero filling', 'HorizontalAlignment', 'left');
+                obj.zeroFillingSelectionPopup = uicontrol(obj.handle, 'Style', 'popup', 'Units', 'normalized', ...
+                    'Position', [0.7 0.4 0.2 0.04], 'String', 'None');
+                obj.zeroFillingAddButton = uicontrol(obj.handle, 'Units', 'normalized', ...
+                    'Position', [0.9 0.4 0.04 0.04], 'String', '+', ...
+                    'Callback', @(src, evnt)obj.addPreprocessingMethodCallback('zeroFilling'));
+                
+                obj.smoothingLabel = uicontrol(obj.handle, 'Style', 'text', 'Units', 'normalized', ...
+                    'Position', [0.48 0.35 0.22 0.04], 'String', 'Smoothing', 'HorizontalAlignment', 'left');
+                obj.smoothingSelectionPopup = uicontrol(obj.handle, 'Style', 'popup', 'Units', 'normalized', ...
+                    'Position', [0.7 0.35 0.2 0.04], 'String', 'None');
+                obj.smoothingAddButton = uicontrol(obj.handle, 'Units', 'normalized', ...
+                    'Position', [0.9 0.35 0.04 0.04], 'String', '+', ...
+                    'Callback', @(src, evnt)obj.addPreprocessingMethodCallback('smoothing'));
+                
+                obj.baselineCorrectionLabel = uicontrol(obj.handle, 'Style', 'text', 'Units', 'normalized', ...
+                    'Position', [0.48 0.3 0.22 0.04], 'String', 'Baseline Correction', 'HorizontalAlignment', 'left');
+                obj.baselineCorrectionSelectionPopup = uicontrol(obj.handle, 'Style', 'popup', 'Units', 'normalized', ...
+                    'Position', [0.7 0.3 0.2 0.04], 'String', 'None');
+                obj.baselineCorrectionAddButton = uicontrol(obj.handle, 'Units', 'normalized', ...
+                    'Position', [0.9 0.3 0.04 0.04], 'String', '+', ...
+                    'Callback', @(src, evnt)obj.addPreprocessingMethodCallback('baselineCorrection'));
+                
+%                 obj.peakDetectionLabel = uicontrol(obj.handle, 'Style', 'text', 'Units', 'normalized', ...
+%                     'Position', [0.48 0.25 0.22 0.04], 'String', 'Peak Detection', 'HorizontalAlignment', 'left');
+%                 obj.peakDetectionSelectionPopup = uicontrol(obj.handle, 'Style', 'popup', 'Units', 'normalized', ...
+%                     'Position', [0.7 0.25 0.2 0.04], 'String', 'None');
+%                 obj.peakDetectionAddButton = uicontrol(obj.handle, 'Units', 'normalized', ...
+%                     'Position', [0.9 0.25 0.04 0.04], 'String', '+', ...
+%                     'Callback', @(src, evnt)obj.addPreprocessingMethodCallback('peakDetection'));
+                
+                obj.normalisationLabel = uicontrol(obj.handle, 'Style', 'text', 'Units', 'normalized', ...
+                    'Position', [0.48 0.25 0.22 0.04], 'String', 'Normalisation', 'HorizontalAlignment', 'left');
+                obj.normalisationSelectionPopup = uicontrol(obj.handle, 'Style', 'popup', 'Units', 'normalized', ...
+                    'Position', [0.7 0.25 0.2 0.04], 'String', 'None');
+                obj.normalisationAddButton = uicontrol(obj.handle, 'Units', 'normalized', ...
+                    'Position', [0.9 0.25 0.04 0.04], 'String', '+', ...
+                    'Callback', @(src, evnt)obj.addPreprocessingMethodCallback('normalisation'));
+                
+%                 obj.okButton = uicontrol(obj.handle, 'String', 'OK', ...
+%                     'Units', 'normalized', 'Position', [0.8 0.05 0.15 0.05], 'Callback', @(src, evnt)obj.okButtonCallback());
+                
+                obj.updatePreprocessingPopups();
+            end
         end
+        
+        function sizeChanged(obj, src, evnt)
+            if(obj.handle ~= 0)
+                oldUnits = get(obj.handle, 'Units');
+                set(obj.handle, 'Units', 'pixels');
+            
+                newPosition = get(obj.handle, 'Position');
+
+                Figure.setObjectPositionInPixels(obj.beforeSpectrumDisplay.axisHandle, [50 newPosition(4)/2 newPosition(3)/2-80 newPosition(4)/2-30]);
+                
+%                 axisOldUnits = get(obj.beforeAxis, 'Units');
+%                 set(obj.beforeAxis, 'Units', 'pixels');
+%                 set(obj.beforeAxis, 'Position', [50 newPosition(4)/2 newPosition(3)/2-80 newPosition(4)/2-30]);
+%                 set(obj.beforeAxis, 'Units', axisOldUnits);
+
+                Figure.setObjectPositionInPixels(obj.afterSpectrumDisplay.axisHandle, [newPosition(3)/2+40 newPosition(4)/2 newPosition(3)/2-80 newPosition(4)/2-30]);
+
+%                 axisOldUnits = get(obj.afterAxis, 'Units');
+%                 set(obj.afterAxis, 'Units', 'pixels');
+%                 set(obj.afterAxis, 'Position', [newPosition(3)/2+40 newPosition(4)/2 newPosition(3)/2-80 newPosition(4)/2-30]);
+%                 set(obj.afterAxis, 'Units', axisOldUnits);
+
+                % Sort out the 'Before' label
+                labelOldUnits = get(obj.beforeLabel, 'Units');
+                set(obj.beforeLabel, 'Units', 'pixels');
+                labelOldPosition = get(obj.beforeLabel, 'Position');
+                set(obj.beforeLabel, 'Position', [labelOldPosition(1) newPosition(4)-28 labelOldPosition(3) 20]);
+                set(obj.beforeLabel, 'Units', labelOldUnits);
+                
+                % Sort out the 'After' label
+                labelOldUnits = get(obj.afterLabel, 'Units');
+                set(obj.afterLabel, 'Units', 'pixels');
+                labelOldPosition = get(obj.afterLabel, 'Position');
+                set(obj.afterLabel, 'Position', [labelOldPosition(1) newPosition(4)-28 labelOldPosition(3) 20]);
+                set(obj.afterLabel, 'Units', labelOldUnits);
+
+                set(obj.handle, 'Units', oldUnits);
+            end
+        end
+        
+        function createContextMenu(obj)
+            % Set up the context menu
+            obj.contextMenu = uicontextmenu();
+            %exportDataMenu = uimenu(obj.contextMenu, 'Label', 'Export Data', 'Callback', []);
+            %uimenu(exportDataMenu, 'Label', 'To workspace', 'Callback', @(src,evnt)obj.b.exportToWorkspace());
+            
+            exportWorkflowMenu = uimenu(obj.contextMenu, 'Label', 'Export Workflow', 'Callback', []);
+            uimenu(exportWorkflowMenu, 'Label', 'To workspace', 'Callback', @(src,evnt)obj.preprocessingWorkflow.exportToWorkspace());
+        end
+        
+%         function closeRequest(obj)
+%             obj.delete();
+%         end
     end
 end

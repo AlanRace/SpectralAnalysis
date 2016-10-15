@@ -57,7 +57,7 @@ classdef RegionOfInterestListEditor < Editor
             if(isa(this.regionOfInterestEditor, 'RegionEditor') && isvalid(this.regionOfInterestEditor))
                 this.regionOfInterestEditor.setRegionOfInterest(newROI);
                 
-                figure(this.regionOfInterestEditor.figureHandle);
+                figure(this.regionOfInterestEditor.handle);
             else
                 this.regionOfInterestEditor = RegionEditor(newROI);
             end
@@ -127,7 +127,7 @@ classdef RegionOfInterestListEditor < Editor
             if(isa(this.regionOfInterestEditor, 'RegionEditor') && isvalid(this.regionOfInterestEditor))
                 this.regionOfInterestEditor.setRegionOfInterest();
                 
-                figure(this.regionOfInterestEditor.figureHandle);
+                figure(this.regionOfInterestEditor.handle);
             else
                 this.regionOfInterestEditor = RegionEditor(RegionOfInterest(this.image.getWidth(), this.image.getHeight()));
                 this.regionOfInterestEditor.setRegionOfInterest(this.regionOfInterestList.get(get(this.listBox, 'Value')));
@@ -185,17 +185,17 @@ classdef RegionOfInterestListEditor < Editor
             
             this.setTitle('ROI List Editor');
                 
-            this.pixelSelectionPanel = uipanel(this.figureHandle, ...
+            this.pixelSelectionPanel = uipanel(this.handle, ...
                     'Units', 'normalized', 'Position', [0.05 0.3 0.9 0.65]);
             
-            this.listBox = uicontrol(this.figureHandle, 'Style', 'listbox', 'Units', 'normalized', ...
+            this.listBox = uicontrol(this.handle, 'Style', 'listbox', 'Units', 'normalized', ...
                 'Position', [0.05 0.05 0.5 0.2], 'Callback', @(src, evnt) this.selectRegionOfInterest(get(this.listBox, 'Value')));
             
-            this.addROIButton = uicontrol(this.figureHandle, 'String', '+', ...
+            this.addROIButton = uicontrol(this.handle, 'String', '+', ...
                 'Units', 'normalized', 'Position', [0.6 0.2 0.1 0.05], 'Callback', @(src, evnt) this.addRegionOfInterestCallback());
-            this.editROIButton = uicontrol(this.figureHandle, 'String', 'Edit', ...
+            this.editROIButton = uicontrol(this.handle, 'String', 'Edit', ...
                 'Units', 'normalized', 'Position', [0.6 0.125 0.1 0.05], 'Callback', @(src, evnt) this.editRegionOfInterest());
-            this.removeROIButton = uicontrol(this.figureHandle, 'String', '-', ...
+            this.removeROIButton = uicontrol(this.handle, 'String', '-', ...
                 'Units', 'normalized', 'Position', [0.6 0.05 0.1 0.05], 'Callback', @(src, evnt) this.removeRegionOfInterestCallback());
         end
     end

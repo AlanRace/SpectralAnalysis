@@ -90,7 +90,12 @@ classdef PreprocessingWorkflow < Copyable
             
             spectrum = SpectralData(spectralChannels, intensities);
             spectrum.setData(spectralChannels, intensities);
-            spectrum.setIsProfile(obj.containsPeakPicking());
+            
+            if(obj.containsPeakPicking || ~spectrum.isContinuous)
+                spectrum.setIsContinuous(false);
+            else
+                spectrum.setIsContinuous(true);
+            end
             
             notify(obj, 'WorkflowCompleted');
         end

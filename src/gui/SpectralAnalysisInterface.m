@@ -195,8 +195,8 @@ classdef SpectralAnalysisInterface < Figure
             % Check if we have already opened the
             % DataListViewer and if so if it is still a valid
             % instance of the class. If so show it, otherwise recreate it
-            if(isa(this.dataListViewer, 'DataListViewer') && this.dataListViewer.isvalid() && ~isempty(this.dataListViewer.figureHandle))
-                figure(this.dataListViewer.figureHandle);
+            if(isa(this.dataListViewer, 'DataListViewer') && this.dataListViewer.isvalid() && ~isempty(this.dataListViewer.handle))
+                figure(this.dataListViewer.handle);
             else
                 this.dataListViewer = DataListViewer(this.dataViewerList);
                 
@@ -290,21 +290,21 @@ classdef SpectralAnalysisInterface < Figure
             
             createFigure@Figure(this);
             
-            currentUnits = get(this.figureHandle, 'Units');
+            currentUnits = get(this.handle, 'Units');
             
             % Set the width and the height
-            set(this.figureHandle, 'Units', 'pixels');
-            curPos = get(this.figureHandle, 'Position');
-            set(this.figureHandle, 'Position', [curPos(1) curPos(2)+curPos(4)-80 curPos(3) 80]);
+            set(this.handle, 'Units', 'pixels');
+            curPos = get(this.handle, 'Position');
+            set(this.handle, 'Position', [curPos(1) curPos(2)+curPos(4)-80 curPos(3) 80]);
             
             % Add in progress bar
-            this.progressBarAxis = axes('Parent', this.figureHandle, 'Position', [.05 .7 .9 .2], 'Visible', 'off');
+            this.progressBarAxis = axes('Parent', this.handle, 'Position', [.05 .7 .9 .2], 'Visible', 'off');
             this.progressBar = ProgressBar(this.progressBarAxis);
             
-            this.messageBox = uicontrol('Parent', this.figureHandle, 'Style', 'edit', 'Position', [10 10 curPos(3)-20 40], ...
+            this.messageBox = uicontrol('Parent', this.handle, 'Style', 'edit', 'Position', [10 10 curPos(3)-20 40], ...
                 'String', '', 'HorizontalAlignment', 'left', 'Max', 2);
             
-            set(this.figureHandle, 'Units', currentUnits);
+            set(this.handle, 'Units', currentUnits);
         end
         
         function createMenu(this)
@@ -313,7 +313,7 @@ classdef SpectralAnalysisInterface < Figure
             %    createMenu()
             
             % Add 'Open' menu to the menu bar with all detected parsers
-            this.openFileMenu = uimenu(this.figureHandle, 'Label', 'Open');
+            this.openFileMenu = uimenu(this.handle, 'Label', 'Open');
             [this.openFileMethods, openFileMethodNames] = getSubclasses('Parser', 0);
             
             for i = 1:length(openFileMethodNames)
@@ -323,7 +323,7 @@ classdef SpectralAnalysisInterface < Figure
             
             % Add 'Convert' menu to the menu bar with all detected
             % converters
-            this.convertMenu = uimenu(this.figureHandle, 'Label', 'Convert To Binary');
+            this.convertMenu = uimenu(this.handle, 'Label', 'Convert To Binary');
             [this.toBinaryConverterMethods, toBinaryConverterNames] = getSubclasses('ToBinaryConverter', 0);
             
             for i = 1:length(toBinaryConverterNames)
@@ -332,7 +332,7 @@ classdef SpectralAnalysisInterface < Figure
             end
             
             % Add in memory menu
-            this.memoryMenu = uimenu(this.figureHandle, 'Label', 'Memory');
+            this.memoryMenu = uimenu(this.handle, 'Label', 'Memory');
             uimenu(this.memoryMenu, 'Label', 'Memory Usage', 'Callback', @(src, evnt) this.showDataListViewer());
             
             % TODO: Add in options menu
@@ -345,7 +345,7 @@ classdef SpectralAnalysisInterface < Figure
             
             
             % Get the new position of the figure in pixels
-            newPosition = Figure.getPositionInPixels(this.figureHandle);
+            newPosition = Figure.getPositionInPixels(this.handle);
             
             margin = 10;
             

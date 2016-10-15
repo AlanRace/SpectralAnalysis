@@ -1,6 +1,6 @@
-classdef PreprocessingMethodEditor < handle
+classdef PreprocessingMethodEditor < Editor
     properties (SetAccess = private)
-        figureHandle = 0;
+%         handle = 0;
         
         multiSpectrumDisplay;
         preprocessingMethodName;
@@ -18,12 +18,12 @@ classdef PreprocessingMethodEditor < handle
         parameterDefinitions;
         parameters;
         
-        okButton;
+%         okButton;
     end
     
-    events
-        FinishedEditingPreprocessingMethod;
-    end
+%     events
+%         FinishedEditingPreprocessingMethod;
+%     end
     
     methods
         function obj = PreprocessingMethodEditor(spectrum, preprocessingMethod)
@@ -45,13 +45,15 @@ classdef PreprocessingMethodEditor < handle
             obj.beforeSpectrum = spectrum;
             obj.beforeSpectrum.setDescription('Before');
             
-            obj.createFigure();
+%             obj.createFigure();
                         
             obj.afterSpectrum = SpectralData(obj.beforeSpectrum.spectralChannels, obj.beforeSpectrum.intensities);
             obj.afterSpectrum.setDescription('After');
             
-            obj.multiSpectrumDisplay = MultiSpectrumDisplay(obj.spectrumAxis, obj.beforeSpectrum);
+            obj.multiSpectrumDisplay = MultiSpectrumDisplay(obj, obj.beforeSpectrum);
             
+            
+            obj.createParameterInterface();
             
             
             %TODO: Update the parameters if an instance of the class was
@@ -63,92 +65,7 @@ classdef PreprocessingMethodEditor < handle
             obj.parameterChanged();
         end
        
-        function createFigure(obj)
-            if(~obj.figureHandle)
-                preProcessingName = eval([obj.preprocessingMethodName '.Name']);
-                
-                obj.figureHandle = figure(...
-                    'Name', ['Preprocessing Method Editor: ' preProcessingName], 'NumberTitle','off',...
-                    'Units','characters',...
-                    'MenuBar','none',...
-                    'Toolbar','none', ...
-                    'CloseRequestFcn', @(src, evnt)obj.closeRequest());
-                
-                if(strcmp(version('-release'), '2014b'))
-                    set(obj.figureHandle, 'SizeChangedFcn', @(src, evnt)obj.sizeChanged());
-                end
-                
-                obj.spectrumAxis = axes('Parent', obj.figureHandle, 'Position', [.1 .55 .8 .35]);
-                
-                % Create appropriate interface elements for the parameters
-                % of the preprocessing method
-                generate = eval([obj.preprocessingMethodName '.defaultsRequireGenerating()']);
-                if(generate)
-                    parameters = eval([obj.preprocessingMethodName '.generateDefaultsFromSpectrum(obj.beforeSpectrum)']);
-                else
-                    parameters = [];
-                end
-                
-                obj.parameterDefinitions = eval([obj.preprocessingMethodName '.ParameterDefinitions']);
-                
-                for i = 1:length(obj.parameterDefinitions)
-                    type = obj.parameterDefinitions(i).type;
-                    
-                    uicontrol(obj.figureHandle, 'Style', 'text', 'String', obj.parameterDefinitions(i).name, 'HorizontalAlignment', 'left', ...
-                        'Units', 'normalized', 'Position', [.25 .40-((i-1)*0.05) .25 .04]);
-                    
-                    if(isempty(parameters))
-                        defaultValue = obj.parameterDefinitions(i).defaultValue;
-                    else
-                        defaultValue = parameters(i).value;
-                    end
-                    
-                    if(isa(defaultValue, 'double'))
-                        defaultValue = num2str(defaultValue, '%0.20f');
-                        
-                        decimalPointLoc = strfind(defaultValue, '.');
-                        
-                        if(~isempty(decimalPointLoc))
-                            finalZeroVal = regexp(defaultValue(decimalPointLoc:end), '0+$', 'once');
-                        
-                            if(~isempty(finalZeroVal))
-                                defaultValue = defaultValue(1:finalZeroVal+decimalPointLoc-2);
-                            end
-                        end
-                    end
-                    
-                    if(type == ParameterType.Integer || type == ParameterType.Double || type == ParameterType.String)
-                        defaultValue
-                        
-                        obj.parameterInterfaceHandles(i) = uicontrol(obj.figureHandle, 'Style', 'edit', 'String', defaultValue, ...
-                            'Units', 'normalized', 'Position', [.55 .40-((i-1)*0.05) .2 .04], 'Callback', @(src, evnt)obj.parameterChanged());
-                        
-                        if(type == ParameterType.Integer)
-                            uicontrol(obj.figureHandle, 'Style', 'pushbutton', 'String', '-', ...
-                                'Units', 'normalized', 'Position', [.5 .40-((i-1)*0.05) .04 .04], 'Callback', @(src, evnt)obj.reduceParameter(i));
-                            uicontrol(obj.figureHandle, 'Style', 'pushbutton', 'String', '+', ...
-                                'Units', 'normalized', 'Position', [.75 .40-((i-1)*0.05) .04 .04], 'Callback', @(src, evnt)obj.increaseParameter(i));
-                        end
-                    end
-                end
-                
-                obj.okButton = uicontrol(obj.figureHandle, 'String', 'OK', ...
-                    'Units', 'normalized', 'Position', [0.8 0.05 0.15 0.05], 'Callback', @(src, evnt)obj.okButtonCallback());
-            end
-        end
         
-        function sizeChanged(obj, src, evnt)
-            oldUnits = get(obj.figureHandle, 'Units');
-            set(obj.figureHandle, 'Units', 'pixels');
-            newPosition = get(obj.figureHandle, 'Position');
-            
-            axisOldUnits = get(obj.spectrumAxis, 'Units');
-            set(obj.spectrumAxis, 'Units', 'pixels');
-            set(obj.spectrumAxis, 'Position', [50 newPosition(4)/2 newPosition(3)-80 newPosition(4)/2-30]);
-            set(obj.spectrumAxis, 'Units', axisOldUnits);
-            
-            set(obj.figureHandle, 'Units', oldUnits);
-        end
         
         function preprocessingMethod = getPreprocessingMethod(obj)
             preprocessingMethod = obj.preprocessingMethod;
@@ -158,10 +75,10 @@ classdef PreprocessingMethodEditor < handle
             afterSpectrum = obj.afterSpectrum;
         end
         
-        function delete(obj)
-            delete(obj.figureHandle);
-            obj.figureHandle = 0;
-        end
+%         function delete(obj)
+%             delete(obj.handle);
+%             obj.handle = 0;
+%         end
         
         
     end
@@ -241,19 +158,115 @@ classdef PreprocessingMethodEditor < handle
             obj.parameterChanged();
         end
         
-        function okButtonCallback(obj)
-            % Make sure any last updates are performed
-            obj.parameterChanged();
-            
-            notify(obj, 'FinishedEditingPreprocessingMethod'); %, obj.preprocessingMethod);
-            
-            obj.delete();
-        end
+%         function okButtonCallback(obj)
+%             % Make sure any last updates are performed
+%             obj.parameterChanged();
+%             
+%             notify(obj, 'FinishedEditingPreprocessingMethod'); %, obj.preprocessingMethod);
+%             
+%             obj.delete();
+%         end
     end    
     
     methods (Access = protected)
-        function closeRequest(obj)
-            obj.delete();
+        function createFigure(obj)
+%             if(~obj.handle)
+%                 preProcessingName = eval([obj.preprocessingMethodName '.Name']);
+%                 
+%                 obj.handle = figure(...
+%                     'Name', ['Preprocessing Method Editor: ' preProcessingName], 'NumberTitle','off',...
+%                     'Units','characters',...
+%                     'MenuBar','none',...
+%                     'Toolbar','none', ...
+%                     'CloseRequestFcn', @(src, evnt)obj.closeRequest());
+%                 
+%                 if(strcmp(version('-release'), '2014b'))
+%                     set(obj.handle, 'SizeChangedFcn', @(src, evnt)obj.sizeChanged());
+%                 end
+
+            if(isempty(obj.handle) || ~obj.handle)
+                createFigure@Editor(obj);
+                
+%                 obj.spectrumAxis = axes('Parent', obj.handle, 'Position', [.1 .55 .8 .35]);
+            end
         end
+           
+        function createParameterInterface(obj)
+                % Create appropriate interface elements for the parameters
+                % of the preprocessing method
+                generate = eval([obj.preprocessingMethodName '.defaultsRequireGenerating()']);
+                
+                if(generate)
+                    parameters = eval([obj.preprocessingMethodName '.generateDefaultsFromSpectrum(obj.beforeSpectrum)']);
+                else
+                    parameters = [];
+                end
+                
+                obj.parameterDefinitions = eval([obj.preprocessingMethodName '.ParameterDefinitions']);
+                
+                for i = 1:length(obj.parameterDefinitions)
+                    type = obj.parameterDefinitions(i).type;
+                    
+                    uicontrol(obj.handle, 'Style', 'text', 'String', obj.parameterDefinitions(i).name, 'HorizontalAlignment', 'left', ...
+                        'Units', 'normalized', 'Position', [.25 .40-((i-1)*0.05) .25 .04]);
+                    
+                    if(isempty(parameters))
+                        defaultValue = obj.parameterDefinitions(i).defaultValue;
+                    else
+                        defaultValue = parameters(i).value;
+                    end
+                    
+                    if(isa(defaultValue, 'double'))
+                        defaultValue = num2str(defaultValue, '%0.20f');
+                        
+                        decimalPointLoc = strfind(defaultValue, '.');
+                        
+                        if(~isempty(decimalPointLoc))
+                            finalZeroVal = regexp(defaultValue(decimalPointLoc:end), '0+$', 'once');
+                        
+                            if(~isempty(finalZeroVal))
+                                defaultValue = defaultValue(1:finalZeroVal+decimalPointLoc-2);
+                            end
+                        end
+                    end
+                    
+                    if(type == ParameterType.Integer || type == ParameterType.Double || type == ParameterType.String)
+%                         defaultValue
+                        
+                        obj.parameterInterfaceHandles(i) = uicontrol(obj.handle, 'Style', 'edit', 'String', defaultValue, ...
+                            'Units', 'normalized', 'Position', [.55 .40-((i-1)*0.05) .2 .04], 'Callback', @(src, evnt)obj.parameterChanged());
+                        
+                        if(type == ParameterType.Integer)
+                            uicontrol(obj.handle, 'Style', 'pushbutton', 'String', '-', ...
+                                'Units', 'normalized', 'Position', [.5 .40-((i-1)*0.05) .04 .04], 'Callback', @(src, evnt)obj.reduceParameter(i));
+                            uicontrol(obj.handle, 'Style', 'pushbutton', 'String', '+', ...
+                                'Units', 'normalized', 'Position', [.75 .40-((i-1)*0.05) .04 .04], 'Callback', @(src, evnt)obj.increaseParameter(i));
+                        end
+                    end
+                end
+                
+%                 obj.okButton = uicontrol(obj.handle, 'String', 'OK', ...
+%                     'Units', 'normalized', 'Position', [0.8 0.05 0.15 0.05], 'Callback', @(src, evnt)obj.okButtonCallback());
+            
+        end
+        
+        function sizeChanged(obj, src, evnt)
+            oldUnits = get(obj.handle, 'Units');
+            set(obj.handle, 'Units', 'pixels');
+            newPosition = get(obj.handle, 'Position');
+            
+            Figure.setObjectPositionInPixels(obj.multiSpectrumDisplay.axisHandle, [50 newPosition(4)/2 newPosition(3)-80 newPosition(4)/2-30]);
+            
+%             axisOldUnits = get(obj.spectrumAxis, 'Units');
+%             set(obj.spectrumAxis, 'Units', 'pixels');
+%             set(obj.spectrumAxis, 'Position', [50 newPosition(4)/2 newPosition(3)-80 newPosition(4)/2-30]);
+%             set(obj.spectrumAxis, 'Units', axisOldUnits);
+            
+            set(obj.handle, 'Units', oldUnits);
+        end
+        
+%         function closeRequest(obj)
+%             obj.delete();
+%         end
     end
 end
