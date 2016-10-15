@@ -75,10 +75,10 @@ classdef PeakFilterEditor < Figure
     
     methods (Access = protected)
         function createFigure(obj)
-            if(isempty(obj.figureHandle) || ~obj.figureHandle)
+            if(isempty(obj.handle) || ~obj.handle)
                 createFigure@Figure(obj);
                 
-%                 obj.figureHandle = figure(...
+%                 obj.handle = figure(...
 %                     'Name', ['Peak Filter Editor: ' filterName], 'NumberTitle','off',...
 %                     'Units','characters',...
 %                     'MenuBar','none',...
@@ -86,10 +86,10 @@ classdef PeakFilterEditor < Figure
 %                     'CloseRequestFcn', @(src, evnt)obj.closeRequest());
 %                 
 %                 if(strcmp(version('-release'), '2014b'))
-%                     set(obj.figureHandle, 'SizeChangedFcn', @(src, evnt)obj.sizeChanged());
+%                     set(obj.handle, 'SizeChangedFcn', @(src, evnt)obj.sizeChanged());
 %                 end
                 
-%                 obj.spectrumAxis = axes('Parent', obj.figureHandle, 'Position', [.1 .55 .8 .35]);
+%                 obj.spectrumAxis = axes('Parent', obj.handle, 'Position', [.1 .55 .8 .35]);
                 
                 % Create appropriate interface elements for the parameters
                 % of the preprocessing method
@@ -101,7 +101,7 @@ classdef PeakFilterEditor < Figure
 %                 end
                
                 
-                obj.okButton = uicontrol(obj.figureHandle, 'String', 'OK', ...
+                obj.okButton = uicontrol(obj.handle, 'String', 'OK', ...
                     'Units', 'normalized', 'Position', [0.8 0.05 0.15 0.05], 'Callback', @(src, evnt)obj.okButtonCallback());
             end
         end
@@ -114,7 +114,7 @@ classdef PeakFilterEditor < Figure
             for i = 1:length(obj.parameterDefinitions)
                 type = obj.parameterDefinitions(i).type;
                 
-                uicontrol(obj.figureHandle, 'Style', 'text', 'String', obj.parameterDefinitions(i).name, 'HorizontalAlignment', 'left', ...
+                uicontrol(obj.handle, 'Style', 'text', 'String', obj.parameterDefinitions(i).name, 'HorizontalAlignment', 'left', ...
                     'Units', 'normalized', 'Position', [.25 .40-((i-1)*0.05) .25 .04]);
                 
                 if(isempty(parameters))
@@ -140,33 +140,33 @@ classdef PeakFilterEditor < Figure
                 if(type == ParameterType.Integer || type == ParameterType.Double || type == ParameterType.String)
                     % defaultValue
                     
-                    obj.parameterInterfaceHandles(i) = uicontrol(obj.figureHandle, 'Style', 'edit', 'String', defaultValue, ...
+                    obj.parameterInterfaceHandles(i) = uicontrol(obj.handle, 'Style', 'edit', 'String', defaultValue, ...
                         'Units', 'normalized', 'Position', [.55 .40-((i-1)*0.05) .2 .04], 'Callback', @(src, evnt)obj.parameterChanged());
                     
                     if(type == ParameterType.Integer)
-                        uicontrol(obj.figureHandle, 'Style', 'pushbutton', 'String', '-', ...
+                        uicontrol(obj.handle, 'Style', 'pushbutton', 'String', '-', ...
                             'Units', 'normalized', 'Position', [.5 .40-((i-1)*0.05) .04 .04], 'Callback', @(src, evnt)obj.reduceParameter(i));
-                        uicontrol(obj.figureHandle, 'Style', 'pushbutton', 'String', '+', ...
+                        uicontrol(obj.handle, 'Style', 'pushbutton', 'String', '+', ...
                             'Units', 'normalized', 'Position', [.75 .40-((i-1)*0.05) .04 .04], 'Callback', @(src, evnt)obj.increaseParameter(i));
                     end
                 elseif(type == ParameterType.Boolean)
-                    obj.parameterInterfaceHandles(i) = uicontrol(obj.figureHandle, 'Style', 'checkbox', 'Value', str2num(defaultValue), ...
+                    obj.parameterInterfaceHandles(i) = uicontrol(obj.handle, 'Style', 'checkbox', 'Value', str2num(defaultValue), ...
                         'Units', 'normalized', 'Position', [.55 .40-((i-1)*0.05) .04 .04], 'Callback', @(src, evnt)obj.parameterChanged());
                 end
             end
         end
         
         function sizeChanged(obj, src, evnt)
-            oldUnits = get(obj.figureHandle, 'Units');
-            set(obj.figureHandle, 'Units', 'pixels');
-            newPosition = get(obj.figureHandle, 'Position');
+            oldUnits = get(obj.handle, 'Units');
+            set(obj.handle, 'Units', 'pixels');
+            newPosition = get(obj.handle, 'Position');
             
             axisOldUnits = get(obj.spectrumAxis, 'Units');
             set(obj.spectrumAxis, 'Units', 'pixels');
             set(obj.spectrumAxis, 'Position', [50 newPosition(4)/2 newPosition(3)-80 newPosition(4)/2-30]);
             set(obj.spectrumAxis, 'Units', axisOldUnits);
             
-            set(obj.figureHandle, 'Units', oldUnits);
+            set(obj.handle, 'Units', oldUnits);
         end
     end
     

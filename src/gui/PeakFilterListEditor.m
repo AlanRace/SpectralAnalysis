@@ -14,7 +14,7 @@ classdef PeakFilterListEditor < Editor
         contextMenu;
         
         spectrumLabel;
-        spectrumAxis;
+%         spectrumAxis;
         
         peakFilterList;
         moveUpButton;
@@ -47,14 +47,14 @@ classdef PeakFilterListEditor < Editor
             
             obj.setTitle('Peak Filter List Editor');
 
-            obj.spectrumDisplay = SpectrumDisplay(obj.spectrumAxis, spectrum);
+            obj.spectrumDisplay = SpectrumDisplay(obj, spectrum);
             obj.peakDetection = peakDetection;
             
             obj.spectrumDisplay.disableContextMenu();
             obj.spectrumDisplay.setPeakDetection(obj.peakDetection);
             
-%             set(obj.figureHandle, 'WindowButtonMotionFcn', @(src,evnt)obj.mouseMovedCallback());
-%             set(obj.figureHandle, 'WindowButtonUpFcn', @(src, evnt)obj.mouseButtonUpCallback());
+%             set(obj.handle, 'WindowButtonMotionFcn', @(src,evnt)obj.mouseMovedCallback());
+%             set(obj.handle, 'WindowButtonUpFcn', @(src, evnt)obj.mouseButtonUpCallback());
 
         end
         
@@ -75,7 +75,7 @@ classdef PeakFilterListEditor < Editor
             % PeakFilterEditor and if so if it is still a valid
             % instance of the class. If so show it, otherwise recreate it
             if(isa(obj.peakFilterEditor, 'PeakFilterEditor') && isvalid(obj.peakFilterEditor))
-                figure(obj.peakFilterEditor.figureHandle);
+                figure(obj.peakFilterEditor.handle);
             else
                 index = get(obj.peakFilterSelectionPopup, 'Value');
                 
@@ -200,47 +200,47 @@ classdef PeakFilterListEditor < Editor
     
     methods (Access = protected)
         function createFigure(obj)
-            if(isempty(obj.figureHandle) || ~obj.figureHandle)
+            if(isempty(obj.handle) || ~obj.handle)
                 createFigure@Editor(obj);
-%                 obj.figureHandle = figure(...
+%                 obj.handle = figure(...
 %                     'Name', 'Peak Filter List Editor', 'NumberTitle','off',...
 %                     'Units','characters',...
 %                     'MenuBar','none',...
 %                     'Toolbar','none', ...
 %                     'CloseRequestFcn', @(src, evnt)obj.closeRequest());
                 
-%                 if(isprop(obj.figureHandle, 'SizeChangedFcn'))
-%                     set(obj.figureHandle, 'SizeChangedFcn', @(src, evnt)obj.sizeChanged());
+%                 if(isprop(obj.handle, 'SizeChangedFcn'))
+%                     set(obj.handle, 'SizeChangedFcn', @(src, evnt)obj.sizeChanged());
 %                 else
-%                     set(obj.figureHandle, 'ResizeFcn', @(src, evnt)obj.sizeChanged());
+%                     set(obj.handle, 'ResizeFcn', @(src, evnt)obj.sizeChanged());
 %                 end                   
                 
                 obj.createContextMenu();
-                set(obj.figureHandle, 'uicontextmenu', obj.contextMenu);
+                set(obj.handle, 'uicontextmenu', obj.contextMenu);
                 
-                obj.spectrumLabel = uicontrol(obj.figureHandle, 'Style', 'text', 'Units', 'normalized', ...
+                obj.spectrumLabel = uicontrol(obj.handle, 'Style', 'text', 'Units', 'normalized', ...
                     'Position', [0.4 0.90 0.15 0.05], 'String', '');
-                obj.spectrumAxis = axes('Parent', obj.figureHandle, 'Position', [.1 .55 .8 .35]);
+%                 obj.spectrumAxis = axes('Parent', obj.handle, 'Position', [.1 .55 .8 .35]);
                 
-                obj.peakFilterList = uicontrol(obj.figureHandle, 'Style', 'listbox', ...
+                obj.peakFilterList = uicontrol(obj.handle, 'Style', 'listbox', ...
                     'Units', 'normalized', 'Position', [0.1 0.1 0.25 0.35]);
 
-                obj.moveUpButton = uicontrol(obj.figureHandle, 'String', '^', ...
+                obj.moveUpButton = uicontrol(obj.handle, 'String', '^', ...
                     'Units', 'normalized', 'Position', [0.36 0.35 0.05 0.05], 'Callback', @(src, evnt)obj.moveUpButtonCallback());
-                obj.moveDownButton = uicontrol(obj.figureHandle, 'String', 'v', ...
+                obj.moveDownButton = uicontrol(obj.handle, 'String', 'v', ...
                     'Units', 'normalized', 'Position', [0.36 0.2 0.05 0.05], 'Callback', @(src, evnt)obj.moveDownButtonCallback());
-                obj.removeButton = uicontrol(obj.figureHandle, 'String', '-', ...
+                obj.removeButton = uicontrol(obj.handle, 'String', '-', ...
                     'Units', 'normalized', 'Position', [0.36 0.275 0.05 0.05], 'Callback', @(src, evnt)obj.removeButtonCallback());
                 
-                obj.peakFilterLabel = uicontrol(obj.figureHandle, 'Style', 'text', 'Units', 'normalized', ...
+                obj.peakFilterLabel = uicontrol(obj.handle, 'Style', 'text', 'Units', 'normalized', ...
                     'Position', [0.48 0.4 0.22 0.04], 'String', 'Peak Filter', 'HorizontalAlignment', 'left');
-                obj.peakFilterSelectionPopup = uicontrol(obj.figureHandle, 'Style', 'popup', 'Units', 'normalized', ...
+                obj.peakFilterSelectionPopup = uicontrol(obj.handle, 'Style', 'popup', 'Units', 'normalized', ...
                     'Position', [0.7 0.4 0.2 0.04], 'String', 'None');
-                obj.peakFilterAddButton = uicontrol(obj.figureHandle, 'Units', 'normalized', ...
+                obj.peakFilterAddButton = uicontrol(obj.handle, 'Units', 'normalized', ...
                     'Position', [0.9 0.4 0.04 0.04], 'String', '+', ...
                     'Callback', @(src, evnt)obj.addPeakFilterCallback());
                 
-%                 obj.okButton = uicontrol(obj.figureHandle, 'String', 'OK', ...
+%                 obj.okButton = uicontrol(obj.handle, 'String', 'OK', ...
 %                     'Units', 'normalized', 'Position', [0.8 0.05 0.15 0.05], 'Callback', @(src, evnt)obj.okButtonCallback());
                 
                 obj.updatePeakFilterPopup();
@@ -258,16 +258,18 @@ classdef PeakFilterListEditor < Editor
         end
         
         function sizeChanged(obj, src, evnt)
-            if(obj.figureHandle ~= 0)
-                oldUnits = get(obj.figureHandle, 'Units');
-                set(obj.figureHandle, 'Units', 'pixels');
+            if(obj.handle ~= 0)
+                oldUnits = get(obj.handle, 'Units');
+                set(obj.handle, 'Units', 'pixels');
             
-                newPosition = get(obj.figureHandle, 'Position');
+                newPosition = get(obj.handle, 'Position');
 
-                axisOldUnits = get(obj.spectrumAxis, 'Units');
-                set(obj.spectrumAxis, 'Units', 'pixels');
-                set(obj.spectrumAxis, 'Position', [50 newPosition(4)/2 newPosition(3)-80 newPosition(4)/2-30]);
-                set(obj.spectrumAxis, 'Units', axisOldUnits);
+                Figure.setObjectPositionInPixels(obj.spectrumDisplay.axisHandle, [50 newPosition(4)/2 newPosition(3)-80 newPosition(4)/2-30]);
+                
+%                 axisOldUnits = get(obj.spectrumAxis, 'Units');
+%                 set(obj.spectrumAxis, 'Units', 'pixels');
+%                 set(obj.spectrumAxis, 'Position', [50 newPosition(4)/2 newPosition(3)-80 newPosition(4)/2-30]);
+%                 set(obj.spectrumAxis, 'Units', axisOldUnits);
 
                 % Sort out the 'Before' label
                 labelOldUnits = get(obj.spectrumLabel, 'Units');
@@ -276,7 +278,7 @@ classdef PeakFilterListEditor < Editor
                 set(obj.spectrumLabel, 'Position', [labelOldPosition(1) newPosition(4)-28 labelOldPosition(3) 20]);
                 set(obj.spectrumLabel, 'Units', labelOldUnits);
 
-                set(obj.figureHandle, 'Units', oldUnits);
+                set(obj.handle, 'Units', oldUnits);
             end
         end
     end

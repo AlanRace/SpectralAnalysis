@@ -7,6 +7,8 @@ classdef DataRepresentation < handle
         
         parser;
         
+        isContinuous = true;
+        
         regionOfInterest;
         pixels;
         pixelIndicies;
@@ -43,6 +45,10 @@ classdef DataRepresentation < handle
             this.regionOfInterest = regionOfInterest;
             
             this.createPixelList();
+        end
+        
+        function setIsContinuous(this, isContinuous)
+            this.isContinuous = isContinuous;
         end
         
         function createPixelList(obj)

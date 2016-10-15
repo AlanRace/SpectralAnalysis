@@ -173,6 +173,8 @@ classdef DataViewer < Figure
             if(isa(dataRepresentation.parser, 'SIMSParser'))
                 totalSpectrum = dataRepresentation.parser.getOverviewSpectrum();
                 
+                totalSpectrum.setIsContinuous(obj.dataRepresentation.isContinuous);
+                
                 obj.spectrumList.add(totalSpectrum);
                 obj.spectrumList.add(totalSpectrum);
             
@@ -395,7 +397,7 @@ classdef DataViewer < Figure
             obj.currentSpectrumLocation = [x y];
             
             spectrum = obj.dataRepresentation.getSpectrum(x, y, 1, 1);
-            spectrum
+            spectrum.setIsContinuous(obj.dataRepresentation.isContinuous);
             spectrum.setDescription(['Spectrum at (' num2str(x) ', ' num2str(y) ')']);
             obj.spectrumList.set(1, spectrum);
             obj.updateSpectrumSelectionPopup();
@@ -421,37 +423,55 @@ classdef DataViewer < Figure
             obj.spectrumDisplay.setData(spectrum);
         end
         
-        function mouseDownInsideSpectrum(obj, x)
-            obj.mouseDownInsideSpectrumLocation = x;
-        end
+%         function mouseDownInsideSpectrum(obj, x)
+%             obj.mouseDownInsideSpectrumLocation = x;
+%         end
         
-        function mouseUpInsideSpectrum(obj, x)
-            spectralRange = [min(x, obj.mouseDownInsideSpectrumLocation) max(x, obj.mouseDownInsideSpectrumLocation)];
+        function peakSelected(obj, peakSelectionEvent)
             
-            width = spectralRange(2) - spectralRange(1);
-            halfWidth = width/2;
+%         end
+% 
+%         function mouseUpInsideSpectrum(obj, x)
+%             spectralRange = [min(x, obj.mouseDownInsideSpectrumLocation) max(x, obj.mouseDownInsideSpectrumLocation)];
             
-            if(isa(obj.dataRepresentation.parser, 'SIMSParser') || 1)
-                blankImage = Image(zeros(obj.dataRepresentation.height, obj.dataRepresentation.width));
-                blankImage.setDescription([num2str(spectralRange(1)) ' - ' num2str(spectralRange(2))]);
-
-                obj.imageListGenerated(end+1) = false;
-                obj.imageList(end+1) = blankImage;
-
-                obj.updateImageSelectionPopup();
+            if(peakSelectionEvent.selectionType == PeakSelectionEvent.Exact)
+                if(~obj.dataRepresentation.isContinuous)
+                    peakToView = peakSelectionEvent.peakDetails;
+                    
+                    [minVal, minLoc] = min(abs(obj.dataRepresentation.spectralChannels - peakToView));
+                    
+                    spectralRange = [obj.dataRepresentation.spectralChannels(minLoc) obj.dataRepresentation.spectralChannels(minLoc)];
+                    description = num2str(obj.dataRepresentation.spectralChannels(minLoc));
+                end
             else
-                listener = addlistener(obj.dataRepresentation, 'DataLoadProgress', @(src, evnt)obj.progressBar.updateProgress(evnt));
-
-                image = obj.dataRepresentation.generateImages(spectralRange(1)+halfWidth, halfWidth, obj.preprocessingWorkflow);
-
-                delete(listener);
-
-    %             imageInstance = Image(image);
-                image.setDescription([num2str(spectralRange(1)) ' - ' num2str(spectralRange(2))]);
-
-                obj.addImage(image);
-                obj.displayImage(length(obj.imageList));
+                spectralRange = peakSelectionEvent.peakDetails;
+                description = [num2str(spectralRange(1)) ' - ' num2str(spectralRange(2))];
             end
+
+                width = spectralRange(2) - spectralRange(1);
+                halfWidth = width/2;
+
+                if(isa(obj.dataRepresentation.parser, 'SIMSParser') || ~isa(obj.dataRepresentation, 'DataInMemory'))
+                    blankImage = Image(zeros(obj.dataRepresentation.height, obj.dataRepresentation.width));
+                    blankImage.setDescription(description);
+
+                    obj.imageListGenerated(end+1) = false;
+                    obj.imageList(end+1) = blankImage;
+
+                    obj.updateImageSelectionPopup();
+                else
+                    listener = addlistener(obj.dataRepresentation, 'DataLoadProgress', @(src, evnt)obj.progressBar.updateProgress(evnt));
+
+                    image = obj.dataRepresentation.generateImages(spectralRange(1)+halfWidth, halfWidth, obj.preprocessingWorkflow);
+
+                    delete(listener);
+
+        %             imageInstance = Image(image);
+                    image.setDescription(description);
+
+                    obj.addImage(image);
+                    obj.displayImage(length(obj.imageList));
+                end
         end
         
         function editRegionOfInterestList(obj)
@@ -1029,9 +1049,10 @@ classdef DataViewer < Figure
 %                 obj.spectrumAxis = axes('Parent', obj.handle, 'Position', [.1 .3 .8 .25]);
                 obj.spectrumDisplay = SpectrumDisplay(obj, SpectralData(0, 0));
                 
-                addlistener(obj.spectrumDisplay, 'MouseDownInsideAxis', @(src, evnt)obj.mouseDownInsideSpectrum(evnt.x));
-                addlistener(obj.spectrumDisplay, 'MouseUpInsideAxis', @(src, evnt)obj.mouseUpInsideSpectrum(evnt.x));
+%                 addlistener(obj.spectrumDisplay, 'MouseDownInsideAxis', @(src, evnt)obj.mouseDownInsideSpectrum(evnt.x));
+%                 addlistener(obj.spectrumDisplay, 'MouseUpInsideAxis', @(src, evnt)obj.mouseUpInsideSpectrum(evnt.x));
                                 
+                addlistener(obj.spectrumDisplay, 'PeakSelected', @(src, evnt)obj.peakSelected(evnt));
                 
                 obj.switchSpectrumViewButton = uicontrol('Parent', obj.handle, 'String', '<>', 'Callback', @(src, evnt)obj.switchSpectrumView(), ...
                         'Units', 'normalized', 'Position', [0.85 0.55 0.05 0.05], 'Visible', 'Off');

@@ -84,6 +84,10 @@ classdef DatacubeReduction < DataReduction
             for i = 1:numel(data)
                 dataInMemory = DataInMemory();
                 
+                if(~dataRepresentation.isContinuous || this.preprocessingWorkflow.containsPeakPicking())
+                    dataInMemory.setIsContinuous(false);
+                end
+                
                 if(this.processEntireDataset && i == 1)
                     dataInMemory.setData(data{i}, dataRepresentation.regionOfInterest, ...
                         dataRepresentation.isRowMajor, peakList, [dataRepresentation.name ' (Processed)']);
