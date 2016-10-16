@@ -74,6 +74,8 @@ classdef PreprocessingWorkflowEditor < Editor
             
             obj.createFigure();
             
+            obj.setTitle('Preprocessing Workflow Editor');
+            
             obj.beforeSpectrumDisplay = SpectrumDisplay(obj, spectrum);
             
             afterSpectrum = SpectralData(obj.beforeSpectrumDisplay.data.spectralChannels,obj.beforeSpectrumDisplay.data.intensities);

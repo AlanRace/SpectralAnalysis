@@ -150,13 +150,15 @@ classdef DataViewer < Figure
             
             obj.setTitle(['DataViewer: ' title]);
             
+            obj.sizeChanged();
+            
             %obj.createFigure();
             
             obj.regionOfInterestList = RegionOfInterestList();
             obj.spectrumList = SpectrumList();
             
             obj.imageDisplay = ImageDisplay(obj, Image(1));
-            addlistener(obj.imageDisplay, 'MouseDownInsideAxis', @(src, evnt)obj.mouseDownInsideAxisCallback(evnt));
+            addlistener(obj.imageDisplay, 'PixelSelected', @(src, evnt)obj.pixelSelectedCallback(evnt));
             
             % Add the overview image to the list of images
             obj.addImage(obj.dataRepresentation.getOverviewImage());
@@ -383,10 +385,10 @@ classdef DataViewer < Figure
             set(obj.progressBar.axisHandle, 'Visible', 'off');
         end
         
-        function mouseDownInsideAxisCallback(obj, event)
-            if(event.button == MouseEventData.LeftButton) 
+        function pixelSelectedCallback(obj, event)
+%             if(event.button == MouseEventData.LeftButton) 
                 obj.displaySpectrum(event.x, event.y);
-            end
+%             end
         end
         
         

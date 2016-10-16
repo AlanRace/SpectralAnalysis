@@ -42,6 +42,8 @@ classdef PreprocessingMethodEditor < Editor
             
             obj.preprocessingMethodName = preprocessingMethod;
             
+            obj.setTitle(['Edit Preprocessing Method: ' obj.preprocessingMethodName ]);
+            
             obj.beforeSpectrum = spectrum;
             obj.beforeSpectrum.setDescription('Before');
             
