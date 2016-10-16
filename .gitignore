@@ -5,3 +5,4 @@ src/processing/postprocessing/tSNE/
 *.mat
 *.mexw64
 *.asv
+us.stackdump

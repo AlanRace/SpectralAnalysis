@@ -100,6 +100,98 @@ classdef PreprocessingWorkflow < Copyable
             notify(obj, 'WorkflowCompleted');
         end
         
+        function saveWorkflow(this, location)
+            docNode = com.mathworks.xml.XMLUtils.createDocument('preprocessingWorkflow');
+            docRootNode = docNode.getDocumentElement;
+            docRootNode.setAttribute('version', '1.0');
+            
+            for i = 1:length(this.workflow)
+                preprocessingMethod = this.workflow{i};
+                
+                methodElement = docNode.createElement('preprocessingMethod');
+                methodElement.setAttribute('class', class(preprocessingMethod));
+                
+                params = preprocessingMethod.Parameters;
+                
+                for j = 1:length(params)
+                    paramElement = docNode.createElement('parameter');
+                    
+                    paramElement.setAttribute('description', params(j).parameterDescription.name);
+                    
+                    switch(params(j).parameterDescription.type)
+                        case {ParameterType.Integer, ParameterType.Boolean}
+                            paramElement.setAttribute('value', num2str(params(j).value, '%d'));
+                        case(ParameterType.Double)
+                            paramElement.setAttribute('value', num2str(params(j).value, '%f'));
+                        otherwise
+                            paramElement.setAttribute('value', params(j).value);
+                    end
+                    
+                    methodElement.appendChild(paramElement);
+                end
+                
+                docRootNode.appendChild(methodElement);
+            end
+            
+            xmlwrite(location, docNode);
+        end
+        
+        function loadWorkflow(this, location)
+            pw = PreprocessingWorkflow();
+            
+            xDoc = xmlread(location);
+            xRoot = xDoc.getDocumentElement();
+            
+            childNodes = xRoot.getChildNodes();
+            
+            for i = 0:childNodes.getLength()-1
+                preprocessingMethod = childNodes.item(i);
+                
+                if(strcmp(preprocessingMethod.getNodeName(), 'preprocessingMethod'))
+                    className = char(preprocessingMethod.getAttribute('class'));
+                    
+                    functionCall = [className '('];
+                    
+                    methodChildren = preprocessingMethod.getChildNodes();
+                    
+                    paramIndex = 0;
+                    
+                    for j = 0:methodChildren.getLength()-1
+                        parameter = methodChildren.item(j);
+                        
+                        if(strcmp(parameter.getNodeName(), 'parameter'))
+                            paramIndex = paramIndex + 1;
+                            value = char(parameter.getAttribute('value'));
+                            
+                            if(paramIndex > 1)
+                                functionCall = [functionCall ', '];
+                            end
+                            
+                            functionCall = [functionCall value];
+                            
+%                             type = eval([className '.ParameterDefinitions(paramIndex).type'])
+%                             
+%                             switch(type)
+%                                 case {ParameterType.Integer, ParameterType.Boolean}
+%                                     value = str2num(value);
+%                                 case(ParameterType.Double)
+%                                     value = str2double(value);
+%                             end
+%                             
+%                             value
+                        end
+                    end
+                    
+                    functionCall = [functionCall ')'];
+                    
+                    pm = eval(functionCall);
+                    pw.addPreprocessingMethod(pm);
+                end
+            end
+            
+            this.workflow = pw.workflow;
+        end
+        
         function strings = toCellArrayOfStrings(obj)
             strings = {};
             

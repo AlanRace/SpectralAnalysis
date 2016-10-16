@@ -26,6 +26,11 @@ classdef PreprocessingWorkflowEditor < Editor
         moveDownButton;
         removeButton;
         
+        saveWorkflowButton;
+        loadWorkflowButton;
+        
+        previousPath;
+        
         zeroFillingLabel;
         zeroFillingSelectionPopup;
         zeroFillingAddButton;
@@ -60,6 +65,10 @@ classdef PreprocessingWorkflowEditor < Editor
         function obj = PreprocessingWorkflowEditor(spectrum, preprocessingWorkflow)
             if(~isa(spectrum, 'SpectralData'))
                 exception = MException('PreprocessingWorkflowEditor:invalidArgument', 'Must provide an instance of SpectralData');
+                
+                % Clean up the partly generated interface
+                obj.delete();
+                
                 throw(exception);
             end
             
@@ -93,9 +102,30 @@ classdef PreprocessingWorkflowEditor < Editor
             obj.afterSpectrumDisplay.mouseButtonUpCallback();
         end
         
+        function saveWorkflowCallback(this)
+            % Request location to save workflow
+            [filename, path, filter] = uiputfile({'*.sap', 'SpectralAnalysis Preprocessing'}, 'Save Preprocessing Workflow', [this.previousPath filesep 'preprocessingWorkflow.sap']);
+            
+            if(filter > 0)
+                this.previousPath = path;
+                location = [path filesep filename];
+                
+                this.preprocessingWorkflow.saveWorkflow(location);
+            end
+        end
         
-        
-        
+        function loadWorkflowCallback(this)
+            [filename, path, filter] = uigetfile({'*.sap', 'SpectralAnalysis Preprocessing'}, 'Load Preprocessing Workflow', this.previousPath);
+            
+            if(filter > 0)
+                this.previousPath = path;
+                location = [path filesep filename];
+                
+                this.preprocessingWorkflow.loadWorkflow(location);
+                
+                this.updatePreprocessingWorkflowList();
+            end
+        end
         
         function addPreprocessingMethodCallback(obj, preprocessingType)
             % Check if we have already opened the
@@ -328,6 +358,11 @@ classdef PreprocessingWorkflowEditor < Editor
                     'Units', 'normalized', 'Position', [0.36 0.2 0.05 0.05], 'Callback', @(src, evnt)obj.moveDownButtonCallback());
                 obj.removeButton = uicontrol(obj.handle, 'String', '-', ...
                     'Units', 'normalized', 'Position', [0.36 0.275 0.05 0.05], 'Callback', @(src, evnt)obj.removeButtonCallback());
+                
+                obj.saveWorkflowButton = uicontrol(obj.handle, 'String', 'Save', ...
+                    'Units', 'normalized', 'Position', [0.1 0.05 0.1 0.05], 'Callback', @(src, evnt)obj.saveWorkflowCallback());
+                obj.loadWorkflowButton = uicontrol(obj.handle, 'String', 'Load', ...
+                    'Units', 'normalized', 'Position', [0.25 0.05 0.1 0.05], 'Callback', @(src, evnt)obj.loadWorkflowCallback());
                 
                 obj.zeroFillingLabel = uicontrol(obj.handle, 'Style', 'text', 'Units', 'normalized', ...
                     'Position', [0.48 0.4 0.22 0.04], 'String', 'Zero filling', 'HorizontalAlignment', 'left');
