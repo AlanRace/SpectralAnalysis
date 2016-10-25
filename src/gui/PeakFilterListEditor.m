@@ -1,6 +1,7 @@
 classdef PeakFilterListEditor < Editor
     properties (SetAccess = private)        
         spectrumDisplay;
+        spectrumPanel;
         
         peakDetection;
     end
@@ -47,7 +48,8 @@ classdef PeakFilterListEditor < Editor
             
             obj.setTitle('Peak Filter List Editor');
 
-            obj.spectrumDisplay = SpectrumDisplay(obj, spectrum);
+            obj.spectrumPanel = SpectrumPanel(obj, spectrum);
+            obj.spectrumDisplay = obj.spectrumPanel.spectrumDisplay; %SpectrumDisplay(obj, spectrum);
             obj.peakDetection = peakDetection;
             
             obj.spectrumDisplay.disableContextMenu();
@@ -55,6 +57,8 @@ classdef PeakFilterListEditor < Editor
             
 %             set(obj.handle, 'WindowButtonMotionFcn', @(src,evnt)obj.mouseMovedCallback());
 %             set(obj.handle, 'WindowButtonUpFcn', @(src, evnt)obj.mouseButtonUpCallback());
+
+            obj.sizeChanged();
 
         end
         
@@ -264,7 +268,7 @@ classdef PeakFilterListEditor < Editor
             
                 newPosition = get(obj.handle, 'Position');
 
-                Figure.setObjectPositionInPixels(obj.spectrumDisplay.axisHandle, [50 newPosition(4)/2 newPosition(3)-80 newPosition(4)/2-30]);
+                Figure.setObjectPositionInPixels(obj.spectrumPanel.handle, [30 newPosition(4)/2 newPosition(3)-80 newPosition(4)/2-30]);
                 
 %                 axisOldUnits = get(obj.spectrumAxis, 'Units');
 %                 set(obj.spectrumAxis, 'Units', 'pixels');
@@ -280,6 +284,8 @@ classdef PeakFilterListEditor < Editor
 
                 set(obj.handle, 'Units', oldUnits);
             end
+            
+            sizeChanged@Editor(obj);
         end
     end
 end

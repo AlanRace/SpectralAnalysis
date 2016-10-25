@@ -152,7 +152,7 @@ classdef DataViewer < Figure
             
             obj.setTitle(['DataViewer: ' title]);
             
-            obj.sizeChanged();
+%             obj.sizeChanged();
             
             %obj.createFigure();
             
@@ -1145,7 +1145,6 @@ classdef DataViewer < Figure
         end
         
         function sizeChanged(obj)
-            sizeChanged@Figure(obj);
             
             if(obj.handle ~= 0)
                 % Get the new position of the figure in pixels
@@ -1263,6 +1262,8 @@ classdef DataViewer < Figure
                 
                 Figure.setObjectPositionInPixels(obj.progressBarAxis, [margin, margin, newPosition(3)-margin*2, progressBarHeight]);
             end
+            
+            sizeChanged@Figure(obj);
         end
         
         function createContextMenu(obj)

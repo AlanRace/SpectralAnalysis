@@ -3,7 +3,10 @@ classdef PreprocessingWorkflowEditor < Editor
 %         handle = 0;
         
         beforeSpectrumDisplay;
+        beforeSpectrumPanel;
+        
         afterSpectrumDisplay;
+        afterSpectrumPanel;
         
         preprocessingWorkflow;
     end
@@ -76,10 +79,13 @@ classdef PreprocessingWorkflowEditor < Editor
             
             obj.setTitle('Preprocessing Workflow Editor');
             
-            obj.beforeSpectrumDisplay = SpectrumDisplay(obj, spectrum);
+            obj.beforeSpectrumPanel = SpectrumPanel(obj, spectrum);
+            obj.beforeSpectrumDisplay = obj.beforeSpectrumPanel.spectrumDisplay; %SpectrumDisplay(obj, spectrum);
             
             afterSpectrum = SpectralData(obj.beforeSpectrumDisplay.data.spectralChannels,obj.beforeSpectrumDisplay.data.intensities);
-            obj.afterSpectrumDisplay = SpectrumDisplay(obj, afterSpectrum);
+            
+            obj.afterSpectrumPanel = SpectrumPanel(obj, afterSpectrum);
+            obj.afterSpectrumDisplay = obj.afterSpectrumPanel.spectrumDisplay;%SpectrumDisplay(obj, afterSpectrum);
             
             set(obj.handle, 'WindowButtonMotionFcn', @(src,evnt)obj.mouseMovedCallback());
             set(obj.handle, 'WindowButtonUpFcn', @(src, evnt)obj.mouseButtonUpCallback());
@@ -91,7 +97,11 @@ classdef PreprocessingWorkflowEditor < Editor
                 obj.preprocessingWorkflow = PreprocessingWorkflow();
             end
             
+            
             %warning('TODO: add listener to PreprocessingWorkflowChanged');
+            
+            % Ensure that all proportions are correct
+            obj.sizeChanged();
         end
         
         function mouseMovedCallback(obj)
@@ -341,7 +351,7 @@ classdef PreprocessingWorkflowEditor < Editor
 %                 obj.createContextMenu();
 %                 set(obj.handle, 'uicontextmenu', obj.contextMenu);
 
-            if(isempty(obj.handle) || ~obj.handle)
+            if(isempty(obj.handle) || ~ishandle(obj.handle))
                 createFigure@Editor(obj);
                 
                 obj.beforeLabel = uicontrol(obj.handle, 'Style', 'text', 'Units', 'normalized', ...
@@ -420,14 +430,15 @@ classdef PreprocessingWorkflowEditor < Editor
             
                 newPosition = get(obj.handle, 'Position');
 
-                Figure.setObjectPositionInPixels(obj.beforeSpectrumDisplay.axisHandle, [50 newPosition(4)/2 newPosition(3)/2-80 newPosition(4)/2-30]);
+                %obj.beforeSpectrumDisplay.axisHandle
+                Figure.setObjectPositionInPixels(obj.beforeSpectrumPanel.handle, [30 newPosition(4)/2 newPosition(3)/2-40 newPosition(4)/2-20]);
                 
 %                 axisOldUnits = get(obj.beforeAxis, 'Units');
 %                 set(obj.beforeAxis, 'Units', 'pixels');
 %                 set(obj.beforeAxis, 'Position', [50 newPosition(4)/2 newPosition(3)/2-80 newPosition(4)/2-30]);
 %                 set(obj.beforeAxis, 'Units', axisOldUnits);
 
-                Figure.setObjectPositionInPixels(obj.afterSpectrumDisplay.axisHandle, [newPosition(3)/2+40 newPosition(4)/2 newPosition(3)/2-80 newPosition(4)/2-30]);
+                Figure.setObjectPositionInPixels(obj.afterSpectrumPanel.handle, [newPosition(3)/2+20 newPosition(4)/2 newPosition(3)/2-40 newPosition(4)/2-20]);
 
 %                 axisOldUnits = get(obj.afterAxis, 'Units');
 %                 set(obj.afterAxis, 'Units', 'pixels');
@@ -450,6 +461,8 @@ classdef PreprocessingWorkflowEditor < Editor
 
                 set(obj.handle, 'Units', oldUnits);
             end
+            
+            sizeChanged@Figure(obj);
         end
         
         function createContextMenu(obj)

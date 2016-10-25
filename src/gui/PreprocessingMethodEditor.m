@@ -3,6 +3,8 @@ classdef PreprocessingMethodEditor < Editor
 %         handle = 0;
         
         multiSpectrumDisplay;
+        multiSpectrumPanel;
+        
         preprocessingMethodName;
         preprocessingMethod;
         
@@ -52,8 +54,9 @@ classdef PreprocessingMethodEditor < Editor
             obj.afterSpectrum = SpectralData(obj.beforeSpectrum.spectralChannels, obj.beforeSpectrum.intensities);
             obj.afterSpectrum.setDescription('After');
             
-            obj.multiSpectrumDisplay = MultiSpectrumDisplay(obj, obj.beforeSpectrum);
-            
+%             obj.multiSpectrumDisplay = MultiSpectrumDisplay(obj, obj.beforeSpectrum);
+            obj.multiSpectrumPanel = MultiSpectrumPanel(obj, obj.beforeSpectrum);
+            obj.multiSpectrumDisplay = obj.multiSpectrumPanel.spectrumDisplay;
             
             obj.createParameterInterface();
             
@@ -65,6 +68,9 @@ classdef PreprocessingMethodEditor < Editor
             % TODO: Use listeners for checking parameters changed
             
             obj.parameterChanged();
+            
+            % Ensure that all proportions are correct
+            obj.sizeChanged();
         end
        
         
@@ -257,7 +263,7 @@ classdef PreprocessingMethodEditor < Editor
             set(obj.handle, 'Units', 'pixels');
             newPosition = get(obj.handle, 'Position');
             
-            Figure.setObjectPositionInPixels(obj.multiSpectrumDisplay.axisHandle, [50 newPosition(4)/2 newPosition(3)-80 newPosition(4)/2-30]);
+            Figure.setObjectPositionInPixels(obj.multiSpectrumPanel.handle, [50 newPosition(4)/2 newPosition(3)-80 newPosition(4)/2-30]);
             
 %             axisOldUnits = get(obj.spectrumAxis, 'Units');
 %             set(obj.spectrumAxis, 'Units', 'pixels');
@@ -265,6 +271,8 @@ classdef PreprocessingMethodEditor < Editor
 %             set(obj.spectrumAxis, 'Units', axisOldUnits);
             
             set(obj.handle, 'Units', oldUnits);
+            
+            sizeChanged@Figure(obj);
         end
         
 %         function closeRequest(obj)
