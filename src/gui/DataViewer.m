@@ -18,6 +18,8 @@ classdef DataViewer < Figure
         % </html>
         spectrumDisplay;
         
+        spectrumPanel;
+        
         %%
         % <html>
         % <a href="PreprocessingWorkflow.html">PreprocessingWorkflow</a>
@@ -395,10 +397,19 @@ classdef DataViewer < Figure
         function displaySpectrum(obj, x, y)
             x = round(x);
             y = round(y);
+
+            if(x <= 0 || y <= 0)
+                return;
+            end
             
             obj.currentSpectrumLocation = [x y];
             
             spectrum = obj.dataRepresentation.getSpectrum(x, y, 1, 1);
+            
+            if(isempty(spectrum) || isempty(spectrum.spectralChannels))
+                return;
+            end
+            
             spectrum.setIsContinuous(obj.dataRepresentation.isContinuous);
             spectrum.setDescription(['Spectrum at (' num2str(x) ', ' num2str(y) ')']);
             obj.spectrumList.set(1, spectrum);
@@ -1049,7 +1060,9 @@ classdef DataViewer < Figure
                     'TooltipString', 'Remove selected spectra from the list');
                 
 %                 obj.spectrumAxis = axes('Parent', obj.handle, 'Position', [.1 .3 .8 .25]);
-                obj.spectrumDisplay = SpectrumDisplay(obj, SpectralData(0, 0));
+                
+                obj.spectrumPanel = SpectrumPanel(obj, SpectralData(0, 0));
+                obj.spectrumDisplay = obj.spectrumPanel.spectrumDisplay; %SpectrumDisplay(obj, SpectralData(0, 0));
                 
 %                 addlistener(obj.spectrumDisplay, 'MouseDownInsideAxis', @(src, evnt)obj.mouseDownInsideSpectrum(evnt.x));
 %                 addlistener(obj.spectrumDisplay, 'MouseUpInsideAxis', @(src, evnt)obj.mouseUpInsideSpectrum(evnt.x));
@@ -1132,6 +1145,8 @@ classdef DataViewer < Figure
         end
         
         function sizeChanged(obj)
+            sizeChanged@Figure(obj);
+            
             if(obj.handle ~= 0)
                 % Get the new position of the figure in pixels
                 newPosition = Figure.getPositionInPixels(obj.handle);
@@ -1140,6 +1155,7 @@ classdef DataViewer < Figure
                 
                 colourBarSize = 80;
                 spectrumExtraSize = 30;
+                spectrumExtraSize = 0;
                 buttonHeight = 25;
                 
                 widthForImage = newPosition(3) - margin*2 - colourBarSize;
@@ -1241,7 +1257,8 @@ classdef DataViewer < Figure
                 end
                 
                 if(~isempty(obj.spectrumDisplay))
-                    Figure.setObjectPositionInPixels(obj.spectrumDisplay.axisHandle, [xPositionForSpectrum, spectrumRegionY, widthForSpectrum, spectrumRegionHeight]);
+                    Figure.setObjectPositionInPixels(obj.spectrumPanel.handle, [xPositionForSpectrum, spectrumRegionY, widthForSpectrum, spectrumRegionHeight]);
+%                     Figure.setObjectPositionInPixels(obj.spectrumDisplay.axisHandle, [xPositionForSpectrum, spectrumRegionY, widthForSpectrum, spectrumRegionHeight]);
                 end
                 
                 Figure.setObjectPositionInPixels(obj.progressBarAxis, [margin, margin, newPosition(3)-margin*2, progressBarHeight]);
