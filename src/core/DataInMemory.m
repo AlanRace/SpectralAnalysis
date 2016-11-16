@@ -12,7 +12,13 @@ classdef DataInMemory < DataRepresentation
         function obj = DataInMemory()
         end        
         
+        function numChannels = getNumberOfChannels(this) 
+            numChannels = length(this.spectralChannels);
+        end
         
+        function numChannels = getNumberOfDimensions(this) 
+            numChannels = length(this.spectralChannels);
+        end
         
         function sizeInBytes = getEstimatedSizeInBytes(obj)
             sizeInBytes = 0;

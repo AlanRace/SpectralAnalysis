@@ -84,7 +84,8 @@ classdef DatacubeReduction < DataReduction
             for i = 1:numel(data)
                 dataInMemory = DataInMemory();
                 
-                if(~dataRepresentation.isContinuous || this.preprocessingWorkflow.containsPeakPicking())
+                if(~dataRepresentation.isContinuous || (~isempty(this.preprocessingWorkflow) && this.preprocessingWorkflow.containsPeakPicking()) ...
+                        || ~isempty(this.peakDetails))
                     dataInMemory.setIsContinuous(false);
                 end
                 
@@ -319,6 +320,10 @@ classdef DatacubeReduction < DataReduction
                         
                         rpgmzArray = newImzML.getReferenceableParamGroupList().getReferenceableParamGroup('mzArray');
                         rpgintensityArray = newImzML.getReferenceableParamGroupList().getReferenceableParamGroup('intensityArray');
+                        
+                        if(isempty(rpgintensityArray))
+                            rpgintensityArray = newImzML.getReferenceableParamGroupList().getReferenceableParamGroup('intensities');;
+                        end
                         
                         rpgmzArray.removeChildOfCVParam(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.dataTypeID);
                         rpgmzArray.addCVParam(com.alanmrace.jimzmlparser.mzML.EmptyCVParam(oldImzML.getOBO().getTerm(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.doublePrecisionID)));

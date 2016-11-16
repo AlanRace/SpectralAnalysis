@@ -3,7 +3,7 @@ classdef SynaptZeroFilling < SpectralZeroFilling
         Name = 'Synapt';
         Description = '';
         
-        ParameterDefinitions = [ParameterDescription('Full m/z List File', ParameterType.String, 'D:/Birmingham/DataDrive/2014_02_17_MALDI.PRO/Data/mTOR_Full_mz_List.mat')];
+        ParameterDefinitions = [ParameterDescription('Full m/z List', ParameterType.Double, [0 1000])];
     end
     
     properties (Access = public)
@@ -11,8 +11,8 @@ classdef SynaptZeroFilling < SpectralZeroFilling
     end
     
     methods
-        function obj = SynaptZeroFilling(fullmzListFile)
-            obj.Parameters = Parameter(SynaptZeroFilling.ParameterDefinitions(1), fullmzListFile);
+        function obj = SynaptZeroFilling(fullmzList)
+            obj.Parameters = Parameter(SynaptZeroFilling.ParameterDefinitions(1), fullmzList);
             
             %% Generate fullmzListFile using:
             % imzML = dataRepresentation.parser.imzML;
@@ -34,9 +34,10 @@ classdef SynaptZeroFilling < SpectralZeroFilling
             %     end
             % end
             % toc;
-            a = load(fullmzListFile);
             
-            obj.mzsFull = a.fullmzList;
+%             a = load(fullmzListFile);
+            
+            obj.mzsFull = fullmzList;
         end
         
         function [mzsFull, countsFull] = zeroFill(obj, spectralChannels, intensities)

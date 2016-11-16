@@ -60,6 +60,7 @@ classdef DataListViewer < Figure
             end
             
             set(this.listBox, 'String', itemList);
+            set(this.listBox, 'Value', 1);
         end
     end
     
@@ -71,11 +72,11 @@ classdef DataListViewer < Figure
             
             createFigure@Figure(this);
             
-            this.listBox = uicontrol(this.figureHandle, 'Style', 'listbox', 'Units', 'Pixels', ...
-                'Position', [10 10 450 100]);
+            this.listBox = uicontrol(this.handle, 'Style', 'listbox', 'Units', 'Pixels', ...
+                'Position', [10 10 450 300]);
             
-            this.closeDataButton = uicontrol(this.figureHandle, 'Units', 'Pixels', ...
-                'Position', [470 90 60 20], 'String', 'Close Data');
+            %this.closeDataButton = uicontrol(this.handle, 'Units', 'Pixels', ...
+            %    'Position', [470 90 60 20], 'String', 'Close Data');
         end
     end
     

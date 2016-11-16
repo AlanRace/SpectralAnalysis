@@ -16,6 +16,10 @@ classdef ProjectedDataInMemory < DataInMemory
 %             obj.projectionChannels = projectionChannels;
         end
         
+        function numChannels = getNumberOfDimensions(this) 
+            numChannels = size(this.projectionMatrix, 2);
+        end
+        
         function spectrum = getSpectrum(obj, x, y, z, relative)
             if(nargin < 4)
                 z = 1;

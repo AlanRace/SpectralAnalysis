@@ -236,9 +236,21 @@ classdef DataViewer < Figure
         
         function coefficientEditBoxCallback(obj)
             coeffString = get(obj.coefficientEditBox, 'String');
-            obj.coefficientEditBox
+%             obj.coefficientEditBox
             
             value = str2num(coeffString);
+            
+            if(isempty(value) || value <= 0 || isinf(value) || isnan(value))
+                value = 1;
+                
+                set(obj.coefficientEditBox, 'String', num2str(value));
+            end
+            
+            if(value > obj.dataRepresentation.getNumberOfDimensions())
+                value = obj.dataRepresentation.getNumberOfDimensions();
+                
+                set(obj.coefficientEditBox, 'String', num2str(value));
+            end
             
             imageData = obj.dataRepresentation.getProjectedImage(value);
             obj.imageDisplay.setData(Image(imageData));
@@ -275,7 +287,7 @@ classdef DataViewer < Figure
             end
             
             spectrum = SpectralData(obj.dataRepresentation.spectralChannels, obj.dataRepresentation.projectionMatrix(:, value));
-            spectrum.setIsProfile(1);
+            spectrum.setIsContinuous(0);
             
             spectrum.setDescription(['Coefficient ' num2str(value) ' (Out of ' num2str(size(obj.dataRepresentation.projectionMatrix, 2)) ')']);
             obj.spectrumList.set(1, spectrum);
@@ -615,9 +627,10 @@ classdef DataViewer < Figure
                         compositeImage = normaliseRGBChannels(compositeImage);
                     end
                     
-                    figure;
-                    axisHandle = axes;
-                    display = ImageDisplay(axisHandle, Image(compositeImage));
+                    figure = Figure();
+                    figure.showStandardFigure();
+%                     axisHandle = axes;
+                    display = ImageDisplay(figure, Image(compositeImage));
                     
                     if(length(imagesToOverlay) > 1)
                         display.setColourBarOn(false);
@@ -1078,8 +1091,8 @@ classdef DataViewer < Figure
                         'Units', 'normalized', 'Position', [0.8 0.55 0.05 0.05], 'Visible', 'Off');
                     obj.coefficientEditBox = uicontrol('Parent', obj.handle, 'Style', 'edit', 'Callback', @(src, evnt)obj.coefficientEditBoxCallback(), ...
                         'Units', 'normalized', 'Position', [0.15 0.55 0.05 0.05], 'String', '1', 'Visible', 'Off');
-                    %obj.coefficientLabel = uicontrol('Parent', obj.handle, 'Style', 'text', 'String', [' / ' num2str(size(obj.dataRepresentation.projectionMatrix, 2))], ...
-                    %    'Units', 'normalized', 'Position', [0.49 0.56 0.1 0.05], 'HorizontalAlignment', 'left');
+                    obj.coefficientLabel = uicontrol('Parent', obj.handle, 'Style', 'text', 'String', [''], ...
+                        'Units', 'normalized', 'Position', [0.49 0.56 0.1 0.05], 'HorizontalAlignment', 'left');
                 
                 obj.preprocessingPanel = uipanel('Parent', obj.handle, 'Title', 'Spectral Preprocessing', ...
                     'Position', [.525 .05 .425 .2]);
@@ -1100,6 +1113,9 @@ classdef DataViewer < Figure
             set(obj.previousCoefficientButton, 'Visible', 'On');
             set(obj.nextCoefficientButton, 'Visible', 'On');
             set(obj.coefficientEditBox, 'Visible', 'On');
+            set(obj.coefficientLabel, 'Visible', 'On');
+            
+            set(obj.coefficientLabel, 'String', [' / ' num2str(obj.dataRepresentation.getNumberOfDimensions())]);
         end
         
         function imageListTableSelected(obj, src, evnt)
@@ -1219,6 +1235,14 @@ classdef DataViewer < Figure
                 end
                 
                 Figure.setObjectPositionInPixels(obj.imageTitleLabel, [xPositionForImage+widthForImage/2-100, imageRegionY+imageRegionHeight+2, 200, 15]);
+                
+                xPositionForCoeffs = xPositionForImage+widthForImage/2 - 90;
+                
+                Figure.setObjectPositionInPixels(obj.previousCoefficientButton, [xPositionForCoeffs, imageRegionY-20, 50, 30]);
+                Figure.setObjectPositionInPixels(obj.coefficientEditBox, [xPositionForCoeffs+60, imageRegionY-20, 50, 30]);
+                Figure.setObjectPositionInPixels(obj.coefficientLabel, [xPositionForCoeffs+120, imageRegionY-20, 50, 20]);
+                Figure.setObjectPositionInPixels(obj.nextCoefficientButton, [xPositionForCoeffs + 180, imageRegionY-20, 50, 30]);
+%                 get(obj.coefficientLabel)
                 
                 % Sort spectrum region
                 if(obj.showSpectrumList)
