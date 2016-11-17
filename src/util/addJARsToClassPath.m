@@ -9,10 +9,12 @@ function addJARsToClassPath()
         pathstr = ctfroot();
     else
         pathstr = fileparts(mfilename('fullpath'));
+        
+        % lib folder is ../../lib compared to current location of ./util
+        pathstr = [pathstr filesep '..' filesep '..'];
     end
     
-    % lib folder is ../../lib compared to current location of ./util
-    pathstr = [pathstr filesep '..' filesep '..' filesep 'lib' filesep];
+    pathstr = [pathstr filesep 'lib' filesep];
     
     % If it's not already on the path then add it
     if(~found)

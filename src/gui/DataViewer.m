@@ -185,9 +185,12 @@ classdef DataViewer < Figure
                 obj.updateSpectrumSelectionPopup();
                 obj.spectrumDisplay.setData(totalSpectrum);
             end
-
+            
             % Ensure that all proportions are correct
             obj.sizeChanged();
+            
+            % Finally add the colour bar
+            obj.imageDisplay.setColourBarOn(1);
         end
         
         

@@ -1,5 +1,10 @@
 function found = checkJAROnPath(jarName)
-    dpath = javaclasspath;
+    if(isdeployed())
+        found = 1;
+        return;
+    end
+
+    dpath = javaclasspath();
     strResults = strfind(dpath, jarName);
 
     found = 0;

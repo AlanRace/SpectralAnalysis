@@ -6,9 +6,19 @@ function [classFiles classNames] = getSubclasses(superclass, includeNone)
         spectralAnalysisPath = [fileparts(mfilename('fullpath'))];
     end
     
+    spectralAnalysisPath = [spectralAnalysisPath filesep '..' filesep];
+    
+    % Limit the locations to speed up the search when looking for specific
+    % types
+    if(strcmp(superclass, 'Parser') || strcmp(superclass, 'ToBinaryConverter'))
+        spectralAnalysisPath = [spectralAnalysisPath 'io' filesep];
+    elseif(strcmp(superclass, 'SpectralZeroFilling'))    
+        spectralAnalysisPath = [spectralAnalysisPath 'processing' filesep 'preprocessing' filesep];
+    end
+    
     % This file is located within ./util folder so go to parent directory
     % and start the search
-    fileList = getmFilesFromAllFolders([spectralAnalysisPath filesep '..' filesep]);
+    fileList = getmFilesFromAllFolders(spectralAnalysisPath);
     
     % Check if we are including the option of 'None' for a class name -
     % used in some preprocessing lists
