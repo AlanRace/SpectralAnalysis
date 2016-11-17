@@ -1,3 +1,3 @@
+path = [fileparts(mfilename('fullpath')) filesep 'src'];
 
-
-mcc -v -m SpectralAnalysis.m -a jimzMLParser/ -a files/ -a JSpectralAnalysis/ -a *.m
+mcc -v -m SpectralAnalysis.m -a lib/ -a src/ -a *.m
