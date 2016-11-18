@@ -1,0 +1,3 @@
+[submodule "src/gui/MOOGL"]
+	path = src/gui/MOOGL
+	url = https://github.com/AlanRace/MOOGL
