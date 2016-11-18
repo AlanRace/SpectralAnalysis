@@ -1,4 +1,3 @@
-lib/
 src/processing/postprocessing/tSNE/
 *.mexw32
 *.mexa64
