@@ -5,7 +5,7 @@ This repository will be updated shortly, in the meantime please email alan.race@
 
 If you find this useful please cite:  Alan M. Race, Andrew D. Palmer, Alex Dexter, Rory T. Steven, Iain B. Styles, and Josephine Bunch, *Anal. Chem.*, 2016, 88 (19), pp 9451–9458. http://dx.doi.org/10.1021/acs.analchem.6b01643
 
-[Latest version: v1.0.0-alpha](https://github.com/AlanRace/SpectralAnalysis/releases/tag/v1.0.0-alpha)
+[Get the latest version](https://github.com/AlanRace/SpectralAnalysis/releases/)
 
 ## Details on SpectralAnalysis
 * [Getting Started](https://github.com/AlanRace/SpectralAnalysis/wiki/Getting-Started)
