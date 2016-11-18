@@ -3,6 +3,7 @@
 
 % Get location of current m-file
 if(isdeployed())
+    disp('Initialising MATLAB, please wait...');
     path = ctfroot();
 else
     path = [fileparts(mfilename('fullpath'))];
@@ -23,4 +24,10 @@ catch err
     else
         throw(err);
     end
+end
+
+
+% Check that a valid licence exists, otherwise show the 
+if(~isValidLicence())
+    MissingLicenceFigure();
 end
