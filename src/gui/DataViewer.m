@@ -761,18 +761,21 @@ classdef DataViewer < Figure
             spectraToOverlay = obj.spectrumListTableLastSelected(:, 1);
             
             if(~isempty(spectraToOverlay))
-                figure;
-                axisHandle = axes;
+                figure = Figure();
+                figure.showStandardFigure();
+                
+%                 axisHandle = axes;
+                multiSpectrumPanel = MultiSpectrumPanel(figure, obj.spectrumList.get(spectraToOverlay(1)));
                 
                 warning('No preprocessing applied...');
                 
-                display = MultiSpectrumDisplay(axisHandle, obj.spectrumList.get(spectraToOverlay(1)));
+                multiSpectrumDisplay = multiSpectrumPanel.spectrumDisplay;
                 
                 for i = 2:length(spectraToOverlay)
-                    display.setSpectrum(i, obj.spectrumList.get(spectraToOverlay(i)));
+                    multiSpectrumDisplay.setSpectrum(i, obj.spectrumList.get(spectraToOverlay(i)));
                 end
                 
-                display.updateDisplay();
+                multiSpectrumDisplay.updateDisplay();
             end
         end
         
