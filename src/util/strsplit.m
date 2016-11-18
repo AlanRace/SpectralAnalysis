@@ -5,5 +5,5 @@ strings = java.lang.String(str).split(pattern);
 split = {};
 
 for i = 1:strings.length()
-    split{i} = strings(i);
+    split{i} = char(strings(i));
 end
