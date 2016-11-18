@@ -1,6 +1,6 @@
 function split = strsplit(str, pattern)
 
-strings = java.lang.String(d).split(pattern);
+strings = java.lang.String(str).split(pattern);
 
 split = {};
 
