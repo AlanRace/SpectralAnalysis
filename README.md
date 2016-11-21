@@ -5,6 +5,8 @@ If you find this useful please cite:  Alan M. Race, Andrew D. Palmer, Alex Dexte
 
 [Get the latest version](https://github.com/AlanRace/SpectralAnalysis/releases/)
 
+![SpectralAnalysis Interface](https://i.imgur.com/XZy72vR.png)
+
 ## Details on SpectralAnalysis
 * [Getting Started](https://github.com/AlanRace/SpectralAnalysis/wiki/Getting-Started)
 * [Basic Use](https://github.com/AlanRace/SpectralAnalysis/wiki/Basic-Use)
