@@ -19,8 +19,11 @@ addJARsToClassPath();
 try 
     SpectralAnalysisInterface();
 catch err
-    if(strcmp(err.identifier, 'MATLAB:class:undefinedMethod') && ~isempty(strfind(err.message, 'Figure')))
-        disp(['ERROR: Missing MOOGL. Download from https://github.com/AlanRace/MOOGL and place in src/gui folder']);
+    if((strcmp(err.identifier, 'MATLAB:class:undefinedMethod') || strcmp(err.identifier, 'MATLAB:class:InvalidSuperClass')) ...
+            && ~isempty(strfind(err.message, 'Figure')))
+        disp(['ERROR: Missing MOOGL. Download from https://github.com/AlanRace/MOOGL and place in src/gui/MOOGL folder']);
+        
+        return;
     else
         throw(err);
     end
