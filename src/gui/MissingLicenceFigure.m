@@ -31,7 +31,7 @@ classdef MissingLicenceFigure < Figure
         
         function updateEmailMessage(this)
             this.emailMessage = sprintf(MissingLicenceFigure.emailTemplate, this.name, this.email, this.institution, ...
-                com.alanmrace.spectralanalysislicence.EncryptLibrary.getLicenceText());
+                char(com.alanmrace.spectralanalysislicence.EncryptLibrary.getLicenceText()));
             
             set(this.emailMessageBox, 'String', this.emailMessage);
         end
