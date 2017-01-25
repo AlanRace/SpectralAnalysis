@@ -24,7 +24,7 @@ function addJARsToClassPath()
     
     found = checkJAROnPath('JSpectralAnalysis.jar');
     if(~found)
-%         javaaddpath(strrep([pathstr filesep 'JSpectralAnalysis' filesep 'commons-math3-3.2.jar'], '\', '\\'));
+        javaaddpath(strrep([pathstr filesep 'JSpectralAnalysis' filesep 'commons-math3-3.3.jar'], '\', '\\'));
 %         javaaddpath(strrep([pathstr filesep 'JSpectralAnalysis' filesep 'jarhdf5-2.10.1.jar'], '\', '\\'));
 %         javaaddpath(strrep([pathstr filesep 'JSpectralAnalysis' filesep 'guava-18.0.jar'], '\', '\\'));
         javaaddpath(strrep([pathstr filesep 'JSpectralAnalysis' filesep 'JSIMS.jar'], '\', '\\'));
