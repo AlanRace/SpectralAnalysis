@@ -176,7 +176,7 @@ classdef SelectDataRepresentation < handle
                     obj.preprocessingMethodEditor = PreprocessingMethodEditor(SpectralData(spectralChannels, intensities), obj.zeroFillingMethodFiles{index});
                     
                     % Add a listener for updating preprocessingMethod list
-                    addlistener(obj.preprocessingMethodEditor, 'FinishedEditingPreprocessingMethod', @(src, evnt)obj.finishedEditingPreprocessingMethod());
+                    addlistener(obj.preprocessingMethodEditor, 'FinishedEditing', @(src, evnt)obj.finishedEditingPreprocessingMethod());
                 else
                     obj.zeroFilling = [];
                     set(obj.zeroFillingDescription, 'String', 'None');
