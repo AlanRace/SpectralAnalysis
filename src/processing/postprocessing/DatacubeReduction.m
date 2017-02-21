@@ -4,18 +4,22 @@ classdef DatacubeReduction < DataReduction
         Description = '';
         
         ParameterDefinitions = [ParameterDescription('Image Generation', ParameterType.Selection, {'Extract at location', 'Integrate over peak'}), ...
-            ParameterDescription('Output', ParameterType.Selection, {'New Window', 'ImzML'})];
+            ParameterDescription('Output', ParameterType.Selection, {'New Window', 'ImzML'}), ...
+            ParameterDescription('Intensity Data Type', ParameterType.Selection, {'Double', 'Single', '64-Bit Integer', ...
+            '32-Bit Integer', '16-Bit Integer', '8-Bit Integer'})];
     end
     
     properties
         imageGeneration;
         output;
+        intensityDataType;
     end
     
     methods
-        function obj = DatacubeReduction(imageGeneration, output)
+        function obj = DatacubeReduction(imageGeneration, output, intensityDataType)
             obj.imageGeneration = imageGeneration;
             obj.output = output;
+            obj.intensityDataType = intensityDataType;
             
             switch(obj.imageGeneration)
                 case 'Extract at location'
@@ -331,7 +335,30 @@ classdef DatacubeReduction < DataReduction
                         rpgmzArray.addCVParam(com.alanmrace.jimzmlparser.mzML.EmptyCVParam(oldImzML.getOBO().getTerm(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.doublePrecisionID)));
                         
                         rpgintensityArray.removeChildOfCVParam(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.dataTypeID);
-                        rpgintensityArray.addCVParam(com.alanmrace.jimzmlparser.mzML.EmptyCVParam(oldImzML.getOBO().getTerm(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.doublePrecisionID)));
+                        
+                        % 'Double', 'Single', '64-Bit Integer', '32-Bit Integer', 
+                        % '16-Bit Integer', '8-Bit Integer'
+                        cvParam = [];
+                        
+                        switch(this.intensityDataType)
+                            case 'Double'
+                                cvParam = com.alanmrace.jimzmlparser.mzML.BinaryDataArray.doublePrecisionID;
+                            case 'Single'
+                                cvParam = com.alanmrace.jimzmlparser.mzML.BinaryDataArray.singlePrecisionID;
+                            case '64-Bit Integer'
+                                cvParam = com.alanmrace.jimzmlparser.mzML.BinaryDataArray.signed64bitIntegerID;
+                            case '32-Bit Integer'
+                                cvParam = com.alanmrace.jimzmlparser.mzML.BinaryDataArray.signed32bitIntegerID;
+                            case '16-Bit Integer'
+                                cvParam = com.alanmrace.jimzmlparser.mzML.BinaryDataArray.signed16bitIntegerID;
+                            case '8-Bit Integer'
+                                cvParam = com.alanmrace.jimzmlparser.mzML.BinaryDataArray.signed8bitIntegerID;
+                            otherwise
+                                exception = MException('DatacubeReduction:InvalidArgument', ['Invalid intensity data type provided: ' this.intensityDataType]);
+                                throw(exception);
+                        end
+                        
+                        rpgintensityArray.addCVParam(com.alanmrace.jimzmlparser.mzML.EmptyCVParam(oldImzML.getOBO().getTerm(cvParam)));
                         
                         % Remove any compression
                         rpgmzArray.removeChildOfCVParam(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.compressionTypeID);
@@ -411,11 +438,44 @@ classdef DatacubeReduction < DataReduction
                                 if(~isempty(arrayLengthParam))
                                     arrayLengthParam.setValue((arrayLength));
                                 end;
-                                % Set encoded length
-                                bda.getCVParam('IMS:1000104').setValue((8*arrayLength));
                                 
-                                % Write out the data
-                                fwrite(ibdFileIDs(pixelListIndex), spectrum.intensities, 'double');
+                                % 'Double', 'Single', '64-Bit Integer', '32-Bit Integer', 
+                                % '16-Bit Integer', '8-Bit Integer'
+                                switch(this.intensityDataType)
+                                    case 'Double'
+                                        % Set encoded length
+                                        bda.getCVParam('IMS:1000104').setValue((8*arrayLength));
+                                        % Write out the data
+                                        fwrite(ibdFileIDs(pixelListIndex), spectrum.intensities, 'double');
+                                    case 'Single'
+                                        % Set encoded length
+                                        bda.getCVParam('IMS:1000104').setValue((4*arrayLength));
+                                        % Write out the data
+                                        fwrite(ibdFileIDs(pixelListIndex), single(spectrum.intensities), 'single');
+                                    case '64-Bit Integer'
+                                        % Set encoded length
+                                        bda.getCVParam('IMS:1000104').setValue((8*arrayLength));
+                                        % Write out the data
+                                        fwrite(ibdFileIDs(pixelListIndex), int64(spectrum.intensities), 'int64');
+                                    case '32-Bit Integer'
+                                        % Set encoded length
+                                        bda.getCVParam('IMS:1000104').setValue((4*arrayLength));
+                                        % Write out the data
+                                        fwrite(ibdFileIDs(pixelListIndex), int32(spectrum.intensities), 'int32');
+                                    case '16-Bit Integer'
+                                        % Set encoded length
+                                        bda.getCVParam('IMS:1000104').setValue((2*arrayLength));
+                                        % Write out the data
+                                        fwrite(ibdFileIDs(pixelListIndex), int16(spectrum.intensities), 'int16');
+                                    case '8-Bit Integer'
+                                        % Set encoded length
+                                        bda.getCVParam('IMS:1000104').setValue((arrayLength));
+                                        % Write out the data
+                                        fwrite(ibdFileIDs(pixelListIndex), int8(spectrum.intensities), 'int8');
+                                    otherwise
+                                        exception = MException('DatacubeReduction:InvalidArgument', ['Invalid intensity data type provided: ' this.intensityDataType]);
+                                        throw(exception);
+                                end
                             end
                         end
                         
