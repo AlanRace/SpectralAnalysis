@@ -325,8 +325,13 @@ classdef DatacubeReduction < DataReduction
                             rpgintensityArray = newImzML.getReferenceableParamGroupList().getReferenceableParamGroup('intensities');;
                         end
                         
+                        % Ensure that everything is set to be stored as
+                        % double precision
                         rpgmzArray.removeChildOfCVParam(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.dataTypeID);
                         rpgmzArray.addCVParam(com.alanmrace.jimzmlparser.mzML.EmptyCVParam(oldImzML.getOBO().getTerm(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.doublePrecisionID)));
+                        
+                        rpgintensityArray.removeChildOfCVParam(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.dataTypeID);
+                        rpgintensityArray.addCVParam(com.alanmrace.jimzmlparser.mzML.EmptyCVParam(oldImzML.getOBO().getTerm(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.doublePrecisionID)));
                         
                         % Remove any compression
                         rpgmzArray.removeChildOfCVParam(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.compressionTypeID);
