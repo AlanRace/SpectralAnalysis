@@ -470,6 +470,9 @@ classdef DataViewer < Figure
                     
                     spectralRange = [obj.dataRepresentation.spectralChannels(minLoc) obj.dataRepresentation.spectralChannels(minLoc)];
                     description = num2str(obj.dataRepresentation.spectralChannels(minLoc));
+                else
+                    spectralRange = [peakSelectionEvent.peakDetails peakSelectionEvent.peakDetails];
+                    description = num2str(peakSelectionEvent.peakDetails, 10);
                 end
             else
                 spectralRange = peakSelectionEvent.peakDetails;
@@ -665,12 +668,18 @@ classdef DataViewer < Figure
             for i = 1:length(imagesToGenerate)
                 limits = strtrim(strsplit(imagesToGenerate(i).description, '-'));
                 
-                if(length(limits) ~= 2)
+                if(length(limits) == 2)
+                    min = str2double(limits(1));
+                    max = str2double(limits(2));
+                elseif(length(limits) == 1)
+                    numSplit = strsplit(limits(1), '\.');
+                    smallest = 10^-(length(numSplit{2})) * 0.5;
+                    
+                    min = str2double(limits(1)) - smallest;
+                    max = min + smallest*2;
+                else
                     continue;
                 end
-                
-                min = str2double(limits(1));
-                max = str2double(limits(2));
                 
                 if(isnan(min) || isnan(max))
                     continue;
