@@ -6,17 +6,19 @@ classdef DatacubeReduction < DataReduction
         ParameterDefinitions = [ParameterDescription('Image Generation', ParameterType.Selection, {'Extract at location', 'Integrate over peak'}), ...
             ParameterDescription('Output', ParameterType.Selection, {'New Window', 'ImzML'}), ...
             ParameterDescription('Intensity Data Type', ParameterType.Selection, {'Double', 'Single', '64-Bit Integer', ...
-            '32-Bit Integer', '16-Bit Integer', '8-Bit Integer'})];
+            '32-Bit Integer', '16-Bit Integer', '8-Bit Integer'}), ...
+            ParameterDescription('Storage Type (To ImzML Only)', ParameterType.Selection, {'Processed', 'Continuous'})];
     end
     
     properties
         imageGeneration;
         output;
         intensityDataType;
+        storageType;
     end
     
     methods
-        function obj = DatacubeReduction(imageGeneration, output, intensityDataType)
+        function obj = DatacubeReduction(imageGeneration, output, intensityDataType, storageType)
             obj.imageGeneration = imageGeneration;
             obj.output = output;
             obj.intensityDataType = intensityDataType;
@@ -27,6 +29,8 @@ classdef DatacubeReduction < DataReduction
                 case 'Integrate over peak'
                     obj.setIntegrateOverPeak()
             end
+            
+            obj.storageType = storageType;
         end
         
         function dataRepresentationList = process(this, dataRepresentation)
@@ -287,6 +291,8 @@ classdef DatacubeReduction < DataReduction
             pixels = this.getPixelListToProcess(dataRepresentation);
             rois = this.regionOfInterestList.getObjects();
             
+            writtenOutmzList = false;
+            
             for i = 1:size(pixels, 1)
                 % Prompt user for file names
                 if(isempty(imzMLList))
@@ -398,11 +404,27 @@ classdef DatacubeReduction < DataReduction
                     continue;
                 end
                 
+                
                 for pixelListIndex = 1:numel(pixelLists)
                     [pixel, row, col] = intersect(pixelLists{pixelListIndex}, pixels(i, :), 'rows');
                     
                     if(~isempty(row))
                         curImzML = imzMLList{pixelListIndex};
+                        
+                        % Check if we are exporting to continuous
+                        if(strcmp(this.storageType, 'Continuous') && ~writtenOutmzList(pixelListIndex))
+                            mzListOffset(pixelListIndex) = ftell(ibdFileIDs(pixelListIndex));
+                            mzListArrayLength(pixelListIndex) = length(spectrum.spectralChannels);
+                            mzListEncodedLength(pixelListIndex) = 8 * mzListArrayLength;
+
+                            curImzML.getFileDescription().getFileContent().removeChildOfCVParam('IMS:1000003');
+                            curImzML.getFileDescription().getFileContent().addCVParam(com.alanmrace.jimzmlparser.mzML.EmptyCVParam(oldImzML.getOBO().getTerm('IMS:1000030')));
+
+                            % Write out the data
+                            fwrite(ibdFileIDs(pixelListIndex), spectrum.spectralChannels, 'double');
+                            
+                            writtenOutmzList(pixelListIndex) = true;
+                        end
                         
                         mzMLSpectrum = com.alanmrace.jimzmlparser.mzML.Spectrum(mzMLSpectrum, oldImzML.getReferenceableParamGroupList(), curImzML.getDataProcessingList(), ...
                             curImzML.getFileDescription().getSourceFileList(), curImzML.getInstrumentConfigurationList());
@@ -414,20 +436,33 @@ classdef DatacubeReduction < DataReduction
                             dataArrayType = bda.getCVParamOrChild(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.binaryDataArrayID);
                             
                             if(dataArrayType.getTerm().getID().equals(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.mzArrayID))
-                                arrayLength = length(spectrum.spectralChannels);
                                 
-                                % Set offset
-                                bda.getCVParam('IMS:1000102').setValue((ftell(ibdFileIDs(pixelListIndex))));
-                                % Set array length
-                                arrayLengthParam = bda.getCVParam('IMS:1000103');
-                                if(~isempty(arrayLengthParam))
-                                    arrayLengthParam.setValue((arrayLength));
+                                if(strcmp(this.storageType, 'Continuous'))
+                                    % Set offset
+                                    bda.getCVParam('IMS:1000102').setValue(mzListOffset);
+                                    % Set array length
+                                    arrayLengthParam = bda.getCVParam('IMS:1000103');
+                                    if(~isempty(arrayLengthParam))
+                                        arrayLengthParam.setValue(mzListArrayLength);
+                                    end
+                                    % Set encoded length
+                                    bda.getCVParam('IMS:1000104').setValue(mzListEncodedLength);
+                                else
+                                    arrayLength = length(spectrum.spectralChannels);
+
+                                    % Set offset
+                                    bda.getCVParam('IMS:1000102').setValue((ftell(ibdFileIDs(pixelListIndex))));
+                                    % Set array length
+                                    arrayLengthParam = bda.getCVParam('IMS:1000103');
+                                    if(~isempty(arrayLengthParam))
+                                        arrayLengthParam.setValue((arrayLength));
+                                    end
+                                    % Set encoded length
+                                    bda.getCVParam('IMS:1000104').setValue((8*arrayLength));
+
+                                    % Write out the data
+                                    fwrite(ibdFileIDs(pixelListIndex), spectrum.spectralChannels, 'double');
                                 end
-                                % Set encoded length
-                                bda.getCVParam('IMS:1000104').setValue((8*arrayLength));
-                                
-                                % Write out the data
-                                fwrite(ibdFileIDs(pixelListIndex), spectrum.spectralChannels, 'double');
                             elseif(dataArrayType.getTerm().getID().equals(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.intensityArrayID))
                                 arrayLength = length(spectrum.intensities);
                                 
