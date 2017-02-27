@@ -5,7 +5,7 @@ If you find this useful please cite:  Alan M. Race, Andrew D. Palmer, Alex Dexte
 
 [Get the latest version](https://github.com/AlanRace/SpectralAnalysis/releases/). 
 
-If downloading the source, please be aware that the latest version of [MOOGL](https://github.com/AlanRace/MOOGL/tree/develop) must also be downloaded and included in the `SpectralAnalysis\src\gui\MOOGL` folder.
+If downloading the source, please be aware that the latest version of [MOOGL](https://github.com/AlanRace/MOOGL/tree/master) must also be downloaded and included in the `SpectralAnalysis\src\gui\MOOGL` folder.
 
 ![SpectralAnalysis Interface](https://i.imgur.com/XZy72vR.png)
 
