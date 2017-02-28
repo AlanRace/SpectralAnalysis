@@ -285,6 +285,7 @@ classdef DatacubeReduction < DataReduction
             % out so that resources can be tidied up
             imzMLList = {};
             ibdFileIDs = [];
+            ibdFileNames = {};
             
             pixelLists = {};
             
@@ -379,10 +380,22 @@ classdef DatacubeReduction < DataReduction
                         
                         % TODO: Add in UUID
                         
-                        imzMLList{end+1} = newImzML;
+                        imzMLList{fileIndex} = newImzML;
                         [ibdPath ibdFilename ext] = fileparts(filenameList{fileIndex});
                         
-                        ibdFileIDs(end+1) = fopen([ibdPath filesep ibdFilename '.ibd'], 'w');
+                        ibdFileNames{fileIndex} = [ibdPath filesep ibdFilename '.ibd'];
+                        ibdFileIDs(fileIndex) = fopen(ibdFileNames{fileIndex}, 'w');
+                        
+                        % Create UUID and write it out
+                        uuid = java.util.UUID.randomUUID();
+                        bytesToWrite = com.alanmrace.jimzmlparser.imzML.ImzML.uuidToByteArray(uuid);
+                        fwrite(ibdFileIDs(fileIndex), bytesToWrite, 'int8', 'ieee-be');
+                        
+                        uuid = strrep(char(uuid), '-', '')
+                        
+                        % Add UUID to the imzML
+                        newImzML.getFileDescription().getFileContent().removeChildOfCVParam('IMS:1000080');
+                        newImzML.getFileDescription().getFileContent().addCVParam(com.alanmrace.jimzmlparser.mzML.StringCVParam(oldImzML.getOBO().getTerm('IMS:1000080'), uuid));
                     end
                 end
                 
@@ -525,6 +538,15 @@ classdef DatacubeReduction < DataReduction
                 for i = 1:numel(imzMLList)
                     fclose(ibdFileIDs(i));
                     
+                    curImzML = imzMLList{i};
+                    
+                    % Calculate the SHA-1 Hash using jimzMLParser 
+                    sha1Hash = com.alanmrace.jimzmlparser.imzML.ImzML.calculateSHA1(ibdFileNames{i});
+
+                    % Replace any old CVParam with the new SHA-1 Hash
+                    curImzML.getFileDescription().getFileContent().removeChildOfCVParam(com.alanmrace.jimzmlparser.mzML.FileContent.ibdChecksumID);
+                    curImzML.getFileDescription().getFileContent().addCVParam(com.alanmrace.jimzmlparser.mzML.StringCVParam(oldImzML.getOBO().getTerm('IMS:1000091'), sha1Hash));
+
                     imzMLList{i}.write(filenameList{i});
                 end
             end
