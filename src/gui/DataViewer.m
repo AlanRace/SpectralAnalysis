@@ -394,9 +394,15 @@ classdef DataViewer < Figure
                     end
                 end
             catch err
-                errordlg(err.message, err.identifier);
-                
-                rethrow(err);
+                if(strcmp(err.identifier, 'MATLAB:Java:GenericException') && ...
+                        ~isempty(strfind(err.message, 'java.lang.ArrayIndexOutOfBoundsException')))
+                    errordlg(['Could not perform ''' postProcessingMethod.Name ''' because spectra are different lengths. ' ...
+                        'Did you set up appropriate zero filling and turn on preprocessing?'], ...
+                        'Array Index Out Of Bounds');
+                else
+                    errordlg(err.message, err.identifier);
+                    rethrow(err);
+                end
             end
             
             set(obj.progressBar.axisHandle, 'Visible', 'off');

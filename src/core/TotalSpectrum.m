@@ -57,7 +57,7 @@ classdef TotalSpectrum < SpectralRepresentation
                 ped = ProgressEventData(0, ['Using fast methods. Generating Total Spectrum']);
                 notify(this, 'ProcessingProgress', ped);
                 
-                try 
+%                 try 
                     spectrumGeneration = com.alanmrace.JSpectralAnalysis.spectralrepresentation.MultithreadedSpectralRepresentationGeneration(javaDataRepresentation, workflow, roiList);
                     spectrumGeneration.generateTotalSpectrum();
                     
@@ -83,12 +83,12 @@ classdef TotalSpectrum < SpectralRepresentation
                         
                         spectrumList.add(s);
                     end
-                catch err
+%                 catch err
                     
-                    errBox = errordlg(err.message, err.identifier);
-                    
-                    rethrow(err);
-                end
+%                     errBox = errordlg(err.message, err.identifier);
+%                     
+%                     rethrow(err);
+%                 end
                 
                 ped = ProgressEventData(1, ['Generated Total Spectrum']);
                 notify(this, 'ProcessingProgress', ped);
