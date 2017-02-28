@@ -333,7 +333,7 @@ classdef DatacubeReduction < DataReduction
                         rpgintensityArray = newImzML.getReferenceableParamGroupList().getReferenceableParamGroup('intensityArray');
                         
                         if(isempty(rpgintensityArray))
-                            rpgintensityArray = newImzML.getReferenceableParamGroupList().getReferenceableParamGroup('intensities');;
+                            rpgintensityArray = newImzML.getReferenceableParamGroupList().getReferenceableParamGroup('intensities');
                         end
                         
                         % Ensure that everything is set to be stored as
