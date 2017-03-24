@@ -437,6 +437,11 @@ classdef DatacubeReduction < DataReduction
                             fwrite(ibdFileIDs(pixelListIndex), spectrum.spectralChannels, 'double');
                             
                             writtenOutmzList(pixelListIndex) = true;
+                        else
+                            % Otherwise change the binary type to specify
+                            % processed
+                            curImzML.getFileDescription().getFileContent().removeChildOfCVParam('IMS:1000003');
+                            curImzML.getFileDescription().getFileContent().addCVParam(com.alanmrace.jimzmlparser.mzML.EmptyCVParam(oldImzML.getOBO().getTerm('IMS:1000031')));
                         end
                         
                         mzMLSpectrum = com.alanmrace.jimzmlparser.mzML.Spectrum(mzMLSpectrum, oldImzML.getReferenceableParamGroupList(), curImzML.getDataProcessingList(), ...
