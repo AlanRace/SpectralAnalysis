@@ -312,6 +312,10 @@ classdef CombineSpectraIntoPixels < Figure
         end 
         
         function keyPressCallback(this, event)
+            if(isempty(this.currentSpectrumViewed))
+                this.currentSpectrumViewed = -1;
+            end
+            
             spectrumToView = this.currentSpectrumViewed;
             
             switch event.Key
@@ -321,7 +325,7 @@ classdef CombineSpectraIntoPixels < Figure
                     spectrumToView = spectrumToView - 1;
             end
 
-            if(spectrumToView < 0)
+            if(isempty(spectrumToView) || spectrumToView < 0)
                 spectrumToView = 0;
             elseif(spectrumToView > this.numSpectra-1)
                 spectrumToView = this.numSpectra-1;

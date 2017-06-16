@@ -29,11 +29,11 @@ classdef PeakThresholdFilter < PeakFilter
                 peakDetails(intensities < this.threshold, :) = [];
                 intensities(intensities < this.threshold) = [];
             else
-                relIntesities = intensities ./ max(intensities);
+                relIntensities = intensities ./ max(intensities);
                 relThreshold = this.threshold / 100;
                 
-                spectralChannels(relIntesities < relThreshold) = [];
-                intensities(relIntesities < relThreshold) = [];
+                spectralChannels(relIntensities < relThreshold) = [];
+                intensities(relIntensities < relThreshold) = [];
                 peakDetails(relIntensities < relThreshold, :) = [];
             end
         end

@@ -66,6 +66,8 @@ classdef OrbitrapZeroFilling < SpectralZeroFilling
 
             countsFull = interp1(spectralChannels, intensities, mzsFull, 'linear');
             countsFull(isnan(countsFull)) = 0;
+            
+%             countsFull = sparse(countsFull);
         end
     end
     
