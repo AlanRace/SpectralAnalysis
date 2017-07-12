@@ -98,6 +98,7 @@ classdef DataViewer < Figure
         editRegionOfInterestButton;
         saveRegionOfInterestButton;
         loadRegionOfInterestButton;
+        infoRegionOfInterestButton;
         selectedROIs;
         
         preprocessingPanel;
@@ -570,6 +571,11 @@ classdef DataViewer < Figure
                 
                 this.updateRegionOfInterestList();
             end
+        end
+        
+        function infoRegionOfInterest(this) 
+            roiInfo = RegionOfInterestInfoFigure(this.regionOfInterestList, this.imageList);
+            roiInfo.selectImageIndex(1);
         end
         
         function setRegionOfInterestList(this, regionOfInterestList)
@@ -1063,11 +1069,17 @@ classdef DataViewer < Figure
                     'CellSelectionCallback', @obj.selectRegionOfInterest, ...
                     'Units', 'normalized', 'Position', [0.05 0.05 0.9 0.9]);
                 obj.editRegionOfInterestButton = uicontrol('Parent', obj.regionOfInterestPanel, 'String', 'Edit', ...
-                    'Units', 'normalized', 'Position', [0.65 0.1 0.3 0.3], 'Callback', @(src, evnt)obj.editRegionOfInterestList());
+                    'Units', 'normalized', 'Position', [0.65 0.1 0.3 0.3], 'Callback', @(src, evnt)obj.editRegionOfInterestList(), ...
+                    'TooltipString', 'Add/Edit regions of interest');
                 obj.saveRegionOfInterestButton = uicontrol('Parent', obj.regionOfInterestPanel, 'String', 'S', ...
-                    'Units', 'normalized', 'Position', [0.1 0.1 0.1 0.3], 'Callback', @(src, evnt)obj.saveRegionOfInterest());
+                    'Units', 'normalized', 'Position', [0.1 0.1 0.1 0.3], 'Callback', @(src, evnt)obj.saveRegionOfInterest(), ...
+                    'TooltipString', 'Save region of interest list');
                 obj.loadRegionOfInterestButton = uicontrol('Parent', obj.regionOfInterestPanel, 'String', 'L', ...
-                    'Units', 'normalized', 'Position', [0.1 0.1 0.1 0.05], 'Callback', @(src, evnt)obj.loadRegionOfInterest());
+                    'Units', 'normalized', 'Position', [0.1 0.1 0.1 0.05], 'Callback', @(src, evnt)obj.loadRegionOfInterest(), ...
+                    'TooltipString', 'Load region of interest list');
+                obj.infoRegionOfInterestButton = uicontrol('Parent', obj.regionOfInterestPanel, 'String', 'i', ...
+                    'Units', 'normalized', 'Position', [0.1 0.1 0.1 0.05], 'Callback', @(src, evnt)obj.infoRegionOfInterest(), ...
+                    'TooltipString', 'Display region of interest details');
                 
                 
 %                 obj.imageAxis = axes('Parent', obj.handle, 'Position', [.25 .62 .7 .3]);
@@ -1245,9 +1257,10 @@ classdef DataViewer < Figure
                     
                     if(~isempty(panelPosition))
                         Figure.setObjectPositionInPixels(obj.regionOfInterestTable, [margin, buttonHeight + margin, panelPosition(3) - margin*2, panelPosition(4) - margin*2 - buttonHeight - 20]);
-                        Figure.setObjectPositionInPixels(obj.editRegionOfInterestButton, [panelPosition(3)/2, margin, panelPosition(3)/2 - margin, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.editRegionOfInterestButton, [panelPosition(3)*2/3, margin, panelPosition(3)*1/3 - margin, buttonHeight]);
                         Figure.setObjectPositionInPixels(obj.saveRegionOfInterestButton, [margin, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
                         Figure.setObjectPositionInPixels(obj.loadRegionOfInterestButton, [margin+panelPosition(3)*1/5, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.infoRegionOfInterestButton, [margin+panelPosition(3)*2/5, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
                     end
                 end
                 
