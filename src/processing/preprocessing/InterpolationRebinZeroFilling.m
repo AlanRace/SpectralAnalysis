@@ -19,6 +19,7 @@ classdef InterpolationRebinZeroFilling < SpectralZeroFilling
             sChannels = obj.Parameters(1).value:obj.Parameters(3).value:obj.Parameters(2).value;
 
             intensities = interp1(spectralChannels, intensities, sChannels);
+            intensities(isnan(intensities)) = 0;
             spectralChannels = sChannels;
         end
     end

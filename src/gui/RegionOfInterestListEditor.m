@@ -12,6 +12,8 @@ classdef RegionOfInterestListEditor < Editor
         editROIButton;
         removeROIButton;
         
+        autoROIButton;
+        
         regionOfInterestEditor = 0;
         
         roiFinishedEditingListener = 0;
@@ -68,6 +70,22 @@ classdef RegionOfInterestListEditor < Editor
             
             this.roiFinishedEditingListener = addlistener(this.regionOfInterestEditor, ...
                 'FinishedEditing', @(src, evnt)this.finishedEditingRegionOfInterest(src.getRegionOfInterest()));
+        end
+        
+        function autoRegionOfInterestCallback(this)
+            for i = 1:this.image.getHeight()
+                newROI = RegionOfInterest(this.image.getWidth(), this.image.getHeight());
+                newROI.setName(['Line ' num2str(i)]);
+                
+                roi = zeros(this.image.getHeight(), this.image.getWidth());
+                roi(i, :) = 1;
+                
+                newROI.addPixels(roi);
+                
+                this.regionOfInterestList.add(newROI);
+                
+                this.updateRegionOfInterestList();
+            end
         end
         
         function finishedEditingRegionOfInterest(this, regionOfInterest)
@@ -197,6 +215,9 @@ classdef RegionOfInterestListEditor < Editor
                 'Units', 'normalized', 'Position', [0.6 0.125 0.1 0.05], 'Callback', @(src, evnt) this.editRegionOfInterest());
             this.removeROIButton = uicontrol(this.handle, 'String', '-', ...
                 'Units', 'normalized', 'Position', [0.6 0.05 0.1 0.05], 'Callback', @(src, evnt) this.removeRegionOfInterestCallback());
+            
+            this.autoROIButton = uicontrol(this.handle, 'String', 'Auto Line', ...
+                'Units', 'normalized', 'Position', [0.8 0.2 0.1 0.05], 'Callback', @(src, evnt) this.autoRegionOfInterestCallback());
         end
     end
 end

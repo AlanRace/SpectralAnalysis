@@ -85,6 +85,7 @@ classdef DataViewer < Figure
         % Buttons for interacting with the spectrum list
         addSpectrumButton;
         overlaySpectrumButton;
+        subtractSpectrumButton;
         removeSpectrumButton;
         
         switchSpectrumViewButton;
@@ -788,15 +789,56 @@ classdef DataViewer < Figure
 %                 axisHandle = axes;
                 multiSpectrumPanel = MultiSpectrumPanel(figure, obj.spectrumList.get(spectraToOverlay(1)));
                 
-                warning('No preprocessing applied...');
+                spectraToOverlayList = [];
                 
+                for i = 1:length(spectraToOverlay)
+                    if(i == 1)
+                        spectraToOverlayList = obj.spectrumList.get(spectraToOverlay(i));
+                    else
+                        spectraToOverlayList(i) = obj.spectrumList.get(spectraToOverlay(i));
+                    end
+                    
+                    if(~isempty(obj.preprocessingWorkflow))
+                        spectraToOverlayList(i) = obj.preprocessingWorkflow.performWorkflow(spectraToOverlayList(i));
+                    end
+                end
+                                
                 multiSpectrumDisplay = multiSpectrumPanel.spectrumDisplay;
                 
                 for i = 2:length(spectraToOverlay)
-                    multiSpectrumDisplay.setSpectrum(i, obj.spectrumList.get(spectraToOverlay(i)));
+                    multiSpectrumDisplay.setSpectrum(i, spectraToOverlayList(i));
                 end
                 
                 multiSpectrumDisplay.updateDisplay();
+            end
+        end
+        
+        function subtractSpectrumCallback(this)
+            spectraToSubstract = this.spectrumListTableLastSelected(:, 1);
+            
+            if(~isempty(spectraToSubstract) && length(spectraToSubstract) == 2)
+                
+                spectrum1 = this.spectrumList.get(spectraToSubstract(1));
+                spectrum2 = this.spectrumList.get(spectraToSubstract(2));
+                
+                if(~isempty(this.preprocessingWorkflow))
+                    spectrum1 = this.preprocessingWorkflow.performWorkflow(spectrum1);
+                    spectrum2 = this.preprocessingWorkflow.performWorkflow(spectrum2);
+                end
+                
+                try 
+                    differenceSpectrum = SpectralData(spectrum1.spectralChannels, spectrum1.intensities - spectrum2.intensities);
+
+                    figure = Figure();
+                    figure.showStandardFigure();
+                    spectrumPanel = SpectrumPanel(figure, differenceSpectrum);
+                    
+                    figure.setTitle(['Difference between ' spectrum1.getDescription() ' and ' spectrum2.getDescription()]);
+                catch err 
+                    errordlg(err.message);
+                end
+            else
+                errordlg('Please select 2 spectra to subtract', 'DataViewer:NoSpectraSelected');
             end
         end
         
@@ -1101,6 +1143,9 @@ classdef DataViewer < Figure
                 obj.overlaySpectrumButton = uicontrol('Parent', obj.spectrumListPanel, 'String', 'O', ...
                     'Callback', @(src, evnt) obj.overlaySpectrumCallback(), ...
                     'TooltipString', 'Overlay selected spectra');
+                obj.subtractSpectrumButton = uicontrol('Parent', obj.spectrumListPanel, 'String', 'S', ...
+                    'Callback', @(src, evnt) obj.subtractSpectrumCallback(), ...
+                    'TooltipString', 'Subtract selected spectra');
                 obj.removeSpectrumButton = uicontrol('Parent', obj.spectrumListPanel, 'String', '-', ...
                     'Callback', @(src, evnt) obj.removeSpectraFromListCallback(), ...
                     'TooltipString', 'Remove selected spectra from the list');
@@ -1291,7 +1336,8 @@ classdef DataViewer < Figure
 
                         Figure.setObjectPositionInPixels(obj.addSpectrumButton, [margin, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
                         Figure.setObjectPositionInPixels(obj.overlaySpectrumButton, [margin+panelPosition(3)/5, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.removeSpectrumButton, [margin+panelPosition(3)*2/5, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.subtractSpectrumButton, [margin+panelPosition(3)*2/5, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.removeSpectrumButton, [margin+panelPosition(3)*3/5, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
                     end
                     
                     widthForSpectrum = widthForSpectrum - widthOfSpectrumList - margin;

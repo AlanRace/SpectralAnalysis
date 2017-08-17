@@ -1,4 +1,3 @@
-mex -largeArrayDims rebin.c
 mex -largeArrayDims calculateE.c
 mex -largeArrayDims updateQ.c
 
