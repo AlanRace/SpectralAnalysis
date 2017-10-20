@@ -34,6 +34,10 @@ classdef ProjectedDataInMemory < DataInMemory
             spectrum = SpectralData(spectrum.spectralChannels, intensities);
         end
         
+        function spectrum = getProjectedSpectrum(obj, index)
+            spectrum = SpectralData(obj.spectralChannels, obj.projectionMatrix(:, index));
+        end
+        
         function [image] = getProjectedImage(obj, index)
             image = zeros(obj.height, obj.width);
             

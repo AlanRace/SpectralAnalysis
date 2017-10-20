@@ -27,8 +27,6 @@ classdef DataViewer < Figure
         % </html>
         preprocessingWorkflow;
         
-        regionOfInterestList;
-        
         % Data that has been generated and should be shown in the 
         imageListGenerated;
         imageList;
@@ -95,12 +93,6 @@ classdef DataViewer < Figure
         coefficientLabel;
 
         regionOfInterestPanel;
-        regionOfInterestTable;
-        editRegionOfInterestButton;
-        saveRegionOfInterestButton;
-        loadRegionOfInterestButton;
-        infoRegionOfInterestButton;
-        selectedROIs;
         
         preprocessingPanel;
         preprocessingLabel;
@@ -115,7 +107,7 @@ classdef DataViewer < Figure
         
         statusBar;
         
-        regionOfInterestListEditor;
+%         regionOfInterestListEditor;
         preprocessingWorkflowEditor;
         
         postProcessingMethodEditor;
@@ -158,7 +150,8 @@ classdef DataViewer < Figure
             
             %obj.createFigure();
             
-            obj.regionOfInterestList = RegionOfInterestList();
+%             obj.regionOfInterestList = RegionOfInterestList();
+%             obj.regionOfInterestPanel.setRegionOfInterestList(obj.regionOfInterestList);
             obj.spectrumList = SpectrumList();
             
             obj.imageDisplay = ImageDisplay(obj, Image(1));
@@ -198,6 +191,8 @@ classdef DataViewer < Figure
         
         
         function switchSpectrumView(obj)
+            f = PCAInfoFigure(obj.dataRepresentation, obj.regionOfInterestPanel.regionOfInterestList);
+            
             isVisible = strcmp(get(obj.previousCoefficientButton, 'Visible'), 'on');
             
             obj.makeCoefficientControlsVisible(~isVisible);
@@ -259,6 +254,7 @@ classdef DataViewer < Figure
             
             imageData = obj.dataRepresentation.getProjectedImage(value);
             obj.imageDisplay.setData(Image(imageData));
+                obj.regionOfInterestPanel.setImageForEditor(Image(imageData));
             
             if(sum(obj.dataRepresentation.data(:) < 0) > 0)
                 minVal = min(0, min(imageData(:)));
@@ -308,7 +304,7 @@ classdef DataViewer < Figure
             else
                 obj.postProcessingMethodEditor = PostProcessingMethodEditor(obj.spectralRepresentationMethods{representationIndex});%MemoryEfficientPCAEditor(obj.spectrumDisplay.peakList, obj.preprocessingWorkflow);
                 
-                obj.postProcessingMethodEditor.setRegionOfInterestList(obj.regionOfInterestList);
+                obj.postProcessingMethodEditor.setRegionOfInterestList(obj.regionOfInterestPanel.regionOfInterestList);
 
                 addlistener(obj.postProcessingMethodEditor, 'FinishedEditingPostProcessingMethod', @(src, evnt)obj.finishedEditingPostProcessingMethod());
             end
@@ -329,7 +325,7 @@ classdef DataViewer < Figure
             else
                 obj.postProcessingMethodEditor = PostProcessingMethodEditor(obj.dataReductionMethods{dataReductionIndex});%MemoryEfficientPCAEditor(obj.spectrumDisplay.peakList, obj.preprocessingWorkflow);
                 
-                obj.postProcessingMethodEditor.setRegionOfInterestList(obj.regionOfInterestList);
+                obj.postProcessingMethodEditor.setRegionOfInterestList(obj.regionOfInterestPanel.regionOfInterestList);
 
                 addlistener(obj.postProcessingMethodEditor, 'FinishedEditingPostProcessingMethod', @(src, evnt)obj.finishedEditingPostProcessingMethod());
             end
@@ -344,7 +340,7 @@ classdef DataViewer < Figure
             else
                 obj.postProcessingMethodEditor = PostProcessingMethodEditor(obj.clusteringMethods{clusteringIndex});
                 
-                obj.postProcessingMethodEditor.setRegionOfInterestList(obj.regionOfInterestList);
+                obj.postProcessingMethodEditor.setRegionOfInterestList(obj.regionOfInterestPanel.regionOfInterestList);
 
                 addlistener(obj.postProcessingMethodEditor, 'FinishedEditingPostProcessingMethod', @(src, evnt)obj.finishedEditingPostProcessingMethod());
             end
@@ -513,104 +509,21 @@ classdef DataViewer < Figure
                 end
         end
         
-        function editRegionOfInterestList(obj)
-            % Check if we have already opened the
-            % RegionOfInterestListEditor and if so if it is still a valid
-            % instance of the class. If so show it, otherwise recreate it
-            if(isa(obj.regionOfInterestListEditor, 'RegionOfInterestListEditor') && isvalid(obj.regionOfInterestListEditor))
-                figure(obj.regionOfInterestListEditor.handle);
-            else
-                obj.regionOfInterestListEditor = RegionOfInterestListEditor(obj.imageDisplay.getData(), obj.regionOfInterestList);
-
-                addlistener(obj.regionOfInterestListEditor, 'FinishedEditing', @(src, evnt)obj.finishedEditingRegionOfInterestList());
-            end
-            
-            assignin('base', 'dvroiList', obj.regionOfInterestList);
-        end
-        
-        function finishedEditingRegionOfInterestList(obj)
-            obj.regionOfInterestList = obj.regionOfInterestListEditor.regionOfInterestList;
-            
-            obj.updateRegionOfInterestList();
-        end
-        
-        function saveRegionOfInterest(this)
-            this.regionOfInterestList.get(1)
-            for i = this.selectedROIs
-                variableName = inputdlg(['Please specifiy a variable name for ' this.regionOfInterestList.get(i).name ':'], 'Variable name', 1, {'roi'});
-
-                while(~isempty(variableName))
-                    if(isvarname(variableName{1}))
-                        assignin('base', variableName{1}, this.regionOfInterestList.get(i));
-                        break;
-                    else
-                        variableName = inputdlg('Invalid variable name. Please specifiy a variable name:', 'Variable name', 1, variableName);
-                    end
-                end
-            end
-        end
-        
-        function loadRegionOfInterest(this)
-            variables = evalin('base', 'who');
-            rois = {};
-            
-            for i = 1:length(variables)
-                if(evalin('base', ['isa(' variables{i} ', ''RegionOfInterest'')']))
-                    rois{end+1} = variables{i};
-                end
-            end
-            
-            [selection, ok] = listdlg('PromptString', 'Select ROI(s)', ...
-                'ListString', rois);
-            
-            if(ok)
-                for i = selection
-                    newROI = evalin('base', rois{i});
-                    
-                    this.regionOfInterestList.add(newROI);
-                end
-                
-                this.updateRegionOfInterestList();
-            end
-        end
-        
         function infoRegionOfInterest(this) 
-            roiInfo = RegionOfInterestInfoFigure(this.regionOfInterestList, this.imageList);
+            
+            roiInfo = RegionOfInterestInfoFigure(this.regionOfInterestPanel.regionOfInterestList, this.imageList);
             roiInfo.selectImageIndex(1);
         end
         
-        function setRegionOfInterestList(this, regionOfInterestList)
-            this.regionOfInterestList = regionOfInterestList;
-            
-            this.updateRegionOfInterestList();
-        end
-        
-        function selectRegionOfInterest(this, src, event)
-             this.selectedROIs = event.Indices(:, 1)';
-        end
-        
-        function updateRegionOfInterestList(this)
-            rois = this.regionOfInterestList.getObjects();
-            data = {};
-            
-            for i = 1:numel(rois)
-                data{i, 1} = ['<HTML><font color="' rois{i}.getColour().toHex() '">' rois{i}.getName() '</font></HTML>' ];
-                data{i, 2} = false;
-            end
-            
-            set(this.regionOfInterestTable, 'Data', data);
-            
-            this.updateRegionOfInterestDisplay();
-        end
         
         function updateRegionOfInterestDisplay(this)
             this.imageDisplay.removeAllRegionsOfInterest();
             
-            roiData = get(this.regionOfInterestTable, 'Data');
+            roiData = get(this.regionOfInterestPanel.regionOfInterestTable, 'Data');
             
             for i = 1:size(roiData, 1)
                 if(roiData{i, 2})
-                    this.imageDisplay.addRegionOfInterest(this.regionOfInterestList.get(i));
+                    this.imageDisplay.addRegionOfInterest(this.regionOfInterestPanel.regionOfInterestList.get(i));
                 end
             end
             
@@ -936,6 +849,7 @@ classdef DataViewer < Figure
                 set(obj.imageTitleLabel, 'String', obj.imageList(imageIndex).getDescription());
                 
                 obj.imageDisplay.setData(obj.imageList(imageIndex));
+                obj.regionOfInterestPanel.setImageForEditor(obj.imageList(imageIndex));
                 
                 set(obj.imageAxis, 'ButtonDownFcn', @(src, evnt)obj.imageAxisClicked());
             end
@@ -1098,31 +1012,10 @@ classdef DataViewer < Figure
                     'Callback', @(src, evnt) obj.loadImageListCallback(), ...
                     'TooltipString', 'Load image list');
 
-                obj.regionOfInterestPanel = uipanel('Parent', obj.handle, 'Title', 'Region Of Interest', ...
-                    'Position', [0.05 0.05 0.425 0.2]);
-                %Set up the region of interest table
-                columnNames = {'Region', 'Display'};
-                columnFormat = {'char', 'logical'};
-                columnEditable = [false, true];
-                
-                obj.regionOfInterestTable = uitable('Parent', obj.regionOfInterestPanel, ...
-                    'ColumnName', columnNames, 'ColumnFormat', columnFormat, 'ColumnEditable', columnEditable, ...
-                    'RowName', [], 'CellEditCallback', @(src, evnt) obj.updateRegionOfInterestDisplay(), ...
-                    'CellSelectionCallback', @obj.selectRegionOfInterest, ...
-                    'Units', 'normalized', 'Position', [0.05 0.05 0.9 0.9]);
-                obj.editRegionOfInterestButton = uicontrol('Parent', obj.regionOfInterestPanel, 'String', 'Edit', ...
-                    'Units', 'normalized', 'Position', [0.65 0.1 0.3 0.3], 'Callback', @(src, evnt)obj.editRegionOfInterestList(), ...
-                    'TooltipString', 'Add/Edit regions of interest');
-                obj.saveRegionOfInterestButton = uicontrol('Parent', obj.regionOfInterestPanel, 'String', 'S', ...
-                    'Units', 'normalized', 'Position', [0.1 0.1 0.1 0.3], 'Callback', @(src, evnt)obj.saveRegionOfInterest(), ...
-                    'TooltipString', 'Save region of interest list');
-                obj.loadRegionOfInterestButton = uicontrol('Parent', obj.regionOfInterestPanel, 'String', 'L', ...
-                    'Units', 'normalized', 'Position', [0.1 0.1 0.1 0.05], 'Callback', @(src, evnt)obj.loadRegionOfInterest(), ...
-                    'TooltipString', 'Load region of interest list');
-                obj.infoRegionOfInterestButton = uicontrol('Parent', obj.regionOfInterestPanel, 'String', 'i', ...
-                    'Units', 'normalized', 'Position', [0.1 0.1 0.1 0.05], 'Callback', @(src, evnt)obj.infoRegionOfInterest(), ...
-                    'TooltipString', 'Display region of interest details');
-                
+                obj.regionOfInterestPanel = RegionOfInterestPanel(obj);
+                addlistener(obj.regionOfInterestPanel, 'InfoButtonClicked', @(src, evnt) obj.infoRegionOfInterest());
+                addlistener(obj.regionOfInterestPanel, 'RegionOfInterestSelected', @(src, evnt) obj.updateRegionOfInterestDisplay());
+                              
                 
 %                 obj.imageAxis = axes('Parent', obj.handle, 'Position', [.25 .62 .7 .3]);
                 
@@ -1296,16 +1189,8 @@ classdef DataViewer < Figure
                     widthOfROIList = 200;
                     widthForImage = widthForImage - widthOfROIList - margin;
                     
-                    Figure.setObjectPositionInPixels(obj.regionOfInterestPanel, [newPosition(3)-widthOfROIList-margin, imageRegionY, widthOfROIList, imageRegionHeight]);
-                    
-                    panelPosition = Figure.getPositionInPixels(obj.regionOfInterestPanel);
-                    
-                    if(~isempty(panelPosition))
-                        Figure.setObjectPositionInPixels(obj.regionOfInterestTable, [margin, buttonHeight + margin, panelPosition(3) - margin*2, panelPosition(4) - margin*2 - buttonHeight - 20]);
-                        Figure.setObjectPositionInPixels(obj.editRegionOfInterestButton, [panelPosition(3)*2/3, margin, panelPosition(3)*1/3 - margin, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.saveRegionOfInterestButton, [margin, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.loadRegionOfInterestButton, [margin+panelPosition(3)*1/5, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.infoRegionOfInterestButton, [margin+panelPosition(3)*2/5, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
+                    if(~isempty(obj.regionOfInterestPanel))
+                        Figure.setObjectPositionInPixels(obj.regionOfInterestPanel.handle, [newPosition(3)-widthOfROIList-margin, imageRegionY, widthOfROIList, imageRegionHeight]);
                     end
                 end
                 
