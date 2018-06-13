@@ -294,6 +294,8 @@ classdef DatacubeReduction < DataReduction
             
             writtenOutmzList = false;
             
+            oldImzML = dataRepresentation.parser.imzML;
+            
             for i = 1:size(pixels, 1)
                 % Prompt user for file names
                 if(isempty(imzMLList))
@@ -322,80 +324,79 @@ classdef DatacubeReduction < DataReduction
                     
                     filenameList = inputdlg(prompt, 'Please supply filenames for imzML output', 1, defaults);
                     
-                    oldImzML = dataRepresentation.parser.imzML;
-                    
                     for fileIndex = 1:numel(filenameList)
-                        newImzML = com.alanmrace.jimzmlparser.imzML.ImzML(oldImzML);
-                        newImzML.getRun().setSpectrumList(com.alanmrace.jimzmlparser.mzML.SpectrumList(0, newImzML.getRun().getSpectrumList().getDefaultDataProcessingRef()));
-                        newImzML.getRun().setChromatogramList(com.alanmrace.jimzmlparser.mzML.ChromatogramList(0, newImzML.getRun().getSpectrumList().getDefaultDataProcessingRef()));
-                        
-                        rpgmzArray = newImzML.getReferenceableParamGroupList().getReferenceableParamGroup('mzArray');
-                        rpgintensityArray = newImzML.getReferenceableParamGroupList().getReferenceableParamGroup('intensityArray');
-                        
-                        if(isempty(rpgintensityArray))
-                            rpgintensityArray = newImzML.getReferenceableParamGroupList().getReferenceableParamGroup('intensities');
-                        end
-                        
-                        % Ensure that everything is set to be stored as
-                        % double precision
-                        rpgmzArray.removeChildOfCVParam(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.dataTypeID);
-                        rpgmzArray.addCVParam(com.alanmrace.jimzmlparser.mzML.EmptyCVParam(oldImzML.getOBO().getTerm(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.doublePrecisionID)));
-                        
-                        rpgintensityArray.removeChildOfCVParam(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.dataTypeID);
-                        
-                        % 'Double', 'Single', '64-Bit Integer', '32-Bit Integer', 
-                        % '16-Bit Integer', '8-Bit Integer'
-                        cvParam = [];
-                        
-                        switch(this.intensityDataType)
-                            case 'Double'
-                                cvParam = com.alanmrace.jimzmlparser.mzML.BinaryDataArray.doublePrecisionID;
-                            case 'Single'
-                                cvParam = com.alanmrace.jimzmlparser.mzML.BinaryDataArray.singlePrecisionID;
-                            case '64-Bit Integer'
-                                cvParam = com.alanmrace.jimzmlparser.mzML.BinaryDataArray.signed64bitIntegerID;
-                            case '32-Bit Integer'
-                                cvParam = com.alanmrace.jimzmlparser.mzML.BinaryDataArray.signed32bitIntegerID;
-                            case '16-Bit Integer'
-                                cvParam = com.alanmrace.jimzmlparser.mzML.BinaryDataArray.signed16bitIntegerID;
-                            case '8-Bit Integer'
-                                cvParam = com.alanmrace.jimzmlparser.mzML.BinaryDataArray.signed8bitIntegerID;
-                            otherwise
-                                exception = MException('DatacubeReduction:InvalidArgument', ['Invalid intensity data type provided: ' this.intensityDataType]);
-                                throw(exception);
-                        end
-                        
-                        rpgintensityArray.addCVParam(com.alanmrace.jimzmlparser.mzML.EmptyCVParam(oldImzML.getOBO().getTerm(cvParam)));
-                        
-                        % Remove any compression
-                        rpgmzArray.removeChildOfCVParam(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.compressionTypeID);
-                        rpgintensityArray.removeChildOfCVParam(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.compressionTypeID);
-                        
-                        % Ensure that it is stored as no compression
-                        rpgmzArray.addCVParam(com.alanmrace.jimzmlparser.mzML.EmptyCVParam(oldImzML.getOBO().getTerm(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.noCompressionID)));
-                        rpgintensityArray.addCVParam(com.alanmrace.jimzmlparser.mzML.EmptyCVParam(oldImzML.getOBO().getTerm(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.noCompressionID)));
-                        
-                        % TODO: Add in SpectralAnalysis software and
-                        % any preprocessing performed
-                        
+                        newImzML = com.alanmrace.jimzmlparser.imzml.ImzML(oldImzML);
+                        newImzML.getSpectrumList().clear();
+%                         newImzML.getRun().setSpectrumList(com.alanmrace.jimzmlparser.mzml.SpectrumList(0, newImzML.getRun().getSpectrumList().getDefaultDataProcessingRef()));
+%                         newImzML.getRun().setChromatogramList(com.alanmrace.jimzmlparser.mzml.ChromatogramList(0, newImzML.getRun().getSpectrumList().getDefaultDataProcessingRef()));
+%                         
+%                         rpgmzArray = newImzML.getReferenceableParamGroupList().getReferenceableParamGroup('mzArray');
+%                         rpgintensityArray = newImzML.getReferenceableParamGroupList().getReferenceableParamGroup('intensityArray');
+%                         
+%                         if(isempty(rpgintensityArray))
+%                             rpgintensityArray = newImzML.getReferenceableParamGroupList().getReferenceableParamGroup('intensities');
+%                         end
+%                         
+%                         % Ensure that everything is set to be stored as
+%                         % double precision
+%                         rpgmzArray.removeChildOfCVParam(com.alanmrace.jimzmlparser.mzml.BinaryDataArray.dataTypeID);
+%                         rpgmzArray.addCVParam(com.alanmrace.jimzmlparser.mzml.EmptyCVParam(oldImzML.getOBO().getTerm(com.alanmrace.jimzmlparser.mzml.BinaryDataArray.doublePrecisionID)));
+%                         
+%                         rpgintensityArray.removeChildOfCVParam(com.alanmrace.jimzmlparser.mzml.BinaryDataArray.dataTypeID);
+%                         
+%                         % 'Double', 'Single', '64-Bit Integer', '32-Bit Integer', 
+%                         % '16-Bit Integer', '8-Bit Integer'
+%                         cvParam = [];
+%                         
+%                         switch(this.intensityDataType)
+%                             case 'Double'
+%                                 cvParam = com.alanmrace.jimzmlparser.mzml.BinaryDataArray.doublePrecisionID;
+%                             case 'Single'
+%                                 cvParam = com.alanmrace.jimzmlparser.mzml.BinaryDataArray.singlePrecisionID;
+%                             case '64-Bit Integer'
+%                                 cvParam = com.alanmrace.jimzmlparser.mzml.BinaryDataArray.signed64bitIntegerID;
+%                             case '32-Bit Integer'
+%                                 cvParam = com.alanmrace.jimzmlparser.mzml.BinaryDataArray.signed32bitIntegerID;
+%                             case '16-Bit Integer'
+%                                 cvParam = com.alanmrace.jimzmlparser.mzml.BinaryDataArray.signed16bitIntegerID;
+%                             case '8-Bit Integer'
+%                                 cvParam = com.alanmrace.jimzmlparser.mzml.BinaryDataArray.signed8bitIntegerID;
+%                             otherwise
+%                                 exception = MException('DatacubeReduction:InvalidArgument', ['Invalid intensity data type provided: ' this.intensityDataType]);
+%                                 throw(exception);
+%                         end
+%                         
+%                         rpgintensityArray.addCVParam(com.alanmrace.jimzmlparser.mzml.EmptyCVParam(oldImzML.getOBO().getTerm(cvParam)));
+%                         
+%                         % Remove any compression
+%                         rpgmzArray.removeChildOfCVParam(com.alanmrace.jimzmlparser.mzml.BinaryDataArray.compressionTypeID);
+%                         rpgintensityArray.removeChildOfCVParam(com.alanmrace.jimzmlparser.mzml.BinaryDataArray.compressionTypeID);
+%                         
+%                         % Ensure that it is stored as no compression
+%                         rpgmzArray.addCVParam(com.alanmrace.jimzmlparser.mzml.EmptyCVParam(oldImzML.getOBO().getTerm(com.alanmrace.jimzmlparser.mzml.BinaryDataArray.noCompressionID)));
+%                         rpgintensityArray.addCVParam(com.alanmrace.jimzmlparser.mzml.EmptyCVParam(oldImzML.getOBO().getTerm(com.alanmrace.jimzmlparser.mzml.BinaryDataArray.noCompressionID)));
+%                         
+%                         % TODO: Add in SpectralAnalysis software and
+%                         % any preprocessing performed
+%                         
                         % TODO: Add in UUID
                         
                         imzMLList{fileIndex} = newImzML;
-                        [ibdPath ibdFilename ext] = fileparts(filenameList{fileIndex});
-                        
-                        ibdFileNames{fileIndex} = [ibdPath filesep ibdFilename '.ibd'];
-                        ibdFileIDs(fileIndex) = fopen(ibdFileNames{fileIndex}, 'w');
-                        
-                        % Create UUID and write it out
-                        uuid = java.util.UUID.randomUUID();
-                        bytesToWrite = com.alanmrace.jimzmlparser.imzML.ImzML.uuidToByteArray(uuid);
-                        fwrite(ibdFileIDs(fileIndex), bytesToWrite, 'int8', 'ieee-be');
-                        
-                        uuid = strrep(char(uuid), '-', '')
-                        
-                        % Add UUID to the imzML
-                        newImzML.getFileDescription().getFileContent().removeChildOfCVParam('IMS:1000080');
-                        newImzML.getFileDescription().getFileContent().addCVParam(com.alanmrace.jimzmlparser.mzML.StringCVParam(oldImzML.getOBO().getTerm('IMS:1000080'), uuid));
+%                         [ibdPath ibdFilename ext] = fileparts(filenameList{fileIndex});
+%                         
+%                         ibdFileNames{fileIndex} = [ibdPath filesep ibdFilename '.ibd'];
+%                         ibdFileIDs(fileIndex) = fopen(ibdFileNames{fileIndex}, 'w');
+%                         
+%                         % Create UUID and write it out
+%                         uuid = java.util.UUID.randomUUID();
+%                         bytesToWrite = com.alanmrace.jimzmlparser.util.UUIDHelper.uuidToByteArray(uuid);
+%                         fwrite(ibdFileIDs(fileIndex), bytesToWrite, 'int8', 'ieee-be');
+%                         
+%                         uuid = strrep(char(uuid), '-', '')
+%                         
+%                         % Add UUID to the imzML
+%                         newImzML.getFileDescription().getFileContent().removeChildOfCVParam('IMS:1000080');
+%                         newImzML.getFileDescription().getFileContent().addCVParam(com.alanmrace.jimzmlparser.mzml.StringCVParam(oldImzML.getOBO().getTerm('IMS:1000080'), uuid));
                     end
                 end
                 
@@ -421,138 +422,148 @@ classdef DatacubeReduction < DataReduction
                 for pixelListIndex = 1:numel(pixelLists)
                     [pixel, row, col] = intersect(pixelLists{pixelListIndex}, pixels(i, :), 'rows');
                     
+                    % TODO move this outside of the loop
+                    minX = min(pixels(:, 1));
+                    minY = min(pixels(:, 2));
+                    
                     if(~isempty(row))
                         curImzML = imzMLList{pixelListIndex};
                         
-                        % Check if we are exporting to continuous
-                        if(strcmp(this.storageType, 'Continuous') && ~writtenOutmzList(pixelListIndex))
-                            mzListOffset(pixelListIndex) = ftell(ibdFileIDs(pixelListIndex));
-                            mzListArrayLength(pixelListIndex) = length(spectrum.spectralChannels);
-                            mzListEncodedLength(pixelListIndex) = 8 * mzListArrayLength;
-
-                            curImzML.getFileDescription().getFileContent().removeChildOfCVParam('IMS:1000003');
-                            curImzML.getFileDescription().getFileContent().addCVParam(com.alanmrace.jimzmlparser.mzML.EmptyCVParam(oldImzML.getOBO().getTerm('IMS:1000030')));
-
-                            % Write out the data
-                            fwrite(ibdFileIDs(pixelListIndex), spectrum.spectralChannels, 'double');
-                            
-                            writtenOutmzList(pixelListIndex) = true;
-                        else
-                            % Otherwise change the binary type to specify
-                            % processed
-                            curImzML.getFileDescription().getFileContent().removeChildOfCVParam('IMS:1000003');
-                            curImzML.getFileDescription().getFileContent().addCVParam(com.alanmrace.jimzmlparser.mzML.EmptyCVParam(oldImzML.getOBO().getTerm('IMS:1000031')));
-                        end
-                        
-                        mzMLSpectrum = com.alanmrace.jimzmlparser.mzML.Spectrum(mzMLSpectrum, oldImzML.getReferenceableParamGroupList(), curImzML.getDataProcessingList(), ...
-                            curImzML.getFileDescription().getSourceFileList(), curImzML.getInstrumentConfigurationList());
-                        
-                        bdaList = mzMLSpectrum.getBinaryDataArrayList();
-                        
-                        for listIndex = 0:bdaList.size()-1
-                            bda = bdaList.getBinaryDataArray(listIndex);
-                            dataArrayType = bda.getCVParamOrChild(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.binaryDataArrayID);
-                            
-                            if(dataArrayType.getTerm().getID().equals(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.mzArrayID))
-                                
-                                if(strcmp(this.storageType, 'Continuous'))
-                                    % Set offset
-                                    bda.getCVParam('IMS:1000102').setValue(mzListOffset);
-                                    % Set array length
-                                    arrayLengthParam = bda.getCVParam('IMS:1000103');
-                                    if(~isempty(arrayLengthParam))
-                                        arrayLengthParam.setValue(mzListArrayLength);
-                                    end
-                                    % Set encoded length
-                                    bda.getCVParam('IMS:1000104').setValue(mzListEncodedLength);
-                                else
-                                    arrayLength = length(spectrum.spectralChannels);
-
-                                    % Set offset
-                                    bda.getCVParam('IMS:1000102').setValue((ftell(ibdFileIDs(pixelListIndex))));
-                                    % Set array length
-                                    arrayLengthParam = bda.getCVParam('IMS:1000103');
-                                    if(~isempty(arrayLengthParam))
-                                        arrayLengthParam.setValue((arrayLength));
-                                    end
-                                    % Set encoded length
-                                    bda.getCVParam('IMS:1000104').setValue((8*arrayLength));
-
-                                    % Write out the data
-                                    fwrite(ibdFileIDs(pixelListIndex), spectrum.spectralChannels, 'double');
-                                end
-                            elseif(dataArrayType.getTerm().getID().equals(com.alanmrace.jimzmlparser.mzML.BinaryDataArray.intensityArrayID))
-                                arrayLength = length(spectrum.intensities);
-                                
-                                % Set offset
-                                bda.getCVParam('IMS:1000102').setValue((ftell(ibdFileIDs(pixelListIndex))));
-                                % Set array length
-                                arrayLengthParam = bda.getCVParam('IMS:1000103');
-                                if(~isempty(arrayLengthParam))
-                                    arrayLengthParam.setValue((arrayLength));
-                                end;
-                                
-                                % 'Double', 'Single', '64-Bit Integer', '32-Bit Integer', 
-                                % '16-Bit Integer', '8-Bit Integer'
-                                switch(this.intensityDataType)
-                                    case 'Double'
-                                        % Set encoded length
-                                        bda.getCVParam('IMS:1000104').setValue((8*arrayLength));
-                                        % Write out the data
-                                        fwrite(ibdFileIDs(pixelListIndex), spectrum.intensities, 'double');
-                                    case 'Single'
-                                        % Set encoded length
-                                        bda.getCVParam('IMS:1000104').setValue((4*arrayLength));
-                                        % Write out the data
-                                        fwrite(ibdFileIDs(pixelListIndex), single(spectrum.intensities), 'single');
-                                    case '64-Bit Integer'
-                                        % Set encoded length
-                                        bda.getCVParam('IMS:1000104').setValue((8*arrayLength));
-                                        % Write out the data
-                                        fwrite(ibdFileIDs(pixelListIndex), int64(spectrum.intensities), 'int64');
-                                    case '32-Bit Integer'
-                                        % Set encoded length
-                                        bda.getCVParam('IMS:1000104').setValue((4*arrayLength));
-                                        % Write out the data
-                                        fwrite(ibdFileIDs(pixelListIndex), int32(spectrum.intensities), 'int32');
-                                    case '16-Bit Integer'
-                                        % Set encoded length
-                                        bda.getCVParam('IMS:1000104').setValue((2*arrayLength));
-                                        % Write out the data
-                                        fwrite(ibdFileIDs(pixelListIndex), int16(spectrum.intensities), 'int16');
-                                    case '8-Bit Integer'
-                                        % Set encoded length
-                                        bda.getCVParam('IMS:1000104').setValue((arrayLength));
-                                        % Write out the data
-                                        fwrite(ibdFileIDs(pixelListIndex), int8(spectrum.intensities), 'int8');
-                                    otherwise
-                                        exception = MException('DatacubeReduction:InvalidArgument', ['Invalid intensity data type provided: ' this.intensityDataType]);
-                                        throw(exception);
-                                end
-                            end
-                        end
-                        
-                        imzMLList{pixelListIndex}.getRun().getSpectrumList().addSpectrum(mzMLSpectrum);
+                        newSpectrum = com.alanmrace.jimzmlparser.mzml.Spectrum(oldImzML.getSpectrum(pixel(1), pixel(2)), curImzML);
+                        newSpectrum.setPixelLocation(pixel(1) - minX + 1, pixel(2) - minY + 1);
+                        curImzML.getRun().getSpectrumList().addSpectrum(newSpectrum);
+%                         
+%                         % Check if we are exporting to continuous
+%                         if(strcmp(this.storageType, 'Continuous') && ~writtenOutmzList(pixelListIndex))
+%                             mzListOffset(pixelListIndex) = ftell(ibdFileIDs(pixelListIndex));
+%                             mzListArrayLength(pixelListIndex) = length(spectrum.spectralChannels);
+%                             mzListEncodedLength(pixelListIndex) = 8 * mzListArrayLength;
+% 
+%                             curImzML.getFileDescription().getFileContent().removeChildOfCVParam('IMS:1000003');
+%                             curImzML.getFileDescription().getFileContent().addCVParam(com.alanmrace.jimzmlparser.mzml.EmptyCVParam(oldImzML.getOBO().getTerm('IMS:1000030')));
+% 
+%                             % Write out the data
+%                             fwrite(ibdFileIDs(pixelListIndex), spectrum.spectralChannels, 'double');
+%                             
+%                             writtenOutmzList(pixelListIndex) = true;
+%                         else
+%                             % Otherwise change the binary type to specify
+%                             % processed
+%                             curImzML.getFileDescription().getFileContent().removeChildOfCVParam('IMS:1000003');
+%                             curImzML.getFileDescription().getFileContent().addCVParam(com.alanmrace.jimzmlparser.mzml.EmptyCVParam(oldImzML.getOBO().getTerm('IMS:1000031')));
+%                         end
+%                         
+%                         mzMLSpectrum = com.alanmrace.jimzmlparser.mzml.Spectrum(mzMLSpectrum, oldImzML.getReferenceableParamGroupList(), curImzML.getDataProcessingList(), ...
+%                             curImzML.getFileDescription().getSourceFileList(), curImzML.getInstrumentConfigurationList());
+%                         
+%                         bdaList = mzMLSpectrum.getBinaryDataArrayList();
+%                         
+%                         for listIndex = 0:bdaList.size()-1
+%                             bda = bdaList.getBinaryDataArray(listIndex);
+%                             dataArrayType = bda.getCVParamOrChild(com.alanmrace.jimzmlparser.mzml.BinaryDataArray.binaryDataArrayID);
+%                             
+%                             if(dataArrayType.getTerm().getID().equals(com.alanmrace.jimzmlparser.mzml.BinaryDataArray.mzArrayID))
+%                                 
+%                                 if(strcmp(this.storageType, 'Continuous'))
+%                                     % Set offset
+%                                     bda.getCVParam('IMS:1000102').setValue(mzListOffset);
+%                                     % Set array length
+%                                     arrayLengthParam = bda.getCVParam('IMS:1000103');
+%                                     if(~isempty(arrayLengthParam))
+%                                         arrayLengthParam.setValue(mzListArrayLength);
+%                                     end
+%                                     % Set encoded length
+%                                     bda.getCVParam('IMS:1000104').setValue(mzListEncodedLength);
+%                                 else
+%                                     arrayLength = length(spectrum.spectralChannels);
+% 
+%                                     % Set offset
+%                                     bda.getCVParam('IMS:1000102').setValue((ftell(ibdFileIDs(pixelListIndex))));
+%                                     % Set array length
+%                                     arrayLengthParam = bda.getCVParam('IMS:1000103');
+%                                     if(~isempty(arrayLengthParam))
+%                                         arrayLengthParam.setValue((arrayLength));
+%                                     end
+%                                     % Set encoded length
+%                                     bda.getCVParam('IMS:1000104').setValue((8*arrayLength));
+% 
+%                                     % Write out the data
+%                                     fwrite(ibdFileIDs(pixelListIndex), spectrum.spectralChannels, 'double');
+%                                 end
+%                             elseif(dataArrayType.getTerm().getID().equals(com.alanmrace.jimzmlparser.mzml.BinaryDataArray.intensityArrayID))
+%                                 arrayLength = length(spectrum.intensities);
+%                                 
+%                                 % Set offset
+%                                 bda.getCVParam('IMS:1000102').setValue((ftell(ibdFileIDs(pixelListIndex))));
+%                                 % Set array length
+%                                 arrayLengthParam = bda.getCVParam('IMS:1000103');
+%                                 if(~isempty(arrayLengthParam))
+%                                     arrayLengthParam.setValue((arrayLength));
+%                                 end;
+%                                 
+%                                 % 'Double', 'Single', '64-Bit Integer', '32-Bit Integer', 
+%                                 % '16-Bit Integer', '8-Bit Integer'
+%                                 switch(this.intensityDataType)
+%                                     case 'Double'
+%                                         % Set encoded length
+%                                         bda.getCVParam('IMS:1000104').setValue((8*arrayLength));
+%                                         % Write out the data
+%                                         fwrite(ibdFileIDs(pixelListIndex), spectrum.intensities, 'double');
+%                                     case 'Single'
+%                                         % Set encoded length
+%                                         bda.getCVParam('IMS:1000104').setValue((4*arrayLength));
+%                                         % Write out the data
+%                                         fwrite(ibdFileIDs(pixelListIndex), single(spectrum.intensities), 'single');
+%                                     case '64-Bit Integer'
+%                                         % Set encoded length
+%                                         bda.getCVParam('IMS:1000104').setValue((8*arrayLength));
+%                                         % Write out the data
+%                                         fwrite(ibdFileIDs(pixelListIndex), int64(spectrum.intensities), 'int64');
+%                                     case '32-Bit Integer'
+%                                         % Set encoded length
+%                                         bda.getCVParam('IMS:1000104').setValue((4*arrayLength));
+%                                         % Write out the data
+%                                         fwrite(ibdFileIDs(pixelListIndex), int32(spectrum.intensities), 'int32');
+%                                     case '16-Bit Integer'
+%                                         % Set encoded length
+%                                         bda.getCVParam('IMS:1000104').setValue((2*arrayLength));
+%                                         % Write out the data
+%                                         fwrite(ibdFileIDs(pixelListIndex), int16(spectrum.intensities), 'int16');
+%                                     case '8-Bit Integer'
+%                                         % Set encoded length
+%                                         bda.getCVParam('IMS:1000104').setValue((arrayLength));
+%                                         % Write out the data
+%                                         fwrite(ibdFileIDs(pixelListIndex), int8(spectrum.intensities), 'int8');
+%                                     otherwise
+%                                         exception = MException('DatacubeReduction:InvalidArgument', ['Invalid intensity data type provided: ' this.intensityDataType]);
+%                                         throw(exception);
+%                                 end
+%                             end
+%                         end
+%                         
+%                         imzMLList{pixelListIndex}.getRun().getSpectrumList().addSpectrum(mzMLSpectrum);
                     end
                 end
-                progressEvent = ProgressEventData(i / size(pixels, 1), processDescription);
-                notify(this, 'ProcessingProgress', progressEvent);
+%                 progressEvent = ProgressEventData(i / size(pixels, 1), processDescription);
+%                 notify(this, 'ProcessingProgress', progressEvent);
             end
             
             if(~isempty(imzMLList))
                 for i = 1:numel(imzMLList)
-                    fclose(ibdFileIDs(i));
+%                     fclose(ibdFileIDs(i));
                     
                     curImzML = imzMLList{i};
                     
                     % Calculate the SHA-1 Hash using jimzMLParser 
-                    sha1Hash = com.alanmrace.jimzmlparser.imzML.ImzML.calculateSHA1(ibdFileNames{i});
+%                     sha1Hash = com.alanmrace.jimzmlparser.imzml.ImzML.calculateSHA1(ibdFileNames{i});
+% 
+%                     % Replace any old CVParam with the new SHA-1 Hash
+%                     curImzML.getFileDescription().getFileContent().removeChildOfCVParam(com.alanmrace.jimzmlparser.mzml.FileContent.ibdChecksumID);
+%                     curImzML.getFileDescription().getFileContent().addCVParam(com.alanmrace.jimzmlparser.mzml.StringCVParam(oldImzML.getOBO().getTerm('IMS:1000091'), sha1Hash));
 
-                    % Replace any old CVParam with the new SHA-1 Hash
-                    curImzML.getFileDescription().getFileContent().removeChildOfCVParam(com.alanmrace.jimzmlparser.mzML.FileContent.ibdChecksumID);
-                    curImzML.getFileDescription().getFileContent().addCVParam(com.alanmrace.jimzmlparser.mzML.StringCVParam(oldImzML.getOBO().getTerm('IMS:1000091'), sha1Hash));
-
-                    imzMLList{i}.write(filenameList{i});
+                    writer = com.alanmrace.jimzmlparser.writer.ImzMLWriter();
+                    
+                    writer.write(curImzML, filenameList{i});
                 end
             end
         end

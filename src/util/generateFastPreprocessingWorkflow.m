@@ -29,11 +29,21 @@ for i = 1:length(workflow)
         
         fastPreprocessingWorkflow.addMethod(com.alanmrace.JSpectralAnalysis.zerofilling.RebinZeroFilling(params(1).value, params(2).value, params(3).value));
         numFastMethods = numFastMethods + 1;
+    elseif(isa(workflow{i}, 'RebinPPMZeroFilling'))
+        params = workflow{i}.Parameters;
+        
+        fastPreprocessingWorkflow.addMethod(com.alanmrace.JSpectralAnalysis.zerofilling.PPMRebinZeroFilling(params(1).value, params(2).value, params(3).value));
+        numFastMethods = numFastMethods + 1;    
     elseif(isa(workflow{i}, 'InterpolationRebinZeroFilling'))
         params = workflow{i}.Parameters;
         
         fastPreprocessingWorkflow.addMethod(com.alanmrace.JSpectralAnalysis.zerofilling.InterpolationRebinZeroFilling(params(1).value, params(2).value, params(3).value));
         numFastMethods = numFastMethods + 1;
+    elseif(isa(workflow{i}, 'InterpolationPPMRebinZeroFilling'))
+        params = workflow{i}.Parameters;
+        
+        fastPreprocessingWorkflow.addMethod(com.alanmrace.JSpectralAnalysis.zerofilling.InterpolationPPMRebinZeroFilling(params(1).value, params(2).value, params(3).value));
+        numFastMethods = numFastMethods + 1;    
     elseif(isa(workflow{i}, 'GaussianSmoothing'))
         params = workflow{i}.Parameters;
         
