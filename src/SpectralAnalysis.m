@@ -17,7 +17,7 @@ addJARsToClassPath();
 
 % Launch spectral analysis interface
 try 
-    SpectralAnalysisInterface();
+    spectralAnalysis = SpectralAnalysisInterface();
 catch err
     if((strcmp(err.identifier, 'MATLAB:class:undefinedMethod') || strcmp(err.identifier, 'MATLAB:class:InvalidSuperClass')) ...
             && ~isempty(strfind(err.message, 'Figure')))

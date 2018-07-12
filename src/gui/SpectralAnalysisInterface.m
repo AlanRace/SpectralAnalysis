@@ -13,6 +13,7 @@ classdef SpectralAnalysisInterface < Figure
     properties (Access = private)
         openFileMenu;
         convertMenu;
+        toolsMenu;
         memoryMenu;
         
         progressBarAxis;
@@ -204,6 +205,10 @@ classdef SpectralAnalysisInterface < Figure
             end
         end
         
+        function showRGBCompositeGenerator(this)
+            OverlayFigure(this.dataViewerList);
+        end
+        
         function dataRepresentations = getDataRepresentations(this)
             % getDataRepresentations Get data representations associated with this SpectralAnalysisInterface.
             %
@@ -330,6 +335,9 @@ classdef SpectralAnalysisInterface < Figure
                 uimenu(this.convertMenu, 'Label', toBinaryConverterNames{i}, ...
                     'Callback', @(src, evnt) this.convertToBinary(this.toBinaryConverterMethods{i}));
             end
+            
+            this.toolsMenu = uimenu(this.handle, 'Label', 'Tools');
+            uimenu(this.toolsMenu, 'Label', 'RGB Composite Generator', 'Callback', @(src, evnt) this.showRGBCompositeGenerator());
             
             % Add in memory menu
             this.memoryMenu = uimenu(this.handle, 'Label', 'Memory');

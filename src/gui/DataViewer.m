@@ -33,6 +33,8 @@ classdef DataViewer < Figure
         spectrumList;
         
         dataRepresentation;
+        
+        title;
     end
     
     % Options
@@ -139,12 +141,12 @@ classdef DataViewer < Figure
             obj.dataRepresentation = dataRepresentation;
             
             if(~isempty(obj.dataRepresentation.parser))
-                title = obj.dataRepresentation.parser.getShortFilename();
+                obj.title = obj.dataRepresentation.parser.getShortFilename();
             else
-                title = obj.dataRepresentation.name;
+                obj.title = obj.dataRepresentation.name;
             end
             
-            obj.setTitle(['DataViewer: ' title]);
+            obj.setTitle(['DataViewer: ' obj.title]);
             
 %             obj.sizeChanged();
             

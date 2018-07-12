@@ -431,6 +431,11 @@ classdef DatacubeReduction < DataReduction
                         
                         newSpectrum = com.alanmrace.jimzmlparser.mzml.Spectrum(oldImzML.getSpectrum(pixel(1), pixel(2)), curImzML);
                         newSpectrum.setPixelLocation(pixel(1) - minX + 1, pixel(2) - minY + 1);
+%                         assignin('base', 'newSpectrum', newSpectrum);
+%                         newSpectrum.setmzArray(spectrum.spectralChannels);
+%                         newSpectrum.setIntensityArray(spectrum.intensities);
+                        newSpectrum.updateSpectralData(spectrum.spectralChannels, spectrum.intensities, com.alanmrace.jimzmlparser.mzml.DataProcessing.create());
+                        
                         curImzML.getRun().getSpectrumList().addSpectrum(newSpectrum);
 %                         
 %                         % Check if we are exporting to continuous

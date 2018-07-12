@@ -70,6 +70,7 @@ classdef InMemoryPCA < DataReduction
             % Set up the memory required
             coeffs = {};
             scores = {};
+            latent = {};
             pixelLists = {};
             
             % Load in the first spectrum in the pixel list to create the
@@ -94,10 +95,11 @@ classdef InMemoryPCA < DataReduction
                         
             % Change L to now be the mean
             for pixelListIndex = 1:numel(pixelLists)
-                [coeffs_, scores_] = princomp(dataRepresentation.data(pixelLists{pixelListIndex}, :), 'econ');
+                [coeffs_, scores_, latent_] = princomp(dataRepresentation.data(pixelLists{pixelListIndex}, :), 'econ');
                 
                 coeff{pixelListIndex} = coeffs_;
                 scores{pixelListIndex} = scores_;
+                latent{pixelListIndex} = latent_;
             end
             
             dataRepresentationList = DataRepresentationList();
@@ -109,16 +111,26 @@ classdef InMemoryPCA < DataReduction
                 projectedDataRepresentation = ProjectedDataInMemory();
                 
                 if(this.processEntireDataset && pixelListIndex == 1)
+                    dataName = [dataRepresentation.name ' (PCA)'];
+                    
                     projectedDataRepresentation.setData(scores{pixelListIndex}, coeff{pixelListIndex}, ...
                         dataRepresentation.regionOfInterest, ...
-                        dataRepresentation.isRowMajor, peakList, [dataRepresentation.name ' (PCA)']);
+                        dataRepresentation.isRowMajor, peakList, dataName);
                 elseif(this.processEntireDataset)
+                    dataName = [rois{pixelListIndex-1}.getName() ' (PCA)'];
+                    
                     projectedDataRepresentation.setData(scores{pixelListIndex}, coeff{pixelListIndex}, rois{pixelListIndex-1}, ...
-                        dataRepresentation.isRowMajor, peakList, [rois{pixelListIndex-1}.getName() ' (PCA)']);
+                        dataRepresentation.isRowMajor, peakList, dataName);
                 else
+                    dataName = [rois{pixelListIndex}.getName() ' (PCA)'];
+                    
                     projectedDataRepresentation.setData(scores{pixelListIndex}, coeff{pixelListIndex}, rois{pixelListIndex}, ...
-                        dataRepresentation.isRowMajor, peakList, [rois{pixelListIndex}.getName() ' (PCA)']);
+                        dataRepresentation.isRowMajor, peakList, dataName);
                 end
+                
+                latent{pixelListIndex}
+                figure, plot(cumsum(latent{pixelListIndex})./sum(latent{pixelListIndex}));
+                title(['Explained ' dataName]);
                 
                 dataRepresentationList.add(projectedDataRepresentation);
             end
