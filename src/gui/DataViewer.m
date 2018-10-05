@@ -597,6 +597,12 @@ classdef DataViewer < Figure
             imageIndex = [];
             
             for i = 1:length(imagesToGenerate)
+                matchedDescription = regexp(imagesToGenerate(i).description, '(\s)*[0-9]*(\.)?[0-9]*(\s)*-?(\s)*[0-9]*(\.)?[0-9]*', 'match');
+                
+                if(isempty(matchedDescription) || strcmp(strtrim(matchedDescription{1}), ''))
+                    continue;
+                end
+                                
                 limits = strtrim(strsplit(imagesToGenerate(i).description, '-'));
                 
                 if(length(limits) == 2)
