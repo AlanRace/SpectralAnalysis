@@ -118,7 +118,13 @@ classdef OverlayFigure < Figure
                 rgbImageData(:, :, 2) = rgbImageData(:, :, 2) ./ max(max(rgbImageData(:, :, 2)));
                 rgbImageData(:, :, 3) = rgbImageData(:, :, 3) ./ max(max(rgbImageData(:, :, 3)));
                 
-                this.rgbImageDisplay.setData(Image(rgbImageData));
+                imageToDisplay = Image(rgbImageData);
+                
+                imageToDisplay.setDescription(sprintf(['R = ' this.rImageDisplay.data.description '\n' ...
+                    'G = ' this.gImageDisplay.data.description '\n' ...
+                    'B = ' this.bImageDisplay.data.description]));
+                
+                this.rgbImageDisplay.setData(imageToDisplay);
             end
         end
     end

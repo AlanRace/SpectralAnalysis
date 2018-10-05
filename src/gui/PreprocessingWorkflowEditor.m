@@ -217,10 +217,14 @@ classdef PreprocessingWorkflowEditor < Editor
             
             beforeSpectrum = obj.beforeSpectrumDisplay.data;
 %            afterSpecturm = SpectralData(beforeSpectrum.spectralChannels, beforeSpectrum.intensities);
-            
-            afterSpecturm = obj.preprocessingWorkflow.performWorkflow(beforeSpectrum);
 
-            obj.afterSpectrumDisplay.setData(afterSpecturm);
+            try
+            	afterSpecturm = obj.preprocessingWorkflow.performWorkflow(beforeSpectrum);
+
+            	obj.afterSpectrumDisplay.setData(afterSpecturm);
+            catch err 
+                err
+            end
         end
         
         function moveUpButtonCallback(obj)
