@@ -517,6 +517,9 @@ classdef DataViewer < Figure
             roiInfo.selectImageIndex(1);
         end
         
+        function setRegionOfInterestList(this, regionOfInterestList)
+            this.regionOfInterestPanel.setRegionOfInterestList(regionOfInterestList);
+        end
         
         function updateRegionOfInterestDisplay(this)
             this.imageDisplay.removeAllRegionsOfInterest();
