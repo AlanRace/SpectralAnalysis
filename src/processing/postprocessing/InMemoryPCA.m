@@ -50,9 +50,9 @@ classdef InMemoryPCA < DataReduction
                 throw(exception);
             end
             
-            if(exist('princomp', 'file') == 0)
+            if(exist('princomp', 'file') == 0 && exist('pca', 'file') == 0)
                 exception = MException('InMemoryPCA:FunctionMissing', ...
-                        'princomp could not be found on the path.  The Statistics Toolbox is required to use this command.');
+                        'Neither princomp nor pca could not be found on the path.  The Statistics Toolbox is required to use this command.');
                 throw(exception);
             end
             
@@ -93,9 +93,19 @@ classdef InMemoryPCA < DataReduction
                 pixelLists{end+1} = rois{roiIndex}.getPixelMask()';
             end
                         
+            usePCA = false;
+            
+            if(exist('pca', 'file'))
+                usePCA = true;
+            end
+            
             % Change L to now be the mean
             for pixelListIndex = 1:numel(pixelLists)
-                [coeffs_, scores_, latent_] = princomp(dataRepresentation.data(pixelLists{pixelListIndex}, :), 'econ');
+                if(usePCA)
+                    [coeffs_, scores_, latent_] = pca(dataRepresentation.data(pixelLists{pixelListIndex}, :));
+                else
+                    [coeffs_, scores_, latent_] = princomp(dataRepresentation.data(pixelLists{pixelListIndex}, :), 'econ');
+                end
                 
                 coeff{pixelListIndex} = coeffs_;
                 scores{pixelListIndex} = scores_;
