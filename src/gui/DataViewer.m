@@ -604,10 +604,11 @@ classdef DataViewer < Figure
             imageIndex = [];
             
             for i = 1:length(imagesToGenerate)
-                matchedDescription = regexp(imagesToGenerate(i).description, '(\s)*[0-9]*(\.)?[0-9]*(\s)*-?(\s)*[0-9]*(\.)?[0-9]*', 'match')
-                matchedDescription{1}
-%                 matchedDescription{2}
-                if(isempty(matchedDescription) || strcmp(strtrim(matchedDescription{1}), '') || length(matchedDescription) > 1)
+                matchedDescription = strtrim(regexp(imagesToGenerate(i).description, '(\s)*[0-9]*(\.)?[0-9]*(\s)*-?(\s)*[0-9]*(\.)?[0-9]*', 'match'));
+                
+                matchedDescription = matchedDescription(~cellfun('isempty',matchedDescription));
+%               
+                if(isempty(matchedDescription) || length(matchedDescription) > 1)
                     % Try and match PPM / Da
                     matchedDescription = regexp(imagesToGenerate(i).description, '(\s)*[0-9]*(\.)?[0-9]*(\s)*\+/-?(\s)*[0-9]*(\.)?[0-9]*(\s)*(PPM|Da)', 'match')
                     
