@@ -39,3 +39,5 @@ if(exist(licenceFile, 'file'))
         valid = true;
     end
 end
+
+valid = true;

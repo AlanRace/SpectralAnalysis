@@ -59,6 +59,8 @@ classdef DataViewer < Figure
         clusteringMenu;
         clusteringMethods;
         
+        toolsMenu;
+        
         contextMenu;
         
         % Store handles of each child interface element
@@ -71,6 +73,8 @@ classdef DataViewer < Figure
         
         imageListPanel;
         imageListPanelLastSelected;
+        toleranceEditBox;
+        toleranceSelectionPopup;
         imageListTable;
         % Buttons for interacting with the image list
         generateImageListButton;
@@ -462,53 +466,56 @@ classdef DataViewer < Figure
 %         end
         
         function peakSelected(obj, peakSelectionEvent)
-            
-%         end
-% 
-%         function mouseUpInsideSpectrum(obj, x)
-%             spectralRange = [min(x, obj.mouseDownInsideSpectrumLocation) max(x, obj.mouseDownInsideSpectrumLocation)];
-            
+
+            %         end
+            %
+            %         function mouseUpInsideSpectrum(obj, x)
+            %             spectralRange = [min(x, obj.mouseDownInsideSpectrumLocation) max(x, obj.mouseDownInsideSpectrumLocation)];
+
             if(peakSelectionEvent.selectionType == PeakSelectionEvent.Exact)
                 if(~obj.dataRepresentation.isContinuous)
                     peakToView = peakSelectionEvent.peakDetails;
-                    
+
                     [minVal, minLoc] = min(abs(obj.dataRepresentation.spectralChannels - peakToView));
-                    
+
                     spectralRange = [obj.dataRepresentation.spectralChannels(minLoc) obj.dataRepresentation.spectralChannels(minLoc)];
                     description = num2str(obj.dataRepresentation.spectralChannels(minLoc));
                 else
+                    units = get(obj.toleranceSelectionPopup, 'String');
+                    unit = units{get(obj.toleranceSelectionPopup, 'Value')};
+
                     spectralRange = [peakSelectionEvent.peakDetails peakSelectionEvent.peakDetails];
-                    description = num2str(peakSelectionEvent.peakDetails, 10);
+                    description = [num2str(peakSelectionEvent.peakDetails, 10) ' +/- ' get(obj.toleranceEditBox, 'String') ' ' unit];
                 end
             else
                 spectralRange = peakSelectionEvent.peakDetails;
                 description = [num2str(spectralRange(1)) ' - ' num2str(spectralRange(2))];
             end
 
-                width = spectralRange(2) - spectralRange(1);
-                halfWidth = width/2;
+            width = spectralRange(2) - spectralRange(1);
+            halfWidth = width/2;
 
-                if(isa(obj.dataRepresentation.parser, 'SIMSParser') || ~isa(obj.dataRepresentation, 'DataInMemory'))
-                    blankImage = Image(zeros(obj.dataRepresentation.height, obj.dataRepresentation.width));
-                    blankImage.setDescription(description);
+            if(isa(obj.dataRepresentation.parser, 'SIMSParser') || ~isa(obj.dataRepresentation, 'DataInMemory'))
+                blankImage = Image(zeros(obj.dataRepresentation.height, obj.dataRepresentation.width));
+                blankImage.setDescription(description);
 
-                    obj.imageListGenerated(end+1) = false;
-                    obj.imageList(end+1) = blankImage;
+                obj.imageListGenerated(end+1) = false;
+                obj.imageList(end+1) = blankImage;
 
-                    obj.updateImageSelectionPopup();
-                else
-                    listener = addlistener(obj.dataRepresentation, 'DataLoadProgress', @(src, evnt)obj.progressBar.updateProgress(evnt));
+                obj.updateImageSelectionPopup();
+            else
+                listener = addlistener(obj.dataRepresentation, 'DataLoadProgress', @(src, evnt)obj.progressBar.updateProgress(evnt));
 
-                    image = obj.dataRepresentation.generateImages(spectralRange(1)+halfWidth, halfWidth, obj.preprocessingWorkflow);
+                image = obj.dataRepresentation.generateImages(spectralRange(1)+halfWidth, halfWidth, obj.preprocessingWorkflow);
 
-                    delete(listener);
+                delete(listener);
 
-        %             imageInstance = Image(image);
-                    image.setDescription(description);
+                %             imageInstance = Image(image);
+                image.setDescription(description);
 
-                    obj.addImage(image);
-                    obj.displayImage(length(obj.imageList));
-                end
+                obj.addImage(image);
+                obj.displayImage(length(obj.imageList));
+            end
         end
         
         function infoRegionOfInterest(this) 
@@ -597,25 +604,68 @@ classdef DataViewer < Figure
             imageIndex = [];
             
             for i = 1:length(imagesToGenerate)
-                matchedDescription = regexp(imagesToGenerate(i).description, '(\s)*[0-9]*(\.)?[0-9]*(\s)*-?(\s)*[0-9]*(\.)?[0-9]*', 'match');
-                
-                if(isempty(matchedDescription) || strcmp(strtrim(matchedDescription{1}), ''))
-                    continue;
-                end
-                                
-                limits = strtrim(strsplit(imagesToGenerate(i).description, '-'));
-                
-                if(length(limits) == 2)
-                    min = str2double(limits(1));
-                    max = str2double(limits(2));
-                elseif(length(limits) == 1)
-                    numSplit = strsplit(limits(1), '\.');
-                    smallest = 10^-(length(numSplit{2})) * 0.5;
+                matchedDescription = regexp(imagesToGenerate(i).description, '(\s)*[0-9]*(\.)?[0-9]*(\s)*-?(\s)*[0-9]*(\.)?[0-9]*', 'match')
+                matchedDescription{1}
+%                 matchedDescription{2}
+                if(isempty(matchedDescription) || strcmp(strtrim(matchedDescription{1}), '') || length(matchedDescription) > 1)
+                    % Try and match PPM / Da
+                    matchedDescription = regexp(imagesToGenerate(i).description, '(\s)*[0-9]*(\.)?[0-9]*(\s)*\+/-?(\s)*[0-9]*(\.)?[0-9]*(\s)*(PPM|Da)', 'match')
                     
-                    min = str2double(limits(1)) - smallest;
-                    max = min + smallest*2;
+                    if(isempty(matchedDescription) || strcmp(strtrim(matchedDescription{1}), ''))
+                        continue;
+                    end
+                    
+                    parts = strtrim(strsplit(imagesToGenerate(i).description, ' '));
+                    
+                    if(strcmp(parts{4}, 'PPM'))
+                        mz = str2double(parts{1});
+                        ppm = str2double(parts{3});
+                        deltam = ppm * mz / 1e6;
+                        
+                        min = mz - deltam;
+                        max = mz + deltam;
+                    elseif(strcmp(parts{4}, 'Da'))
+                        mz = str2double(parts{1});
+                        da = str2double(parts{3});
+                        
+                        min = mz - da;
+                        max = mz + da;
+                    end
                 else
-                    continue;
+                    limits = strtrim(strsplit(imagesToGenerate(i).description, '-'));
+                    
+                    if(length(limits) == 2)
+                        min = str2double(limits(1));
+                        max = str2double(limits(2));
+                    elseif(length(limits) == 1)
+                        units = get(obj.toleranceSelectionPopup, 'String');
+                        unit = units{get(obj.toleranceSelectionPopup, 'Value')};
+
+                        imagesToGenerate(i).setDescription([char(limits(1)) ' +/- ' get(obj.toleranceEditBox, 'String') ' ' unit]);
+                        
+                        if(strcmp(unit, 'PPM'))
+                            mz = str2double(limits(1));
+                            ppm = str2double(get(obj.toleranceEditBox, 'String'));
+                            deltam = ppm * mz / 1e6;
+
+                            min = mz - deltam;
+                            max = mz + deltam;
+                        elseif(strcmp(unit, 'Da'))
+                            mz = str2double(limits(1));
+                            da = str2double(get(obj.toleranceEditBox, 'String'));
+
+                            min = mz - da;
+                            max = mz + da;
+                        end
+                        
+%                         numSplit = strsplit(limits(1), '\.');
+%                         smallest = 10^-(length(numSplit{2})) * 0.5;
+%                         
+%                         min = str2double(limits(1)) - smallest;
+%                         max = min + smallest*2;
+                    else
+                        continue;
+                    end
                 end
                 
                 if(isnan(min) || isnan(max))
@@ -625,6 +675,7 @@ classdef DataViewer < Figure
                 channelWidthList(end+1) = ((max - min) / 2);
                 spectralChannelList(end+1) = channelWidthList(end) + min;
                 imageIndex(end+1) = i;
+                
             end
         end
         
@@ -684,7 +735,12 @@ classdef DataViewer < Figure
                 
                 for i = 1:size(imagesToAdd, 1)
                     blankImage = Image(zeros(obj.dataRepresentation.height, obj.dataRepresentation.width));
-                    blankImage.setDescription([num2str(imagesToAdd(i, 1) - imagesToAdd(i, 2)) ' - ' num2str(imagesToAdd(i, 1) + imagesToAdd(i, 2))]);
+                    
+                    if(size(imagesToAdd, 2) == 1 || imagesToAdd(i, 2) == 0)
+                        blankImage.setDescription(num2str(imagesToAdd(i, 1)));
+                    else
+                        blankImage.setDescription([num2str(imagesToAdd(i, 1) - imagesToAdd(i, 2)) ' - ' num2str(imagesToAdd(i, 1) + imagesToAdd(i, 2))]);
+                    end
 
                     obj.imageListGenerated(end+1) = false;
                     obj.imageList(end+1) = blankImage;
@@ -764,6 +820,9 @@ classdef DataViewer < Figure
             else
                 errordlg('Please select 2 spectra to subtract', 'DataViewer:NoSpectraSelected');
             end
+        end
+        
+        function showExportImagesTool(obj)
         end
         
         %% editPreprocessingWorkflow()
@@ -984,6 +1043,9 @@ classdef DataViewer < Figure
                         'Callback', @(src, evnt) obj.performClustering(i));
                 end
                 
+                obj.toolsMenu = uimenu(obj.handle, 'Label', 'Tools');
+                uimenu(obj.toolsMenu, 'Label', 'Export images', 'Callback', @(src, evnt) obj.showExportImagesTool());
+                
                 obj.createContextMenu();
                 set(obj.handle, 'uicontextmenu', obj.contextMenu);
                 
@@ -998,6 +1060,9 @@ classdef DataViewer < Figure
 %                 get( obj.imageSelectionPopup)
                 
                 obj.imageListPanel = uipanel('Parent', obj.handle, 'Title', 'Image List');
+                
+                obj.toleranceEditBox = uicontrol('Parent', obj.imageListPanel, 'Style', 'edit', 'String', '3');
+                obj.toleranceSelectionPopup = uicontrol('Parent', obj.imageListPanel,'Style', 'popup', 'String', {'PPM', 'Da'});
                 
                 obj.imageListTable = uitable('Parent', obj.imageListPanel,'RowName', [], ...
                     'ColumnName', {'Image', 'Generated'}, ...
@@ -1178,7 +1243,10 @@ classdef DataViewer < Figure
                     panelPosition = Figure.getPositionInPixels(obj.imageListPanel);
                     
                     if(~isempty(panelPosition))
-                        Figure.setObjectPositionInPixels(obj.imageListTable, [margin, buttonHeight + margin, panelPosition(3) - margin*2, panelPosition(4) - margin*2 - buttonHeight - 20]);
+                        Figure.setObjectPositionInPixels(obj.toleranceSelectionPopup, [margin, panelPosition(4) - buttonHeight - margin*4, panelPosition(3)/2 - margin*2, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.toleranceEditBox, [margin + panelPosition(3)/2, panelPosition(4) - buttonHeight - margin*4, panelPosition(3)/2 - margin*2, buttonHeight]);
+                        
+                        Figure.setObjectPositionInPixels(obj.imageListTable, [margin, buttonHeight + margin, panelPosition(3) - margin*2, panelPosition(4) - margin*2 - buttonHeight*2 - 20]);
 
     %                     generateImageListButton;
     %         removeImageButton;
