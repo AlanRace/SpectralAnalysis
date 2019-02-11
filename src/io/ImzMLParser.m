@@ -62,18 +62,22 @@ classdef ImzMLParser < Parser
 
         end
         
-        function [spectralChannels, intensities] = getSpectrum(obj, x, y, z)
-            spectrum = obj.imzML.getSpectrum(x, y);
+        function spectrum = getSpectrum(obj, x, y, z)
+            imzMLSpectrum = obj.imzML.getSpectrum(x, y);
             
-            if(isempty(spectrum))
+            if(isempty(imzMLSpectrum))
                 spectralChannels = [];
                 intensities = [];
                 
                 return;
             end
-assignin('base', 'spectrum', spectrum)        
-            spectralChannels = spectrum.getmzArray();
-            intensities = spectrum.getIntensityArray();
+            
+            spectralChannels = imzMLSpectrum.getmzArray();
+            intensities = imzMLSpectrum.getIntensityArray();
+                        
+            spectrum = SpectralData(spectralChannels, intensities);
+            
+            spectrum.setIsContinuous(~imzMLSpectrum.isCentroid());
         end
         
         function image = getImage(obj, spectralChannel, channelWidth)

@@ -108,7 +108,7 @@ classdef WITecTextExportParser < Parser
             notify(this, 'ParsingComplete');
         end
         
-        function [spectralChannels, intensities] = getSpectrum(this, x, y)
+        function spectrum = getSpectrum(this, x, y)
             % TODO: Read in the data for the spectrum at location (x, y). If one doesn't exist then set spectralChannels and intensities to be empty
             
             % Since spectral channels are stored in a separate file makes
@@ -148,6 +148,8 @@ classdef WITecTextExportParser < Parser
 %             fclose(fileID);
             
             spectralChannels = this.spectralChannels;
+            
+            spectrum = SpectralData(spectralChannels, intensities);
         end
         
         function delete(this)

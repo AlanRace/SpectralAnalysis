@@ -1,6 +1,6 @@
 function addJARsToClassPath()
-    jimzMLParserVersion = '1.0-SNAPSHOT';
-    jimzMLParserJar = ['jimzMLParser-' jimzMLParserVersion '.jar'];
+    jimzMLParserVersion = '1.0.5-jar-with-dependencies';
+    jimzMLParserJar = ['jimzmlparser-' jimzMLParserVersion '.jar'];
 
     % Ensure that imzMLConverter is on the path
     found = checkJAROnPath(jimzMLParserJar);

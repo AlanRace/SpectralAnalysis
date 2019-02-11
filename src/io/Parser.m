@@ -30,7 +30,7 @@ classdef Parser < handle
     methods (Abstract)
         parse(obj);
         
-        [spectralChannels, intensities] = getSpectrum(obj, x, y);
+        spectrum = getSpectrum(obj, x, y);
 %        [image] = getImage(obj, spectralChannel, channelWidth);
         image = getOverviewImage(obj);
         

@@ -57,7 +57,7 @@ classdef SIMSParser < Parser
 
         end
         
-        function [spectralChannels, intensities] = getSpectrum(obj, x, y, z)
+        function spectrum = getSpectrum(obj, x, y, z)
             spectrum = obj.simsParser.getSpectrum(x, y, z);
             
             if(isempty(spectrum))
@@ -69,11 +69,13 @@ classdef SIMSParser < Parser
             
             spectralChannels = spectrum.getSpectralChannels();
             intensities = spectrum.getIntensities();
+            
+            spectrum = SpectralData(spectralChannels, intensities);
         end
         
         function imageList = getImages(obj, spectralChannelList, channelWidthList)
             images = obj.simsParser.generateImages(spectralChannelList, channelWidthList);
-            'hi'
+            
             for i = 1:length(spectralChannelList)
                 imageList(i) = Image(images(i).getImage());
             end

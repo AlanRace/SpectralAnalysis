@@ -47,7 +47,7 @@ classdef SRTextExportParser < Parser
             notify(this, 'ParsingComplete');
         end
         
-        function [spectralChannels, intensities] = getSpectrum(this, x, y, z)
+        function spectrum = getSpectrum(this, x, y, z)
             % TODO: Read in the data for the spectrum at location (x, y). If one doesn't exist then set spectralChannels and intensities to be empty
             
             pixelNum = (y-1)*this.width + (x-1);
@@ -66,6 +66,8 @@ classdef SRTextExportParser < Parser
             fclose(fileID);
             
             spectralChannels = this.spectralChannels;
+            
+            spectrum = SpectralData(spectralChannels, intensities);
         end
         
         function image = getOverviewImage(this)
