@@ -27,9 +27,8 @@ classdef DataOnDisk < DataRepresentation
                 z = 1;
             end
             
-            [spectralChannels, intensities] = obj.parser.getSpectrum(x, y, z);
-            
-            spectrum = SpectralData(spectralChannels, intensities);
+            spectrum = obj.parser.getSpectrum(x, y, z);
+            spectrum.setDescription(['Spectrum at (' num2str(x) ', ' num2str(y) ')']);
         end
         
         function imageList = generateImages(obj, spectralChannelList, channelWidthList, preprocessingWorkflow)
@@ -58,7 +57,7 @@ classdef DataOnDisk < DataRepresentation
                 
                 try 
                     imageGeneration = com.alanmrace.JSpectralAnalysis.MultithreadedImageGeneration();
-                    imageGeneration.generateIonImages(obj.parser.imzML, workflow, spectralChannelList, channelWidthList*2);
+                    imageGeneration.generateIonImages(obj.parser.imzML, workflow, spectralChannelList, channelWidthList);
                     
                     while(~imageGeneration.isDone())
                         ped = ProgressEventData(imageGeneration.getProgress(), ['Using fast methods. Generating ' num2str(length(spectralChannelList)) ' image(s)']);

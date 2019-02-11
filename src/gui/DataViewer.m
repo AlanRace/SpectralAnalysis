@@ -1,7 +1,7 @@
-%% DataViewer
-%
-%%
 classdef DataViewer < Figure
+    % DataViewer is the main interface for viewing data, including all 
+    % controls for data manipulation and visualisation.
+    
     properties (SetAccess = private)
         %handle = 0;
         
@@ -92,6 +92,8 @@ classdef DataViewer < Figure
         subtractSpectrumButton;
         removeSpectrumButton;
         
+        % TODO: Extend DataViewer for ProjectedDataViewer or PCADataViewer 
+        % to allow for more specific control over 
         switchSpectrumViewButton;
         previousCoefficientButton;
         nextCoefficientButton;
@@ -100,12 +102,9 @@ classdef DataViewer < Figure
 
         regionOfInterestPanel;
         
+        % TODO: Separate this out into a different class
         preprocessingPanel;
         preprocessingLabel;
-%         appliedPreprocessingPanel;
-%         appliedPreprocessingLabel;
-%         currentPreprocessingPanel;
-%         currentPreprocessingLabel;
         editPreprocessingButton;
         
         progressBarAxis
@@ -113,7 +112,6 @@ classdef DataViewer < Figure
         
         statusBar;
         
-%         regionOfInterestListEditor;
         preprocessingWorkflowEditor;
         
         postProcessingMethodEditor;
@@ -134,8 +132,6 @@ classdef DataViewer < Figure
         %% Constructor
         %
         function obj = DataViewer(dataRepresentation)
-%             obj = obj@Figure();
-            
             if(~isa(dataRepresentation, 'DataRepresentation'))
                 exception = MException('DataViewer:InvalidArgument', ...
                     'Must supply an instance of a subclass of DataRepresentation to the DataViewer constructor');
@@ -152,12 +148,6 @@ classdef DataViewer < Figure
             
             obj.setTitle(['DataViewer: ' obj.title]);
             
-%             obj.sizeChanged();
-            
-            %obj.createFigure();
-            
-%             obj.regionOfInterestList = RegionOfInterestList();
-%             obj.regionOfInterestPanel.setRegionOfInterestList(obj.regionOfInterestList);
             obj.spectrumList = SpectrumList();
             
             obj.imageDisplay = ImageDisplay(obj, Image(1));
@@ -242,7 +232,6 @@ classdef DataViewer < Figure
         
         function coefficientEditBoxCallback(obj)
             coeffString = get(obj.coefficientEditBox, 'String');
-%             obj.coefficientEditBox
             
             value = str2num(coeffString);
             
@@ -265,8 +254,6 @@ classdef DataViewer < Figure
             if(sum(obj.dataRepresentation.data(:) < 0) > 0)
                 minVal = min(0, min(imageData(:)));
                 maxVal = max(0, max(imageData(:)));
-
-    %             scale = (maxVal - minVal) / 64;
 
                 scaleSize = 256;
                 zeroLoc = round((abs(minVal) / (maxVal - minVal)) * scaleSize);
@@ -314,15 +301,6 @@ classdef DataViewer < Figure
 
                 addlistener(obj.postProcessingMethodEditor, 'FinishedEditingPostProcessingMethod', @(src, evnt)obj.finishedEditingPostProcessingMethod());
             end
-            
-%             
-%             spectralRepresentation = eval([obj.spectralRepresentationMethods{representationIndex} '()']);
-%             
-%             spectrum = spectralRepresentation.process(obj.dataRepresentation);
-%             
-% %             warning('DataViewer:TODO', 'TODO: Apply preprocessingWorkflow if necessary');
-%             
-%             obj.spectrumDisplay.setData(spectrum);
         end
         
         function performDataReduction(obj, dataReductionIndex)
@@ -335,9 +313,6 @@ classdef DataViewer < Figure
 
                 addlistener(obj.postProcessingMethodEditor, 'FinishedEditingPostProcessingMethod', @(src, evnt)obj.finishedEditingPostProcessingMethod());
             end
-            
-            
-%             dataReductionIndex
         end
         
         function performClustering(obj, clusteringIndex)
@@ -355,8 +330,6 @@ classdef DataViewer < Figure
         function finishedEditingPostProcessingMethod(obj)
             postProcessingMethod = obj.postProcessingMethodEditor.postProcessingMethod;
             
-%             mePCA = MemoryEfficientPCA(obj.memoryEfficientPCAEditor.getNumberOfPrincipalComponents());
-% warning('MAKE THIS A DATA REDUCTION THING ONLY?');
             if(isa(postProcessingMethod, 'DataReduction'))
                 postProcessingMethod.setPeakList(obj.spectrumDisplay.peakList);
                 postProcessingMethod.setPeakDetails(obj.spectrumDisplay.peakDetails);
@@ -413,11 +386,8 @@ classdef DataViewer < Figure
         end
         
         function pixelSelectedCallback(obj, event)
-%             if(event.button == MouseEventData.LeftButton) 
-                obj.displaySpectrum(event.x, event.y);
-%             end
+            obj.displaySpectrum(event.x, event.y);
         end
-        
         
         function displaySpectrum(obj, x, y)
             x = round(x);
@@ -435,43 +405,18 @@ classdef DataViewer < Figure
                 return;
             end
             
-            spectrum.setIsContinuous(obj.dataRepresentation.isContinuous);
-            spectrum.setDescription(['Spectrum at (' num2str(x) ', ' num2str(y) ')']);
             obj.spectrumList.set(1, spectrum);
             obj.updateSpectrumSelectionPopup();
             set(obj.spectrumSelectionPopup, 'Value', 1);
             
             if(~isempty(obj.preprocessingWorkflow))
                 spectrum = obj.preprocessingWorkflow.performWorkflow(spectrum);
-                
-%                 spectrum = SpectralData(spectralChannels, intensities);
-                
-                
-%             else
-%                 spectrum = SpectralData(spectralChannels, intensities);
             end
-%             sum(spectrum.intensities)
-%            obj.unprocessedSpectrum = spectrum.copy();
-            
-%             currentList = get(obj.spectrumSelectionPopup, 'String');
-%             currentList{1} = ['Spectrum at (' num2str(x) ', ' num2str(y) ')'];
-%             set(obj.spectrumSelectionPopup, 'String', currentList);
-            
             
             obj.spectrumDisplay.setData(spectrum);
         end
         
-%         function mouseDownInsideSpectrum(obj, x)
-%             obj.mouseDownInsideSpectrumLocation = x;
-%         end
-        
         function peakSelected(obj, peakSelectionEvent)
-
-            %         end
-            %
-            %         function mouseUpInsideSpectrum(obj, x)
-            %             spectralRange = [min(x, obj.mouseDownInsideSpectrumLocation) max(x, obj.mouseDownInsideSpectrumLocation)];
-
             if(peakSelectionEvent.selectionType == PeakSelectionEvent.Exact)
                 if(~obj.dataRepresentation.isContinuous)
                     peakToView = peakSelectionEvent.peakDetails;
@@ -598,19 +543,19 @@ classdef DataViewer < Figure
             end
         end
         
-        function [spectralChannelList, channelWidthList, imageIndex] = imageListToValues(obj, imagesToGenerate)
-            spectralChannelList = [];
-            channelWidthList = [];
-            imageIndex = [];
+        function [spectralChannelList, widthList, imageIndex] = imageListToValues(obj, imagesToGenerate)
+            spectralChannelList = zeros(length(imagesToGenerate), 1);
+            widthList = zeros(length(imagesToGenerate), 1);
+            imageIndex = zeros(length(imagesToGenerate), 1);
             
             for i = 1:length(imagesToGenerate)
                 matchedDescription = strtrim(regexp(imagesToGenerate(i).description, '(\s)*[0-9]*(\.)?[0-9]*(\s)*-?(\s)*[0-9]*(\.)?[0-9]*', 'match'));
                 
                 matchedDescription = matchedDescription(~cellfun('isempty',matchedDescription));
-%               
+               
                 if(isempty(matchedDescription) || length(matchedDescription) > 1)
                     % Try and match PPM / Da
-                    matchedDescription = regexp(imagesToGenerate(i).description, '(\s)*[0-9]*(\.)?[0-9]*(\s)*\+/-?(\s)*[0-9]*(\.)?[0-9]*(\s)*(PPM|Da)', 'match')
+                    matchedDescription = regexp(imagesToGenerate(i).description, '(\s)*[0-9]*(\.)?[0-9]*(\s)*\+/-?(\s)*[0-9]*(\.)?[0-9]*(\s)*(PPM|Da)', 'match');
                     
                     if(isempty(matchedDescription) || strcmp(strtrim(matchedDescription{1}), ''))
                         continue;
@@ -638,6 +583,8 @@ classdef DataViewer < Figure
                     if(length(limits) == 2)
                         min = str2double(limits(1));
                         max = str2double(limits(2));
+                        
+                        mz = min + (max - min)/2;
                     elseif(length(limits) == 1)
                         units = get(obj.toleranceSelectionPopup, 'String');
                         unit = units{get(obj.toleranceSelectionPopup, 'Value')};
@@ -658,12 +605,6 @@ classdef DataViewer < Figure
                             min = mz - da;
                             max = mz + da;
                         end
-                        
-%                         numSplit = strsplit(limits(1), '\.');
-%                         smallest = 10^-(length(numSplit{2})) * 0.5;
-%                         
-%                         min = str2double(limits(1)) - smallest;
-%                         max = min + smallest*2;
                     else
                         continue;
                     end
@@ -673,29 +614,37 @@ classdef DataViewer < Figure
                     continue;
                 end
                 
-                channelWidthList(end+1) = ((max - min) / 2);
-                spectralChannelList(end+1) = channelWidthList(end) + min;
-                imageIndex(end+1) = i;
-                
+                widthList(i) = ((max - min));
+                %TODO: WHY WAS THIS LIKE THIS BEFORE??
+                spectralChannelList(i) = mz; %channelWidthList(end) + min;
+                imageIndex(i) = i;
             end
         end
         
         function generateImagesCallback(obj)
-            notify(obj, 'InfoMessage', MessageEventData(['Generating images.']));
+            notify(obj, 'InfoMessage', MessageEventData('Generating images.'));
             
             imageIndices = find(~obj.imageListGenerated);
             imagesToGenerate = obj.imageList(imageIndices);
                         
-            [spectralChannelList, channelWidthList, imageIndex] = obj.imageListToValues(imagesToGenerate);
+            [spectralChannelList, widthList, imageIndex] = obj.imageListToValues(imagesToGenerate);
             
             if(~isempty(spectralChannelList))
                 listener = addlistener(obj.dataRepresentation, 'DataLoadProgress', @(src, evnt)obj.progressBar.updateProgress(evnt));
             
-                imageList = obj.dataRepresentation.generateImages(spectralChannelList, channelWidthList, obj.preprocessingWorkflow);
+                imageList = obj.dataRepresentation.generateImages(spectralChannelList, widthList, obj.preprocessingWorkflow);
                 
                 delete(listener);
                 
+                imageToDisplay = 0;
+                
                 for i = 1:length(imageIndex)
+                    if(imageIndex(i) <= 0)
+                        continue;
+                    end
+                    
+                    imageToDisplay = i;
+                    
                     % Make sure that the description is correct
                     imageList(i).setDescription(imagesToGenerate(imageIndex(i)).description);
                     
@@ -704,7 +653,10 @@ classdef DataViewer < Figure
                 end
                 
                 obj.updateImageSelectionPopup();
-                obj.displayImage(imageIndices(imageIndex(1)));
+                
+                if(imageToDisplay > 0)
+                    obj.displayImage(imageIndices(imageIndex(imageToDisplay)));
+                end
             end
             
             notify(obj, 'InfoMessage', MessageEventData(['Images generated.']));

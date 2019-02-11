@@ -141,6 +141,8 @@ classdef DataInMemory < DataRepresentation
             end
             
             spectrum = SpectralData(obj.spectralChannels, intensities);
+            spectrum.setIsContinuous(obj.isContinuous);
+            spectrum.setDescription(['Spectrum at (' num2str(x) ', ' num2str(y) ')']);
         end
         
         function imageList = generateImages(obj, spectralChannelList, spectralWidthList, preprocessingWorkflow)
