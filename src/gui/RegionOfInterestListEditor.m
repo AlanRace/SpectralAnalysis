@@ -14,6 +14,9 @@ classdef RegionOfInterestListEditor < Editor
         
         autoROIButton;
         
+        lastPath;
+        loadROIDataButton;
+        
         regionOfInterestEditor = 0;
         
         roiFinishedEditingListener = 0;
@@ -41,15 +44,8 @@ classdef RegionOfInterestListEditor < Editor
             obj.pixelSelectionPanel.setBackgroundImage(image);
             
             obj.updateRegionOfInterestList();
-            
-%             image.getWidth()
-%             image.getHeight()
-%             isinteger(image.getWidth())
-%             roi = RegionOfInterest(image.getWidth(), image.getHeight());
-%             obj.pixelSelectionPanel.setRegionOfInterest(roi);
         end
-       
-        
+               
         
         function addRegionOfInterestCallback(this)
             % TODO: This class can query and set up default names/colours
@@ -88,9 +84,60 @@ classdef RegionOfInterestListEditor < Editor
             end
         end
         
+        function loadROIDataCallback(this)
+            selectedIndex = get(this.listBox, 'Value');
+            
+            if(selectedIndex > this.regionOfInterestList.getSize() || selectedIndex <= 0)
+                exception = MException('RegionOfInterestListEditor:LoadROIData', 'Must select a region of interest');
+                
+                % Make sure the user sees that we have had an error
+                errordlg(exception.message, exception.identifier);
+                throw(exception);
+            end
+            
+            selectedROI = this.regionOfInterestList.get(selectedIndex);
+            
+            % Get the fiter specification of the parser
+            filterSpec = {'*.txt', 'ROI pixel list (*.txt)'};
+                       
+            % Show file select interface
+            tic;
+            [fileName, pathName, filterIndex] = uigetfile(filterSpec, 'Select File', this.lastPath);
+            % Included to try and remove the occasional long delay (up to 7s) 
+            % http://undocumentedmatlab.com/blog/solving-a-matlab-hang-problem
+            drawnow; pause(0.5);
+            toc;
+            
+            % Check that the Open dialog was not cancelled
+            if(filterIndex > 0)
+                % Update the last path so that next time we open a file we
+                % start where we left off
+                this.lastPath = pathName;
+                
+                data = dlmread([pathName filesep fileName]);
+                
+                % Check if the data is 4 column data, such as that produced
+                % by MSiReader
+                if(size(data, 2) == 4)
+                    % Remove pixels which are marked with -1 or 0 
+                    data(data(:, 4) <= 0, :) = [];
+                    
+                    % Add all of the pixels in the file to the ROI
+                    for i = 1:size(data, 1)
+                        if(data(i, 2) <= this.image.getWidth() && data(i, 3) <= this.image.getHeight())
+                            selectedROI.addPixel(data(i, 2), data(i, 3));
+                        end
+                    end
+                    
+                    % Update the ROI view
+                    this.pixelSelectionPanel.displaySelectionData();
+                end
+            end
+        end
+        
         function finishedEditingRegionOfInterest(this, regionOfInterest)
             if(~isa(regionOfInterest, 'RegionOfInterest'))
-                exception = MException('RegionOfInterestListEditor:InvalidArgument', 'addRegionOfInterest: Must suply a RegionOfInterest.');
+                exception = MException('RegionOfInterestListEditor:InvalidArgument', 'addRegionOfInterest: Must supply a RegionOfInterest.');
                 throw(exception);
             end
             
@@ -217,7 +264,10 @@ classdef RegionOfInterestListEditor < Editor
                 'Units', 'normalized', 'Position', [0.6 0.05 0.1 0.05], 'Callback', @(src, evnt) this.removeRegionOfInterestCallback());
             
             this.autoROIButton = uicontrol(this.handle, 'String', 'Auto Line', ...
-                'Units', 'normalized', 'Position', [0.8 0.2 0.1 0.05], 'Callback', @(src, evnt) this.autoRegionOfInterestCallback());
+                'Units', 'normalized', 'Position', [0.8 0.2 0.15 0.05], 'Callback', @(src, evnt) this.autoRegionOfInterestCallback());
+            
+            this.loadROIDataButton = uicontrol(this.handle, 'String', 'Load pixel data', ...
+                'Units', 'normalized', 'Position', [0.8 0.125 0.15 0.05], 'Callback', @(src, evnt) this.loadROIDataCallback());
         end
     end
 end
