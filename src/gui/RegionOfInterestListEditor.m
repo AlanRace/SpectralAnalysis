@@ -11,15 +11,16 @@ classdef RegionOfInterestListEditor < Editor
         addROIButton;
         editROIButton;
         removeROIButton;
+        duplicateROIButton;
         
         autoROIButton;
         
         lastPath;
         loadROIDataButton;
         
-        regionOfInterestEditor = 0;
+        regionOfInterestEditor = [];
         
-        roiFinishedEditingListener = 0;
+        roiFinishedEditingListener = [];
     end
     
     methods
@@ -135,6 +136,31 @@ classdef RegionOfInterestListEditor < Editor
             end
         end
         
+        function duplicateROIDataCallback(this)
+            selectedIndex = get(this.listBox, 'Value');
+            
+            if(selectedIndex > this.regionOfInterestList.getSize() || selectedIndex <= 0)
+                exception = MException('RegionOfInterestListEditor:DuplicateROI', 'Must select a region of interest');
+                
+                % Make sure the user sees that we have had an error
+                errordlg(exception.message, exception.identifier);
+                throw(exception);
+            end
+            
+            selectedROI = this.regionOfInterestList.get(selectedIndex);
+            newROI = selectedROI.copy();
+            
+            this.regionOfInterestList.add(newROI);
+            
+            this.updateRegionOfInterestList();
+            
+            roiIndex = this.regionOfInterestList.getSize();
+            
+            % Select the new ROI
+            set(this.listBox, 'Value', roiIndex);
+            this.selectRegionOfInterest(roiIndex);
+        end
+        
         function finishedEditingRegionOfInterest(this, regionOfInterest)
             if(~isa(regionOfInterest, 'RegionOfInterest'))
                 exception = MException('RegionOfInterestListEditor:InvalidArgument', 'addRegionOfInterest: Must supply a RegionOfInterest.');
@@ -198,7 +224,7 @@ classdef RegionOfInterestListEditor < Editor
                 this.regionOfInterestEditor.setRegionOfInterest(this.regionOfInterestList.get(get(this.listBox, 'Value')));
             end
             
-            if(~isempty(this.roiFinishedEditingListener))
+            if(~isempty(this.roiFinishedEditingListener) && this.roiFinishedEditingListener ~= 0)
                 delete(this.roiFinishedEditingListener);
             end
             
@@ -257,17 +283,20 @@ classdef RegionOfInterestListEditor < Editor
                 'Position', [0.05 0.05 0.5 0.2], 'Callback', @(src, evnt) this.selectRegionOfInterest(get(this.listBox, 'Value')));
             
             this.addROIButton = uicontrol(this.handle, 'String', '+', ...
-                'Units', 'normalized', 'Position', [0.6 0.2 0.1 0.05], 'Callback', @(src, evnt) this.addRegionOfInterestCallback());
+                'Units', 'normalized', 'Position', [0.575 0.2 0.1 0.05], 'Callback', @(src, evnt) this.addRegionOfInterestCallback());
             this.editROIButton = uicontrol(this.handle, 'String', 'Edit', ...
-                'Units', 'normalized', 'Position', [0.6 0.125 0.1 0.05], 'Callback', @(src, evnt) this.editRegionOfInterest());
+                'Units', 'normalized', 'Position', [0.575 0.125 0.1 0.05], 'Callback', @(src, evnt) this.editRegionOfInterest());
             this.removeROIButton = uicontrol(this.handle, 'String', '-', ...
-                'Units', 'normalized', 'Position', [0.6 0.05 0.1 0.05], 'Callback', @(src, evnt) this.removeRegionOfInterestCallback());
+                'Units', 'normalized', 'Position', [0.575 0.05 0.1 0.05], 'Callback', @(src, evnt) this.removeRegionOfInterestCallback());
             
             this.autoROIButton = uicontrol(this.handle, 'String', 'Auto Line', ...
                 'Units', 'normalized', 'Position', [0.8 0.2 0.15 0.05], 'Callback', @(src, evnt) this.autoRegionOfInterestCallback());
             
             this.loadROIDataButton = uicontrol(this.handle, 'String', 'Load pixel data', ...
                 'Units', 'normalized', 'Position', [0.8 0.125 0.15 0.05], 'Callback', @(src, evnt) this.loadROIDataCallback());
+            
+            this.duplicateROIButton = uicontrol(this.handle, 'String', 'Duplicate', ...
+                'Units', 'normalized', 'Position', [0.675 0.125 0.1 0.05], 'Callback', @(src, evnt) this.duplicateROIDataCallback());
         end
     end
 end
