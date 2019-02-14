@@ -99,7 +99,7 @@ classdef RegionOfInterestListEditor < Editor
             selectedROI = this.regionOfInterestList.get(selectedIndex);
             
             % Get the fiter specification of the parser
-            filterSpec = {'*.txt', 'ROI pixel list (*.txt)'};
+            filterSpec = {'*.roi', 'ROI'; '*.txt', 'ROI pixel list (*.txt)'};
                        
             % Show file select interface
             tic;
@@ -115,24 +115,30 @@ classdef RegionOfInterestListEditor < Editor
                 % start where we left off
                 this.lastPath = pathName;
                 
-                data = dlmread([pathName filesep fileName]);
-                
-                % Check if the data is 4 column data, such as that produced
-                % by MSiReader
-                if(size(data, 2) == 4)
-                    % Remove pixels which are marked with -1 or 0 
-                    data(data(:, 4) <= 0, :) = [];
+                if(filterIndex == 1)
+                    regionOfInterest = parseRegionOfInterest([pathName filesep fileName]);
                     
-                    % Add all of the pixels in the file to the ROI
-                    for i = 1:size(data, 1)
-                        if(data(i, 2) <= this.image.getWidth() && data(i, 3) <= this.image.getHeight())
-                            selectedROI.addPixel(data(i, 2), data(i, 3));
+                    selectedROI.addPixels(regionOfInterest.getPixelMask());
+                elseif(filterIndex == 2)
+                    data = dlmread([pathName filesep fileName]);
+
+                    % Check if the data is 4 column data, such as that produced
+                    % by MSiReader
+                    if(size(data, 2) == 4)
+                        % Remove pixels which are marked with -1 or 0 
+                        data(data(:, 4) <= 0, :) = [];
+
+                        % Add all of the pixels in the file to the ROI
+                        for i = 1:size(data, 1)
+                            if(data(i, 2) <= this.image.getWidth() && data(i, 3) <= this.image.getHeight())
+                                selectedROI.addPixel(data(i, 2), data(i, 3));
+                            end
                         end
                     end
-                    
-                    % Update the ROI view
-                    this.pixelSelectionPanel.displaySelectionData();
                 end
+                
+                % Update the ROI view
+                this.pixelSelectionPanel.displaySelectionData();
             end
         end
         
