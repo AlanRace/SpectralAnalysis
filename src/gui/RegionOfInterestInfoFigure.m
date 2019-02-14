@@ -4,6 +4,7 @@ classdef RegionOfInterestInfoFigure < Figure
         roiList;
         imageList;
         
+        imageTitle;
         imageListSelection;
         allDataButton;
         imageDisplay;
@@ -92,12 +93,21 @@ classdef RegionOfInterestInfoFigure < Figure
             set(this.allDataButton, 'Visible', visibility);
             set(this.copyToClipboardButton, 'Visible', visibility);
             set(this.exportButton, 'Visible', visibility);
+            
+            if(strcmp(visibility, 'on'))
+                opposite = 'off';
+            else
+                opposite = 'on';
+            end                
+            
+            set(this.imageTitle, 'Visible', opposite);
         end
         
         function imageSelected(this, source, event)
             selectedImageIndex = get(this.imageListSelection, 'Value');
             selectedImage = this.imageList(selectedImageIndex);
             
+            set(this.imageTitle, 'String', selectedImage.getDescription());
             this.imageDisplay.setData(selectedImage);
             
             tableData = {};
@@ -142,6 +152,9 @@ classdef RegionOfInterestInfoFigure < Figure
             columnNames = {'ROI', 'Mean', 'SD', '# Pixels', 'Max', 'Min'};
             columnFormat = {'char', 'numeric', 'numeric', 'numeric', 'numeric', 'numeric'};
             columnEditable = [false, false, false, false, false, false];
+            
+            this.imageTitle = uicontrol('Parent', this.handle, 'Style', 'text', ...
+                'String', {''}, 'Units', 'normalized', 'Position', [0.05, 0.9, 0.7, 0.05], 'BackgroundColor', [1 1 1], 'Visible', 'off');
             
             this.imageListSelection = uicontrol('Parent', this.handle, 'Style', 'popup', ...
                 'String', {''}, 'Units', 'normalized', 'Position', [0.05, 0.85, 0.7, 0.1], 'Callback', @(src, event) this.imageSelected(src, event));
