@@ -665,17 +665,54 @@ classdef DataViewer < Figure
             assignin('base', 'imageList', obj.imageList);
         end
         
-        function saveImageListCallback(obj)
-            [FileName,PathName,FilterIndex] = uiputfile('*.csv', 'Save image list as', 'imageList.csv');
+        function saveImageListCallback(this)
+            list = {'Save as list', 'Save selected as list', 'Save as images', 'Save selected as images'};
+            [savingOption, ok] = listdlg('ListString', list, 'SelectionMode', 'single', 'Name', 'Saving option', 'ListSize', [300, 160]);
             
-            if(FilterIndex == 1)
-                [spectralChannelList, channelWidthList, imageIndex] = obj.imageListToValues(obj.imageList);
+            if(ok)
+                if(mod(savingOption, 2) == 0)
+                    selectedIndicies = this.imageListPanelLastSelected(:, 1);
                 
-                try
-                    dlmwrite([PathName filesep FileName], [spectralChannelList' channelWidthList'], 'precision', 16);
-                catch err
-                    msgbox(err.message, err.identifier);
-                    err
+                    % Remove the final box if selected
+                    selectedIndicies(selectedIndicies > length(this.imageList)) = [];
+
+                    imagesToSave = this.imageList(selectedIndicies);
+                else
+                    imagesToSave = this.imageList;
+                end
+                
+                if(savingOption == 1 || savingOption == 2)
+                    [FileName,PathName,FilterIndex] = uiputfile('*.csv', 'Save image list as', 'imageList.csv');
+
+                    if(FilterIndex == 1)
+                        [spectralChannelList, channelWidthList, imageIndex] = this.imageListToValues(imagesToSave);
+
+                        try
+                            dlmwrite([PathName filesep FileName], [spectralChannelList channelWidthList], 'precision', 16);
+                        catch err
+                            msgbox(err.message, err.identifier);
+                            err
+                        end
+                    end
+                else
+                    selectedPath = uigetdir('', 'Save ROIs');
+                    
+                    if(selectedPath ~= 0)
+                        newDisplay = this.imageDisplay.openInNewWindow();
+                        
+                        for i = 1:length(imagesToSave)
+                            image = imagesToSave(i);
+                            
+                            newDisplay.setData(image);
+                            
+                            description = image.getDescription();
+                            description = strrep(description, '/', '_');
+                            
+                            newDisplay.exportToImageFile([selectedPath filesep description '.png']);
+                        end
+                        
+                        delete(newDisplay.parent.getParentFigure().handle);
+                    end
                 end
             end
         end

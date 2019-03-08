@@ -80,7 +80,9 @@ classdef DataInMemory < DataRepresentation
                     x = obj.pixels(i, 1);
                     y = obj.pixels(i, 2);
                     
-                    [spectralChannels, intensities] = parser.getSpectrum(x, y);
+                    spectrum = parser.getSpectrum(x, y);
+                    spectralChannels = spectrum.spectralChannels;
+                    intensities = spectrum.intensities;
                     
                     if(~isempty(zeroFilling))
                         [spectralChannels, intensities] = zeroFilling.process(spectralChannels, intensities);
