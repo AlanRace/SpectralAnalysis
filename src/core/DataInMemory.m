@@ -89,10 +89,10 @@ classdef DataInMemory < DataRepresentation
                     end
                     
                     if(isempty(obj.data))
-                        if(isinf(spectralChannelRange(1)))
+                        if(isinf(spectralChannelRange(1)) && ~isempty(spectralChannels))
                             spectralChannelRange(1) = min(spectralChannels);
                         end
-                        if(isinf(spectralChannelRange(2)))
+                        if(isinf(spectralChannelRange(2)) && ~isempty(spectralChannels))
                             spectralChannelRange(2) = max(spectralChannels);
                         end
                         

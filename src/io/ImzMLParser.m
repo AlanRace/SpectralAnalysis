@@ -68,16 +68,16 @@ classdef ImzMLParser < Parser
             if(isempty(imzMLSpectrum))
                 spectralChannels = [];
                 intensities = [];
-                
-                return;
+            else
+                spectralChannels = imzMLSpectrum.getmzArray();
+                intensities = imzMLSpectrum.getIntensityArray();
             end
-            
-            spectralChannels = imzMLSpectrum.getmzArray();
-            intensities = imzMLSpectrum.getIntensityArray();
                         
             spectrum = SpectralData(spectralChannels, intensities);
             
-            spectrum.setIsContinuous(~imzMLSpectrum.isCentroid());
+            if(~isempty(imzMLSpectrum))
+                spectrum.setIsContinuous(~imzMLSpectrum.isCentroid());
+            end
         end
         
         function image = getImage(obj, spectralChannel, channelWidth)
