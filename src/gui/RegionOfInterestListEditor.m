@@ -12,6 +12,7 @@ classdef RegionOfInterestListEditor < Editor
         editROIButton;
         removeROIButton;
         duplicateROIButton;
+        invertROIButton;
         
         autoROIButton;
         
@@ -167,6 +168,23 @@ classdef RegionOfInterestListEditor < Editor
             this.selectRegionOfInterest(roiIndex);
         end
         
+        function invertROIDataCallback(this)
+            selectedIndex = get(this.listBox, 'Value');
+            
+            if(selectedIndex > this.regionOfInterestList.getSize() || selectedIndex <= 0)
+                exception = MException('RegionOfInterestListEditor:DuplicateROI', 'Must select a region of interest');
+                
+                % Make sure the user sees that we have had an error
+                errordlg(exception.message, exception.identifier);
+                throw(exception);
+            end
+            
+            selectedROI = this.regionOfInterestList.get(selectedIndex);
+            selectedROI.invert();
+            
+            this.updateRegionOfInterestList();
+        end
+        
         function finishedEditingRegionOfInterest(this, regionOfInterest)
             if(~isa(regionOfInterest, 'RegionOfInterest'))
                 exception = MException('RegionOfInterestListEditor:InvalidArgument', 'addRegionOfInterest: Must supply a RegionOfInterest.');
@@ -302,7 +320,10 @@ classdef RegionOfInterestListEditor < Editor
                 'Units', 'normalized', 'Position', [0.8 0.125 0.15 0.05], 'Callback', @(src, evnt) this.loadROIDataCallback());
             
             this.duplicateROIButton = uicontrol(this.handle, 'String', 'Duplicate', ...
-                'Units', 'normalized', 'Position', [0.675 0.125 0.1 0.05], 'Callback', @(src, evnt) this.duplicateROIDataCallback());
+                'Units', 'normalized', 'Position', [0.675 0.2 0.1 0.05], 'Callback', @(src, evnt) this.duplicateROIDataCallback());
+            
+            this.invertROIButton = uicontrol(this.handle, 'String', 'Invert', ...
+                'Units', 'normalized', 'Position', [0.675 0.125 0.1 0.05], 'Callback', @(src, evnt) this.invertROIDataCallback());
         end
     end
 end
