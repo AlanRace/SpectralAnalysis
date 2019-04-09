@@ -94,7 +94,7 @@ classdef InMemorypLSA < DataReduction
             end
             
             for roiIndex = 1:numel(rois)
-                pixelLists{end+1} = rois{roiIndex}.getPixelMask()';
+                pixelLists{end+1} = dataRepresentation.getDataIndiciesForROI(rois{roiIndex});
                 xyPos{end+1} = rois{roiIndex}.getPixelList();
             end
                         
@@ -195,7 +195,10 @@ classdef InMemorypLSA < DataReduction
                     projectedDataRepresentation.setData(scores{pixelListIndex}, coeff{pixelListIndex}, rois{pixelListIndex-1}, ...
                         dataRepresentation.isRowMajor, peakList, [rois{pixelListIndex-1}.getName() ' (pLSA)']);
                 else
-                    projectedDataRepresentation.setData(scores{pixelListIndex}, coeff{pixelListIndex}, rois{pixelListIndex}, ...
+                    dataROI = RegionOfInterest(dataRepresentation.width, dataRepresentation.height);
+                    dataROI.addPixels(and(rois{pixelListIndex}.getPixelMask(), dataRepresentation.regionOfInterest.getPixelMask()));
+                    
+                    projectedDataRepresentation.setData(scores{pixelListIndex}, coeff{pixelListIndex}, dataROI, ...
                         dataRepresentation.isRowMajor, peakList, [rois{pixelListIndex}.getName() ' (pLSA)']);
                 end
                 

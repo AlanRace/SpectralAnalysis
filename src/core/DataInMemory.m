@@ -31,7 +31,6 @@ classdef DataInMemory < DataRepresentation
         
         function setData(obj, data, regionOfInterest, isRowMajor, spectralChannels, name)
             obj.data = data;
-            obj.regionOfInterest = regionOfInterest;
             obj.spectralChannels = spectralChannels;
             obj.spectralChannelRange = [min(spectralChannels) max(spectralChannels)];
             obj.name = name;
@@ -41,8 +40,8 @@ classdef DataInMemory < DataRepresentation
             % Ensure that no NaN exist in the data to avoid issues with
             % display and subsequent processing
             obj.data(isnan(obj.data)) = 0;
-            
-            obj.createPixelList();
+                        
+            obj.setRegionOfInterest(regionOfInterest);
         end
         
         function loadData(obj, parser, regionOfInterest, spectralChannelRange, zeroFilling)
@@ -154,15 +153,6 @@ classdef DataInMemory < DataRepresentation
             selectionData = pixelMask(obj.minY:obj.maxY, obj.minX:obj.maxX);
             
             if(isempty(preprocessingWorkflow) || preprocessingWorkflow.numberOfMethods == 0)
-                pixels = obj.regionOfInterest.getPixelList();
-                
-                if(obj.isRowMajor)
-                % Sort by y column, then by x column
-                    pixels = sortrows(pixels, [2 1]);                    
-                else
-                    % Sort by x column, then by y column
-                    pixels = sortrows(pixels, [1 2]);
-                end
                 
                 for imageIndex = 1:length(spectralChannelList)
                     indicies = obj.spectralChannels >= (spectralChannelList(imageIndex)-spectralWidthList(imageIndex)) ...
@@ -170,8 +160,8 @@ classdef DataInMemory < DataRepresentation
 
                     d = sum(obj.data(:, indicies), 2);
 
-                    for i = 1:length(pixels)
-                        images(pixels(i, 2), pixels(i, 1), imageIndex) = d(i);
+                    for i = 1:length(obj.pixels)
+                        images(obj.pixels(i, 2), obj.pixels(i, 1), imageIndex) = d(i);
                     end
                 end
                 
@@ -223,18 +213,9 @@ classdef DataInMemory < DataRepresentation
 %             image(selectionData == 1) = sum(obj.data, 2);
             
             d = sum(obj.data, 2);
-            pixels = obj.regionOfInterest.getPixelList();
             
-            if(obj.isRowMajor)
-                % Sort by y column, then by x column
-                pixels = sortrows(pixels, [2 1]);
-            else
-                % Sort by x column, then by y column
-                pixels = sortrows(pixels, [1 2]);
-            end
-            
-            for i = 1:length(pixels)
-                image(pixels(i, 2), pixels(i, 1)) = d(i);
+            for i = 1:length(obj.pixels)
+                image(obj.pixels(i, 2), obj.pixels(i, 1)) = d(i);
             end
             
             image = Image(image);

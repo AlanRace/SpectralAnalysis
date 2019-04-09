@@ -41,15 +41,7 @@ classdef KMeansClustering < Clustering
 %                curPixels = dataRepresentations{i}.regionOfInterest.pixelSelection;
                 kmeansImage = zeros(dataRepresentation.height, dataRepresentation.width); %size(curPixels));
                 
-                pixels = dataRepresentations{i}.regionOfInterest.getPixelList();
-                
-                if(dataRepresentations{i}.isRowMajor)
-                % Sort by y column, then by x column
-                    pixels = sortrows(pixels, [2 1]);                    
-                else
-                    % Sort by x column, then by y column
-                    pixels = sortrows(pixels, [1 2]);
-                end
+                pixels = dataRepresentations{i}.getDataOrderedPixelList();
                 
                 for j = 1:length(pixels)
                     kmeansImage(pixels(j, 2), pixels(j, 1)) = res(j);

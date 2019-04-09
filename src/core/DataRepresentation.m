@@ -63,12 +63,40 @@ classdef DataRepresentation < handle
             obj.height = (obj.maxY - obj.minY) + 1;
             
             if(obj.isRowMajor)
-                % Sort by y column, then by x column
+                % Sort by rows and then columns
                 [obj.pixels, obj.pixelIndicies] = sortrows(obj.pixels, [2 1]);                    
             else
-                % Sort by x column, then by y column
+                % Sort by columns and then rows
                 [obj.pixels, obj.pixelIndicies] = sortrows(obj.pixels, [1 2]);
             end
+        end
+        
+        % Returns a list of the pixel coordinates in the order that the
+        % data is stored in. I.e. if the data is row major, then the
+        % returned pixel list will also be row major.
+        %
+        % If no regionOfInterest is supplied then the base pixel list is
+        % returned
+        function pixelList = getDataOrderedPixelList(this, regionOfInterest)
+            if(~exist('regionOfInterest', 'var'))
+                pixelList = this.pixels;
+            else            
+                pixelList = regionOfInterest.getPixelList();
+
+                if(this.isRowMajor)
+                    pixelList = sortrows(pixelList, [2 1]);                    
+                else
+                    pixelList = sortrows(pixelList, [1 2]);
+                end
+            end
+        end
+        
+        function roiIndexList = getDataIndiciesForROI(this, regionOfInterest)
+            roiPixelList = this.getDataOrderedPixelList(regionOfInterest);
+            
+            [c, index_A, index_B] = intersect(this.pixels, roiPixelList, 'stable', 'rows');
+            
+            roiIndexList = this.pixelIndicies(index_A);
         end
         
         function exportToWorkspace(obj)

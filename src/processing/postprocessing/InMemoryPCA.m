@@ -90,7 +90,7 @@ classdef InMemoryPCA < DataReduction
             end
             
             for roiIndex = 1:numel(rois)
-                pixelLists{end+1} = rois{roiIndex}.getPixelMask()';
+                pixelLists{end+1} = dataRepresentation.getDataIndiciesForROI(rois{roiIndex});
             end
                         
             usePCA = false;
@@ -134,11 +134,14 @@ classdef InMemoryPCA < DataReduction
                 else
                     dataName = [rois{pixelListIndex}.getName() ' (PCA)'];
                     
-                    projectedDataRepresentation.setData(scores{pixelListIndex}, coeff{pixelListIndex}, rois{pixelListIndex}, ...
+                    dataROI = RegionOfInterest(dataRepresentation.width, dataRepresentation.height);
+                    dataROI.addPixels(and(rois{pixelListIndex}.getPixelMask(), dataRepresentation.regionOfInterest.getPixelMask()));
+                    
+                    projectedDataRepresentation.setData(scores{pixelListIndex}, coeff{pixelListIndex}, dataROI, ...
                         dataRepresentation.isRowMajor, peakList, dataName);
                 end
                 
-                latent{pixelListIndex}
+                % TODO: Incorporate this into the dataRepresentation
                 figure, plot(cumsum(latent{pixelListIndex})./sum(latent{pixelListIndex}));
                 title(['Explained ' dataName]);
                 

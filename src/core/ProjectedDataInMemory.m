@@ -47,18 +47,9 @@ classdef ProjectedDataInMemory < DataInMemory
 %             image(selectionData == 1) = obj.data(:, index);
             size(obj.data)
             d = obj.data(:, index);
-            pixels = obj.regionOfInterest.getPixelList();
             
-            if(obj.isRowMajor)
-                % Sort by y column, then by x column
-                pixels = sortrows(pixels, [2 1]);
-            else
-                % Sort by x column, then by y column
-                pixels = sortrows(pixels, [1 2]);
-            end
-            size(pixels)
-            for i = 1:length(pixels)
-                image(pixels(i, 2), pixels(i, 1)) = d(i);
+            for i = 1:length(obj.pixels)
+                image(obj.pixels(i, 2), obj.pixels(i, 1)) = d(i);
             end
         end
     end

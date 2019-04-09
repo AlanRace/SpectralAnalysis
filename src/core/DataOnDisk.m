@@ -4,7 +4,7 @@ classdef DataOnDisk < DataRepresentation
     
     methods
         function obj = DataOnDisk(parser)
-			if(~isa(parser, 'Parser'))
+            if(~isa(parser, 'Parser'))
                 exception = MException('DataOnDisk:InvalidArgument', 'Must supply an instance of the Parser class.');
                 throw(exception);
             end

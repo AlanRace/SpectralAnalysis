@@ -271,7 +271,10 @@ classdef MemoryEfficientPCA < DataReduction
                     projectedDataRepresentation.setData(scores{pixelListIndex}, coeff{pixelListIndex}, rois{pixelListIndex-1}, ...
                         dataRepresentation.isRowMajor, peakList, [rois{pixelListIndex-1}.getName() ' (ME PCA)']);
                 else
-                    projectedDataRepresentation.setData(scores{pixelListIndex}, coeff{pixelListIndex}, rois{pixelListIndex}, ...
+                    dataROI = RegionOfInterest(dataRepresentation.width, dataRepresentation.height);
+                    dataROI.addPixels(and(rois{pixelListIndex}.getPixelMask(), dataRepresentation.regionOfInterest.getPixelMask()));
+                    
+                    projectedDataRepresentation.setData(scores{pixelListIndex}, coeff{pixelListIndex}, dataROI, ...
                         dataRepresentation.isRowMajor, peakList, [rois{pixelListIndex}.getName() ' (ME PCA)']);
                 end
                 
