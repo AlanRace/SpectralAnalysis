@@ -2,8 +2,16 @@ function [classFiles classNames] = getSubclasses(superclass, includeNone)
     % Get the location of the m file to instigate the search for subclasses
     if(isdeployed())
         spectralAnalysisPath = [ctfroot() filesep 'src' filesep];
+        
+        if(~exist(spectralAnalysisPath, 'file'))
+            spectralAnalysisPath = [ctfroot() filesep 'SpectralAnal' filesep 'src' filesep];
+        end
     else
         spectralAnalysisPath = [fileparts(mfilename('fullpath'))  filesep '..' filesep];
+    end
+    
+    if(~exist(spectralAnalysisPath, 'file'))
+        disp(['Couldn''t find the SpectralAnalysis path: ' spectralAnalysisPath]);
     end
         
     % Limit the locations to speed up the search when looking for specific

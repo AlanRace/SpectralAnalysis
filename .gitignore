@@ -7,3 +7,7 @@ src/processing/postprocessing/tSNE/
 us.stackdump
 
 Ontologies/
+
+mccExcludedFiles\.log
+
+*.exe

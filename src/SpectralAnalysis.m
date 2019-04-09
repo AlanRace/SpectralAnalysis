@@ -5,12 +5,13 @@
 if(isdeployed())
     disp('Initialising MATLAB, please wait...');
     path = ctfroot();
+    disp(path);
 else
     path = [fileparts(mfilename('fullpath'))];
+    
+    % Ensure all folders are on the path
+    addpath(genpath(path));
 end
-
-% Ensure all folders are on the path
-addpath(genpath(path));
 
 % Ensure libraries are on the path
 addJARsToClassPath();
