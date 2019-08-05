@@ -3,80 +3,80 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://example.org/installation/</loc>
+    <loc>/installation/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/advanced-use/integration/</loc>
+    <loc>/advanced-use/integration/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/basic-usage/load-data/</loc>
+    <loc>/basic-usage/load-data/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/basic-usage/load-data/parser/</loc>
+    <loc>/basic-usage/load-data/parser/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/basic-usage/visualisation/</loc>
+    <loc>/basic-usage/visualisation/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/basic-usage/</loc>
+    <loc>/basic-usage/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/advanced-use/</loc>
+    <loc>/advanced-use/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/categories/</loc>
+    <loc>/basic-usage/ensure-consistent-mz-axis/</loc>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://example.org/basic-usage/clustering/</loc>
+    <loc>/basic-usage/clustering/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/basic-usage/load-data/continuous-vs-profile/</loc>
+    <loc>/basic-usage/load-data/continuous-vs-profile/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/basic-usage/data-reduction/</loc>
+    <loc>/basic-usage/data-reduction/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/basic-usage/load-data/data-representation/</loc>
+    <loc>/basic-usage/load-data/data-representation/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/basic-usage/ensure-consistent-mz-axis/</loc>
+    <loc>/advanced-use/extending/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/advanced-use/extending/</loc>
+    <loc>/basic-usage/visualisation/image-list/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/basic-usage/image-list/</loc>
+    <loc>/basic-usage/region-of-interest/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/basic-usage/region-of-interest/</loc>
+    <loc>/basic-usage/spectral-representation/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/basic-usage/spectral-representation/</loc>
+    <loc>/</loc>
   </url>
   
   <url>
-    <loc>http://example.org/</loc>
-  </url>
-  
-  <url>
-    <loc>http://example.org/tags/</loc>
+    <loc>/tags/</loc>
     <priority>0</priority>
   </url>
   
