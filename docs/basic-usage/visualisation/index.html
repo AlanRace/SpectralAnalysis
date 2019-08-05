@@ -564,6 +564,17 @@
 
 <h2 id="image-generation">Image Generation</h2>
 
+<p>When the data is loaded as <a href="../../basic-usage/load-data/data-representation">&lsquo;On Disk&rsquo;</a>, ion images are not automatically generated. As the generation of 10, 20, or even 100 ion images takes approximately the same amount of time when data is on disk, the generation process is only triggered when the user clicks the <code>G</code> button in the <code>Image List</code>, demonstrated in the image below. Once this button is clicked, all images that have not been previously generated (which do not have a tick next to them) in the image list will be generated.</p>
+
+<p>There are four ways to add <em>m/z</em> ranges to the <code>Image List</code>:</p>
+
+<ol>
+<li>Select the range by clicking and dragging above the axis in the spectrum</li>
+<li>Type the range manually into the <code>Image List</code>, with the minimum and maximum value separated by a hypen (-).</li>
+<li>Type a centroid value only into the <code>Image List</code>. When the images are generated, SpectralAnalysis will then automatically apply the range (+/-) with the units chosen (either PPM or Da) defined above the <code>Image List</code>.</li>
+<li>Load a previous list (of either centroid values, or ranges).</li>
+</ol>
+
 <p><img src="https://i.imgur.com/J7ZxGd4.gif" alt="Image Generation" /></p>
 
 
