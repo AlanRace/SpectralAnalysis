@@ -31,7 +31,19 @@
   </url>
   
   <url>
+    <loc>/basic-usage/region-of-interest/</loc>
+  </url>
+  
+  <url>
     <loc>/basic-usage/ensure-consistent-mz-axis/</loc>
+  </url>
+  
+  <url>
+    <loc>/basic-usage/spectral-representation/</loc>
+  </url>
+  
+  <url>
+    <loc>/basic-usage/data-reduction/</loc>
   </url>
   
   <url>
@@ -48,10 +60,6 @@
   </url>
   
   <url>
-    <loc>/basic-usage/data-reduction/</loc>
-  </url>
-  
-  <url>
     <loc>/basic-usage/load-data/data-representation/</loc>
   </url>
   
@@ -61,14 +69,6 @@
   
   <url>
     <loc>/basic-usage/visualisation/image-list/</loc>
-  </url>
-  
-  <url>
-    <loc>/basic-usage/region-of-interest/</loc>
-  </url>
-  
-  <url>
-    <loc>/basic-usage/spectral-representation/</loc>
   </url>
   
   <url>

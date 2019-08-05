@@ -30,12 +30,41 @@ To create a parser for a currently unsupported file type, extend the Parser clas
     </item>
     
     <item>
+      <title>Region of Interest</title>
+      <link>/basic-usage/region-of-interest/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/basic-usage/region-of-interest/</guid>
+      <description>Regions of interest (ROIs) are areas of an image, which can be used as input into subsequent data analysis. ROIs can be defined manually, as explained in this page, or automatically through processing such as clustering.
+Feature List  Generate ROI Calculate statistics on ROI Export ROIs  Overview The ROI panel can be found on the right on the main interface (number 1 in the image below).
+ Region of interest list Save region of interest list Load region of interest list View statistics on ROI Add/edit/delete ROIs  Generate ROI  Pencil Assign individual pixels to the ROI.</description>
+    </item>
+    
+    <item>
       <title>Ensure consistent m/z axis</title>
       <link>/basic-usage/ensure-consistent-mz-axis/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/basic-usage/ensure-consistent-mz-axis/</guid>
       <description>Background A common method for reducing the size of the data without discarding information when saving mass spectrometry data is to only store data points where the intensity is greater than zero. This can result in the data points in any two spectra containing different m/z values (for example in one spectrum there may be a peak at 798.55 and therefore a corresponding data point, but in the next spectrum this peak was not detected and therefore this value is not present in the spectrum).</description>
+    </item>
+    
+    <item>
+      <title>Spectral Representation</title>
+      <link>/basic-usage/spectral-representation/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/basic-usage/spectral-representation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Data Reduction</title>
+      <link>/basic-usage/data-reduction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/basic-usage/data-reduction/</guid>
+      <description></description>
     </item>
     
     <item>
@@ -55,15 +84,6 @@ To create a parser for a currently unsupported file type, extend the Parser clas
       <guid>/basic-usage/load-data/continuous-vs-profile/</guid>
       <description>Continuous - data points follow one another across entire spectral range and are consistent for all spectra within the dataset.
 Profile - data stored as [spectral channel, intensity] tuples.</description>
-    </item>
-    
-    <item>
-      <title>Data Reduction</title>
-      <link>/basic-usage/data-reduction/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/basic-usage/data-reduction/</guid>
-      <description></description>
     </item>
     
     <item>
@@ -92,25 +112,6 @@ Adding new preprocessing Adding new postprocessing Adding new parsers </descript
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/basic-usage/visualisation/image-list/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Region of Interest</title>
-      <link>/basic-usage/region-of-interest/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/basic-usage/region-of-interest/</guid>
-      <description> Regions of interest (ROIs)
- Pencil Assign individual pixels to the ROI. Line Assign all pixels which fall along a line drawn by the user to the ROI. Rectangle Assign all pixels which fall within a rectangle drawn by the user to the ROI. Ellipse  Poly : Eraser : Threshold Assign all pixels &amp;hellip; (see Threshold section for more details). Move   Threshold </description>
-    </item>
-    
-    <item>
-      <title>Spectral Representation</title>
-      <link>/basic-usage/spectral-representation/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/basic-usage/spectral-representation/</guid>
       <description></description>
     </item>
     

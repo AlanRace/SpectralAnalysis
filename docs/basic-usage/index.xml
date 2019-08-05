@@ -11,6 +11,17 @@
     
     
     <item>
+      <title>Region of Interest</title>
+      <link>/basic-usage/region-of-interest/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/basic-usage/region-of-interest/</guid>
+      <description>Regions of interest (ROIs) are areas of an image, which can be used as input into subsequent data analysis. ROIs can be defined manually, as explained in this page, or automatically through processing such as clustering.
+Feature List  Generate ROI Calculate statistics on ROI Export ROIs  Overview The ROI panel can be found on the right on the main interface (number 1 in the image below).
+ Region of interest list Save region of interest list Load region of interest list View statistics on ROI Add/edit/delete ROIs  Generate ROI  Pencil Assign individual pixels to the ROI.</description>
+    </item>
+    
+    <item>
       <title>Ensure consistent m/z axis</title>
       <link>/basic-usage/ensure-consistent-mz-axis/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -20,11 +31,11 @@
     </item>
     
     <item>
-      <title>Clustering</title>
-      <link>/basic-usage/clustering/</link>
+      <title>Spectral Representation</title>
+      <link>/basic-usage/spectral-representation/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/basic-usage/clustering/</guid>
+      <guid>/basic-usage/spectral-representation/</guid>
       <description></description>
     </item>
     
@@ -38,21 +49,11 @@
     </item>
     
     <item>
-      <title>Region of Interest</title>
-      <link>/basic-usage/region-of-interest/</link>
+      <title>Clustering</title>
+      <link>/basic-usage/clustering/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/basic-usage/region-of-interest/</guid>
-      <description> Regions of interest (ROIs)
- Pencil Assign individual pixels to the ROI. Line Assign all pixels which fall along a line drawn by the user to the ROI. Rectangle Assign all pixels which fall within a rectangle drawn by the user to the ROI. Ellipse  Poly : Eraser : Threshold Assign all pixels &amp;hellip; (see Threshold section for more details). Move   Threshold </description>
-    </item>
-    
-    <item>
-      <title>Spectral Representation</title>
-      <link>/basic-usage/spectral-representation/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/basic-usage/spectral-representation/</guid>
+      <guid>/basic-usage/clustering/</guid>
       <description></description>
     </item>
     

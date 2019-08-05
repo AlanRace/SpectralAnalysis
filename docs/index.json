@@ -49,11 +49,32 @@
 	"content": "SpectralAnalysis was designed in such a way to enable rapid development and integration of new\n"
 },
 {
+	"uri": "/basic-usage/region-of-interest/",
+	"title": "Region of Interest",
+	"tags": [],
+	"description": "",
+	"content": " Regions of interest (ROIs) are areas of an image, which can be used as input into subsequent data analysis. ROIs can be defined manually, as explained in this page, or automatically through processing such as clustering.\nFeature List  Generate ROI Calculate statistics on ROI Export ROIs  Overview The ROI panel can be found on the right on the main interface (number 1 in the image below).\n Region of interest list Save region of interest list Load region of interest list View statistics on ROI Add/edit/delete ROIs  Generate ROI  Pencil Assign individual pixels to the ROI. Line Assign all pixels which fall along a line drawn by the user to the ROI. Rectangle Assign all pixels which fall within a rectangle drawn by the user to the ROI. Ellipse  Poly : Eraser : Threshold Assign all pixels \u0026hellip; (see Threshold section for more details). Move   Threshold Calculate statistics Export ROIs "
+},
+{
 	"uri": "/basic-usage/ensure-consistent-mz-axis/",
 	"title": "Ensure consistent m/z axis",
 	"tags": [],
 	"description": "",
 	"content": " Background A common method for reducing the size of the data without discarding information when saving mass spectrometry data is to only store data points where the intensity is greater than zero. This can result in the data points in any two spectra containing different m/z values (for example in one spectrum there may be a peak at 798.55 and therefore a corresponding data point, but in the next spectrum this peak was not detected and therefore this value is not present in the spectrum).\nThis method of storing spectra can cause issues for spectral visualisation, combining spectra (such as calculating an average, or generating a \u0026lsquo;data cube\u0026rsquo;) or performing preprocessing methods (such as smoothing or baseline correction).\n In the case of visualisation it is important that the zeros are replaced. In the case of combining spectra it is important that the spectra are consistent (i.e. that each spectrum has intensity values for exactly the same m/z values). In the case of preprocessing it is important that the m/z values are regularly distributed.  Applying a method in SpectralAnalysis  Select a spectrum by clicking on a pixel in the image.\n Open Preprocessing Workflow Editor by selecting Edit button in Spectral Preprocessing panel.\n Select most appropriate Zero Filling method (see Choosing the most appropriate method section below) and click the adjacent + button.\n Enter desired parameters for the chosen method (if appropriate, and applicable), optionally checking the effect of the zero filling method by zooming into the spectrum and observing the \u0026lsquo;before\u0026rsquo; and \u0026lsquo;after\u0026rsquo; spectra.\n Click OK to close the Edit Preprocesing Method window and then OK again to close the Preprocessing Workflow Editor. The chosen method(s) will now be automatically applied to any viewed spectrum.\n  Choosing the most appropriate method The most appropriate method to use depends on the data and the desired next step in the processing workflow. The methods included in SpectralAnalysis are described below.\n Combine Bins Fixed Point per Peak Interpolation Rebin Interpolation PPM Rebin Interpolation Rebin Orbitrap QSTAR PPM Rebin Rebin Calibration Synapt  Rebin Specify a m/z bin size, and a m/z range. The resulting m/z axis then spans the specified m/z range consisting of equally sized bins. All data points which fall within one of the bins are then added together to generate the resulting spectrum.\nPPM Rebin Specify a PPM bin size, and a m/z range. The resulting m/z axis then spans the specified m/z range consisting of bins of increasing size (each bin has a constant size in PPM, but as PPM is proportional to m/z, the bin size increases as m/z increases). All data points which fall within one of the bins are then added together to generate the resulting spectrum.\nInterpolation Rebin Specify a m/z bin size, and a m/z range. The resulting m/z axis then spans the specified m/z range consisting of equally sized bins. All data points are then interpolated onto the new m/z axis (linear interpolation).\nInterpolation PPM Rebin Specify a PPM bin size, and a m/z range. The resulting m/z axis then spans the specified m/z range consisting of bins of increasing size (each bin has a constant size in PPM, but as PPM is proportional to m/z, the bin size increases as m/z increases). All data points are then interpolated onto the new m/z axis (linear interpolation).\n"
+},
+{
+	"uri": "/basic-usage/spectral-representation/",
+	"title": "Spectral Representation",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "/basic-usage/data-reduction/",
+	"title": "Data Reduction",
+	"tags": [],
+	"description": "",
+	"content": ""
 },
 {
 	"uri": "/categories/",
@@ -77,13 +98,6 @@
 	"content": "Continuous - data points follow one another across entire spectral range and are consistent for all spectra within the dataset.\nProfile - data stored as [spectral channel, intensity] tuples.\n"
 },
 {
-	"uri": "/basic-usage/data-reduction/",
-	"title": "Data Reduction",
-	"tags": [],
-	"description": "",
-	"content": ""
-},
-{
 	"uri": "/basic-usage/load-data/data-representation/",
 	"title": "Data Representation",
 	"tags": [],
@@ -100,20 +114,6 @@
 {
 	"uri": "/basic-usage/visualisation/image-list/",
 	"title": "Image List",
-	"tags": [],
-	"description": "",
-	"content": ""
-},
-{
-	"uri": "/basic-usage/region-of-interest/",
-	"title": "Region of Interest",
-	"tags": [],
-	"description": "",
-	"content": " Regions of interest (ROIs)\n Pencil Assign individual pixels to the ROI. Line Assign all pixels which fall along a line drawn by the user to the ROI. Rectangle Assign all pixels which fall within a rectangle drawn by the user to the ROI. Ellipse  Poly : Eraser : Threshold Assign all pixels \u0026hellip; (see Threshold section for more details). Move   Threshold "
-},
-{
-	"uri": "/basic-usage/spectral-representation/",
-	"title": "Spectral Representation",
 	"tags": [],
 	"description": "",
 	"content": ""
