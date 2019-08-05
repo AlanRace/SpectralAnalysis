@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SpectralAnalysis on SpectralAnalysis: Software for the masses</title>
+    <link>http://example.org/</link>
+    <description>Recent content in SpectralAnalysis on SpectralAnalysis: Software for the masses</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    
+	<atom:link href="http://example.org/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Integration with MATLAB</title>
+      <link>http://example.org/advanced-use/integration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/advanced-use/integration/</guid>
+      <description>When running SpectralAnalysis from within MATLAB (i.e. using the source code version), it is possible to extract data to the workspace for further processing.</description>
+    </item>
+    
+    <item>
+      <title>Parser</title>
+      <link>http://example.org/basic-usage/load-data/parser/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/basic-usage/load-data/parser/</guid>
+      <description>A parser is something that understands a specific file format and enables the translation and loading of data.
+To create a parser for a currently unsupported file type, extend the Parser class and add the new class into the same folder.</description>
+    </item>
+    
+    <item>
+      <title>Clustering</title>
+      <link>http://example.org/basic-usage/clustering/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/basic-usage/clustering/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Continuous vs Profile</title>
+      <link>http://example.org/basic-usage/load-data/continuous-vs-profile/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/basic-usage/load-data/continuous-vs-profile/</guid>
+      <description>Continuous - data points follow one another across entire spectral range and are consistent for all spectra within the dataset.
+Profile - data stored as [spectral channel, intensity] tuples.</description>
+    </item>
+    
+    <item>
+      <title>Data Reduction</title>
+      <link>http://example.org/basic-usage/data-reduction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/basic-usage/data-reduction/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Data Representation</title>
+      <link>http://example.org/basic-usage/load-data/data-representation/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/basic-usage/load-data/data-representation/</guid>
+      <description>A data representation is a means of accessing data.
+ DataInMemory - data is loaded into memory and stored within this class. DataOnDisk - not data is loaded into memory and each access to any portion of the data results in a disk read.  To create a data representation for a currently unsupported style of data access, extend the DataRepresentation class and add the new class into the same folder.</description>
+    </item>
+    
+    <item>
+      <title>Ensure consistent m/z axis</title>
+      <link>http://example.org/basic-usage/ensure-consistent-mz-axis/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/basic-usage/ensure-consistent-mz-axis/</guid>
+      <description>Background A common method for reducing the size of the data without discarding information when saving mass spectrometry data is to only store data points where the intensity is greater than zero. This can result in the data points in any two spectra containing different m/z values (for example in one spectrum there may be a peak at 798.55 and therefore a corresponding data point, but in the next spectrum this peak was not detected and therefore this value is not present in the spectrum).</description>
+    </item>
+    
+    <item>
+      <title>Extending SpectralAnalysis</title>
+      <link>http://example.org/advanced-use/extending/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/advanced-use/extending/</guid>
+      <description> SpectralAnalysis was written with extensibility in mind. To
+Adding new preprocessing Adding new postprocessing Adding new parsers </description>
+    </item>
+    
+    <item>
+      <title>Image List</title>
+      <link>http://example.org/basic-usage/image-list/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/basic-usage/image-list/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Region of Interest</title>
+      <link>http://example.org/basic-usage/region-of-interest/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/basic-usage/region-of-interest/</guid>
+      <description> Regions of interest (ROIs)
+ Pencil Assign individual pixels to the ROI. Line Assign all pixels which fall along a line drawn by the user to the ROI. Rectangle Assign all pixels which fall within a rectangle drawn by the user to the ROI. Ellipse  Poly : Eraser : Threshold Assign all pixels &amp;hellip; (see Threshold section for more details). Move   Threshold </description>
+    </item>
+    
+    <item>
+      <title>Spectral Representation</title>
+      <link>http://example.org/basic-usage/spectral-representation/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/basic-usage/spectral-representation/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

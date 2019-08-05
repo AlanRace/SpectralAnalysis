@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>http://example.org/installation/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/advanced-use/integration/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/basic-usage/load-data/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/basic-usage/load-data/parser/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/basic-usage/visualisation/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/basic-usage/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/advanced-use/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.org/basic-usage/clustering/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/basic-usage/load-data/continuous-vs-profile/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/basic-usage/data-reduction/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/basic-usage/load-data/data-representation/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/basic-usage/ensure-consistent-mz-axis/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/advanced-use/extending/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/basic-usage/image-list/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/basic-usage/region-of-interest/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/basic-usage/spectral-representation/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/</loc>
+  </url>
+  
+  <url>
+    <loc>http://example.org/tags/</loc>
+    <priority>0</priority>
+  </url>
+  
+</urlset>
