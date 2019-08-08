@@ -32,7 +32,7 @@
       }
       
     </style>
-    
+     <link rel="stylesheet" type="text/css" href="css/definition.css" />
   </head>
   <body class="" data-url="/basic-usage/region-of-interest/">
     <nav id="sidebar" class="">
@@ -307,6 +307,30 @@
  
   
     
+    <li data-nav-id="/basic-usage/preprocessing/" title="Spectral Preprocessing" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../basic-usage/preprocessing/">
+          Spectral Preprocessing
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
       <li data-nav-id="/basic-usage/spectral-representation/" title="Spectral Representation" class="dd-item ">
         <a href="../../basic-usage/spectral-representation/">
         Spectral Representation
@@ -333,6 +357,30 @@
         </a>
     </li>
      
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+    <li data-nav-id="/basic-usage/multivariate/" title="Multivariate analysis" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../basic-usage/multivariate/">
+          Multivariate analysis
+          
+      </a>
+      
+              
+    </li>
   
  
 
@@ -429,6 +477,28 @@
           
         
         </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/tutorials/" title="Tutorials" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../tutorials/">
+          Tutorials
+          
+      </a>
+      
               
     </li>
   
@@ -560,7 +630,11 @@
 
 <h3 id="generate-roi">Generate ROI</h3>
 
+<p>To create an ROI manually, the <code>Edit</code> button on the main interface in the <a href="#overview">ROI panel</a> must be clicked. This then opens the <code>ROI List Editor</code>, shown below, displaying the ion image which was previously active in the main interface.</p>
+
 <p><img src="../../images/2019-02-18-ROIEditor.gif" alt="Edit a region of interest" /></p>
+
+<p>To create a new ROI, first click the <code>+</code> button, and then in the new window, select an ROI name and colour and then click <code>OK</code>. This then adds the new ROI to the list (bottom left in the interface). The highlighted ROI is then displayed on top of the image, and any selected tool (defined below) can then be applied directly to the image by clicking and/or dragging.</p>
 
 <dl>
 <dt>Pencil</dt>
@@ -570,15 +644,15 @@
 <dt>Rectangle</dt>
 <dd>Assign all pixels which fall within a rectangle drawn by the user to the ROI.</dd>
 <dt>Ellipse</dt>
-<dd></dd>
-<dt>Poly
-:</dt>
-<dt>Eraser
-:</dt>
+<dd>Assign all pixels which fall within an ellipse drawn by the user.</dd>
+<dt>Poly</dt>
+<dd>Define an arbitrary shape .</dd>
+<dt>Eraser</dt>
+<dd>Toggle button. When active, use any shape to define an area to remove from the current region of interest. When deactivated, areas are added to the ROI.</dd>
 <dt>Threshold</dt>
-<dd>Assign all pixels &hellip; (see Threshold section for more details).</dd>
+<dd>Assign all pixels &hellip; (see <a href="#threshold">Threshold</a> for more details).</dd>
 <dt>Move</dt>
-<dd></dd>
+<dd>Allows dragging of the ROI to a new location.</dd>
 </dl>
 
 <h4 id="threshold">Threshold</h4>
@@ -837,6 +911,38 @@
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
             
         
                     
@@ -884,6 +990,22 @@
                     
             
         
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
                     
             
         

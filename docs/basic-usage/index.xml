@@ -18,7 +18,7 @@
       <guid>/basic-usage/region-of-interest/</guid>
       <description>Regions of interest (ROIs) are areas of an image, which can be used as input into subsequent data analysis. ROIs can be defined manually, as explained in this page, or automatically through processing such as clustering.
 Feature List  Generate ROI Calculate statistics on ROI Export ROIs  Overview The ROI panel can be found on the right on the main interface (number 1 in the image below).
- Region of interest list Save region of interest list Load region of interest list View statistics on ROI Add/edit/delete ROIs  Generate ROI  Pencil Assign individual pixels to the ROI.</description>
+ Region of interest list Save region of interest list Load region of interest list View statistics on ROI Add/edit/delete ROIs  Generate ROI To create an ROI manually, the Edit button on the main interface in the ROI panel must be clicked.</description>
     </item>
     
     <item>
