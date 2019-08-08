@@ -249,36 +249,10 @@ classdef DataViewer < Figure
             
             imageData = obj.dataRepresentation.getProjectedImage(value);
             obj.imageDisplay.setData(Image(imageData));
-                obj.regionOfInterestPanel.setImageForEditor(Image(imageData));
+            obj.regionOfInterestPanel.setImageForEditor(Image(imageData));
             
-            if(sum(obj.dataRepresentation.data(:) < 0) > 0)
-                minVal = min(0, min(imageData(:)));
-                maxVal = max(0, max(imageData(:)));
-
-                scaleSize = 256;
-                zeroLoc = round((abs(minVal) / (maxVal - minVal)) * scaleSize);
-
-                if(zeroLoc <= 0)
-                    zeroLoc = 1;
-                elseif(zeroLoc >= scaleSize)
-                    zeroLoc = scaleSize;
-                end
-
-                colourMap = zeros(scaleSize, 3);
-
-                for i = 1:zeroLoc
-                    colourMap(i, 2) = ((zeroLoc - (i - 1)) / zeroLoc);
-                end
-
-                for i = zeroLoc:scaleSize
-                    colourMap(i, [1 3]) = (i - zeroLoc) / (scaleSize - zeroLoc);
-                end
-
-                colourMap(zeroLoc, :) = [0 0 0];
-
-                obj.imageDisplay.setColourMap(colourMap);
-                obj.imageDisplay.setColourBarOn(1);
-            end
+            % Set the diverging colourmap to be enabled
+            obj.imageDisplay.setDivergingColourMap();
             
             spectrum = SpectralData(obj.dataRepresentation.spectralChannels, obj.dataRepresentation.projectionMatrix(:, value));
             spectrum.setIsContinuous(0);
