@@ -10,6 +10,7 @@ classdef PostProcessing < Processing
     
     methods (Abstract)
         dataRepresentation = process(obj, dataRepresentation);
+        resultsViewer = displayResults(this, dataViewer);
     end
     
     methods

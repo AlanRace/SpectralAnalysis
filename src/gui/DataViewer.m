@@ -316,45 +316,48 @@ classdef DataViewer < Figure
             
             set(obj.progressBar.axisHandle, 'Visible', 'on');
             
-            try
-                if(isa(postProcessingMethod, 'SpectralRepresentation'))
-                    spectrumList = postProcessingMethod.process(obj.dataRepresentation);
-                    spectrumList.getSize()
-                    for i = 1:spectrumList.getSize()
-                        obj.spectrumList.add(spectrumList.get(i));
-                    end
-                    obj.spectrumList.getSize()
-                    obj.updateSpectrumSelectionPopup();
-                else
-                    if(isa(postProcessingMethod, 'Clustering'))
-                        [dataRepresentationList, regionOfInterestLists] = postProcessingMethod.process(obj.dataRepresentation);
-                    else
-                        dataRepresentationList = postProcessingMethod.process(obj.dataRepresentation);
-                    end
-
-                    dataRepresentations = dataRepresentationList.getObjects;
-
-                    for i = 1:numel(dataRepresentations)
-                        dv = DataViewer(dataRepresentations{i});
-
-                        notify(obj, 'NewDataViewerCreated', DataViewerEventData(dv));
-                        
-                        if(isa(postProcessingMethod, 'Clustering'))
-                            dv.setRegionOfInterestList(regionOfInterestLists{i});
-                        end
-                    end
-                end
-            catch err
-                if(strcmp(err.identifier, 'MATLAB:Java:GenericException') && ...
-                        ~isempty(strfind(err.message, 'java.lang.ArrayIndexOutOfBoundsException')))
-                    errordlg(['Could not perform ''' postProcessingMethod.Name ''' because spectra are different lengths. ' ...
-                        'Did you set up appropriate zero filling and turn on preprocessing?'], ...
-                        'Array Index Out Of Bounds');
-                else
-                    errordlg(err.message, err.identifier);
-                    rethrow(err);
-                end
-            end
+            postProcessingMethod.process(obj.dataRepresentation);
+            postProcessingMethod.displayResults(obj);
+            
+%             try
+%                 if(isa(postProcessingMethod, 'SpectralRepresentation'))
+%                     spectrumList = postProcessingMethod.process(obj.dataRepresentation);
+%                     spectrumList.getSize()
+%                     for i = 1:spectrumList.getSize()
+%                         obj.spectrumList.add(spectrumList.get(i));
+%                     end
+%                     obj.spectrumList.getSize()
+%                     obj.updateSpectrumSelectionPopup();
+%                 else
+%                     if(isa(postProcessingMethod, 'Clustering'))
+%                         [dataRepresentationList, regionOfInterestLists] = postProcessingMethod.process(obj.dataRepresentation);
+%                     else
+%                         dataRepresentationList = postProcessingMethod.process(obj.dataRepresentation);
+%                     end
+% 
+%                     dataRepresentations = dataRepresentationList.getObjects;
+% 
+%                     for i = 1:numel(dataRepresentations)
+%                         dv = DataViewer(dataRepresentations{i});
+% 
+%                         notify(obj, 'NewDataViewerCreated', DataViewerEventData(dv));
+%                         
+%                         if(isa(postProcessingMethod, 'Clustering'))
+%                             dv.setRegionOfInterestList(regionOfInterestLists{i});
+%                         end
+%                     end
+%                 end
+%             catch err
+%                 if(strcmp(err.identifier, 'MATLAB:Java:GenericException') && ...
+%                         ~isempty(strfind(err.message, 'java.lang.ArrayIndexOutOfBoundsException')))
+%                     errordlg(['Could not perform ''' postProcessingMethod.Name ''' because spectra are different lengths. ' ...
+%                         'Did you set up appropriate zero filling and turn on preprocessing?'], ...
+%                         'Array Index Out Of Bounds');
+%                 else
+%                     errordlg(err.message, err.identifier);
+%                     rethrow(err);
+%                 end
+%             end
             
             set(obj.progressBar.axisHandle, 'Visible', 'off');
         end
@@ -445,6 +448,14 @@ classdef DataViewer < Figure
         
         function setRegionOfInterestList(this, regionOfInterestList)
             this.regionOfInterestPanel.setRegionOfInterestList(regionOfInterestList);
+        end
+        
+        function addRegionOfInterest(this, regionOfInterest)
+            this.regionOfInterestPanel.addRegionOfInterest(regionOfInterest);
+        end
+        
+        function addRegionOfInterestList(this, regionOfInterestList)
+            this.regionOfInterestPanel.addRegionOfInterestList(regionOfInterestList);
         end
         
         function updateRegionOfInterestDisplay(this)

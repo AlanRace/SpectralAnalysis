@@ -11,7 +11,7 @@ classdef KMeansClustering < Clustering
                 obj.Parameters = Parameter(KMeansClustering.ParameterDefinitions(1), k);
         end
         
-        function [dataRepresentationList regionOfInterestLists] = process(this, dataRepresentation)
+        function [dataRepresentationList, regionOfInterestLists] = process(this, dataRepresentation)
             rois = this.regionOfInterestList.getObjects();
            
             if(this.preprocessEverySpectrum || ~isa(dataRepresentation, 'DataInMemory') || ~isempty(rois))
@@ -33,7 +33,7 @@ classdef KMeansClustering < Clustering
             k = this.Parameters(1).value;
             
             dataRepresentations = dataRepresentationList.getObjects();
-            regionOfInterestLists = {};
+            this.regionOfInterestLists = {};
             
             for i = 1:numel(dataRepresentations)
                 res = kmeans(dataRepresentations{i}.data, k);
@@ -52,7 +52,7 @@ classdef KMeansClustering < Clustering
 %                 kmeansImage = zeros(size(curPixels));
 %                 kmeansImage(curPixels == 1) = res;
                 
-                regionOfInterestLists{i} = RegionOfInterestList();
+                this.regionOfInterestLists{i} = RegionOfInterestList();
                 
                 for j = 1:k
                     roi = RegionOfInterest(size(kmeansImage, 2), size(kmeansImage, 1));
@@ -62,10 +62,12 @@ classdef KMeansClustering < Clustering
                     
 %                     roi.cropTo(curPixels);
                     
-                    regionOfInterestLists{i}.add(roi);
+                    this.regionOfInterestLists{i}.add(roi);
 %                     curPixels(curPixels == 1) = res
                 end
             end
+            
+            regionOfInterestLists = this.regionOfInterestLists;
             
 %             % Create projection data representation
 %             kmeansDataRepresentation = DataInMemory();
