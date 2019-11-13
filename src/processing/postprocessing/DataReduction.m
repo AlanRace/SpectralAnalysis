@@ -6,6 +6,8 @@ classdef DataReduction < PostProcessing
         % 0 - extract at location
         % 1 - integrate over peak
         imageGenerationMethod = 0;
+        
+        dataRepresentationList;
     end
     
     methods
@@ -48,6 +50,13 @@ classdef DataReduction < PostProcessing
                 end
                 
                 spectrum = SpectralData(this.peakList, intensities);
+            end
+        end
+        
+        function viewer = displayResults(this, dataViewer)
+            for i = 1:this.dataRepresentationList.getSize()
+                this.dataRepresentationList.get(i)
+                viewer = DimRedDataViewer(this.dataRepresentationList.get(i));
             end
         end
     end

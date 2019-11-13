@@ -3,12 +3,39 @@ classdef KMeansClustering < Clustering
         Name = 'k-means';
         Description = '';
         
-        ParameterDefinitions = [ParameterDescription('k (Number of clusters)', ParameterType.Integer, 5)];
+        ParameterDefinitions = [ParameterDescription('k (Number of clusters)', ParameterType.Integer, 5), ...
+            ParameterDescription('Number of replicates', ParameterType.Integer, 5), ...
+            ParameterDescription('Distance metric', ParameterType.Selection, {'cosine', 'sqeuclidean', 'cityblock', 'correlation', 'hamming'}), ...
+            ParameterDescription('Minimum features size', ParameterType.Integer, 0)];
+    end
+    
+    properties
+        k;
+        replicates;
+        distance;
+        minFeatureSize;
     end
     
     methods
-        function obj = KMeansClustering(k)
-                obj.Parameters = Parameter(KMeansClustering.ParameterDefinitions(1), k);
+        function this = KMeansClustering(k, replicates, distance, minFeatureSize)
+            if nargin < 4
+                minFeatureSize = 0;
+            end
+            if nargin < 3
+                distance = 'cosine';
+            end
+            if nargin < 2
+                replicates = 5;
+            end
+            
+            this.k = k;
+            this.replicates = replicates;
+            this.distance = distance;
+            this.minFeatureSize = minFeatureSize;
+            
+%                 obj.Parameters = [Parameter(KMeansClustering.ParameterDefinitions(1), k), ...
+%                     Parameter(KMeansClustering.ParameterDefinitions(2), replicates), ...
+%                     Parameter(KMeansClustering.ParameterDefinitions(3), distance)];
         end
         
         function [dataRepresentationList, regionOfInterestLists] = process(this, dataRepresentation)
@@ -30,13 +57,15 @@ classdef KMeansClustering < Clustering
                 dataRepresentationList.add(dataRepresentation);
             end
             
-            k = this.Parameters(1).value;
+%             k = this.Parameters(1).value;
+%             replicates = this.Parameters(2).value;
+%             distance = this.Parameters(3).value;
             
             dataRepresentations = dataRepresentationList.getObjects();
             this.regionOfInterestLists = {};
             
             for i = 1:numel(dataRepresentations)
-                res = kmeans(dataRepresentations{i}.data, k);
+                res = kmeans(dataRepresentations{i}.data, this.k, 'replicates', this.replicates, 'distance', this.distance);
                 
 %                curPixels = dataRepresentations{i}.regionOfInterest.pixelSelection;
                 kmeansImage = zeros(dataRepresentation.height, dataRepresentation.width); %size(curPixels));
@@ -47,17 +76,39 @@ classdef KMeansClustering < Clustering
                     kmeansImage(pixels(j, 2), pixels(j, 1)) = res(j);
                 end
                 
-%                 figure, imagesc(kmeansImage);
+                newkmeansImage = kmeansImage;
+
+                % Remove features that are smaller than the set size,
+                % replacing them with the largest neighbouring cluster
+                for j = 1:this.k
+                    stats = regionprops(kmeansImage == j, 'PixelList', 'Area');
+
+                    for a = 1:length(stats)
+                        if stats(a).Area < this.minFeatureSize
+                            for pixInx = 1:size(stats(a).PixelList, 1)
+                                pix = stats(a).PixelList(pixInx, :);
+
+                                minX = max(1, pix(1)-1);
+                                maxX = min(size(kmeansImage, 2), pix(1)+1);
+                                minY = max(1, pix(2)-1);
+                                maxY = min(size(kmeansImage, 1), pix(2)+1);
+
+                                neighbourhood = kmeansImage(minY:maxY, minX:maxX);
+
+                                newkmeansImage(pix(2), pix(1)) = mode(neighbourhood(:));
+                            end
+                        end
+                    end
+                end
                 
-%                 kmeansImage = zeros(size(curPixels));
-%                 kmeansImage(curPixels == 1) = res;
+                kmeansImage = newkmeansImage;
                 
                 this.regionOfInterestLists{i} = RegionOfInterestList();
                 
-                for j = 1:k
+                for j = 1:this.k
                     roi = RegionOfInterest(size(kmeansImage, 2), size(kmeansImage, 1));
                     roi.addPixels(kmeansImage == j);
-                    roi.setName(['k = ' num2str(j)]);
+                    roi.setName(['k = ' num2str(j) ' (out of ' num2str(this.k) ')']);
                     roi.setColour(Colour(round(rand*255), round(rand*255), round(rand*255)));
                     
 %                     roi.cropTo(curPixels);

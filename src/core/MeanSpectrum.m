@@ -11,6 +11,8 @@ classdef MeanSpectrum < SpectralRepresentation
         ParameterDefinitions = [];
     end
     
+    
+    
 %     methods (Static)
 %         function name = getName()
 %             name = 'Mean Spectrum';
@@ -35,12 +37,12 @@ classdef MeanSpectrum < SpectralRepresentation
             
             % Make sure that we have a progress bar
             addlistener(ts, 'ProcessingProgress', @(src, evnt) notify(this, 'ProcessingProgress', evnt));
-            spectrumList = ts.process(dataRepresentation);
+            this.spectrumList = ts.process(dataRepresentation);
             
             curIndex = 1;
             
             if(this.processEntireDataset)
-                spectrum = spectrumList.get(curIndex);
+                spectrum = this.spectrumList.get(curIndex);
                 spectrum.setDescription('Mean Spectrum (Entire Dataset)');
                 
                 spectrum.setData(spectrum.spectralChannels, spectrum.intensities ./ size(dataRepresentation.pixels, 1));
@@ -54,7 +56,7 @@ classdef MeanSpectrum < SpectralRepresentation
                 for i = 1:numel(rois)
                     pixels = rois{i}.getPixelList();
                     
-                    spectrum = spectrumList.get(curIndex);
+                    spectrum = this.spectrumList.get(curIndex);
                     spectrum.setDescription(['Mean Spectrum (' rois{i}.getName() ')']);
                     
                     spectrum.setData(spectrum.spectralChannels, spectrum.intensities ./ size(pixels, 1));
@@ -62,6 +64,9 @@ classdef MeanSpectrum < SpectralRepresentation
                     curIndex = curIndex + 1;
                 end
             end
+            
+            spectrumList = this.spectrumList;
         end
+        
     end
 end

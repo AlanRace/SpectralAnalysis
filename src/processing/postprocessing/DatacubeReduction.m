@@ -15,8 +15,6 @@ classdef DatacubeReduction < DataReduction
         output;
         intensityDataType;
         storageType;
-        
-        dataRepresentationList;
     end
     
     methods

@@ -47,7 +47,7 @@ classdef DataViewer < Figure
         percentageImage = 60;
     end
     
-    properties (Access = private)
+    properties (Access = protected)
         currentSpectrumLocation;
         
         spectralRepresentationsMenu;
@@ -92,13 +92,6 @@ classdef DataViewer < Figure
         subtractSpectrumButton;
         removeSpectrumButton;
         
-        % TODO: Extend DataViewer for ProjectedDataViewer or PCADataViewer 
-        % to allow for more specific control over 
-        switchSpectrumViewButton;
-        previousCoefficientButton;
-        nextCoefficientButton;
-        coefficientEditBox;
-        coefficientLabel;
 
         regionOfInterestPanel;
         
@@ -158,13 +151,7 @@ classdef DataViewer < Figure
             
             % Display the overview image
             obj.displayImage(1);
-            
-            if(isa(dataRepresentation, 'ProjectedDataInMemory'))
-                obj.showProjectedInterface();
-                
-                obj.coefficientEditBoxCallback();
-            end
-            
+                        
             if(isa(dataRepresentation.parser, 'SIMSParser'))
                 totalSpectrum = dataRepresentation.parser.getOverviewSpectrum();
                 
@@ -182,87 +169,6 @@ classdef DataViewer < Figure
             
             % Finally add the colour bar
             obj.imageDisplay.setColourBarOn(1);
-        end
-        
-        
-        
-        function switchSpectrumView(obj)
-            f = PCAInfoFigure(obj.dataRepresentation, obj.regionOfInterestPanel.regionOfInterestList);
-            
-            isVisible = strcmp(get(obj.previousCoefficientButton, 'Visible'), 'on');
-            
-            obj.makeCoefficientControlsVisible(~isVisible);
-        end
-        
-        function makeCoefficientControlsVisible(obj, isVisible)
-            if(isVisible)
-                set(obj.previousCoefficientButton, 'Visible', 'on');
-                set(obj.nextCoefficientButton, 'Visible', 'on');
-                set(obj.coefficientEditBox, 'Visible', 'on');
-                set(obj.coefficientLabel, 'Visible', 'on');
-            else
-                set(obj.previousCoefficientButton, 'Visible', 'off');
-                set(obj.nextCoefficientButton, 'Visible', 'off');
-                set(obj.coefficientEditBox, 'Visible', 'off');
-                set(obj.coefficientLabel, 'Visible', 'off');
-            end
-        end
-        
-        function previousCoefficientPlotCallback(obj)
-            newValue = str2num(get(obj.coefficientEditBox, 'String')) - 1;
-            
-            if(newValue <= 0)
-                newValue = 1;
-            end
-            
-            set(obj.coefficientEditBox, 'String', num2str(newValue));
-            obj.coefficientEditBoxCallback();
-        end
-        
-        function nextCoefficientPlotCallback(obj)
-            newValue = str2num(get(obj.coefficientEditBox, 'String')) + 1;
-            
-            if(newValue > size(obj.dataRepresentation.projectionMatrix, 2))
-                newValue = size(obj.dataRepresentation.projectionMatrix, 2);
-            end
-            
-            set(obj.coefficientEditBox, 'String', num2str(newValue));
-            obj.coefficientEditBoxCallback();
-        end
-        
-        function coefficientEditBoxCallback(obj)
-            coeffString = get(obj.coefficientEditBox, 'String');
-            
-            value = str2num(coeffString);
-            
-            if(isempty(value) || value <= 0 || isinf(value) || isnan(value))
-                value = 1;
-                
-                set(obj.coefficientEditBox, 'String', num2str(value));
-            end
-            
-            if(value > obj.dataRepresentation.getNumberOfDimensions())
-                value = obj.dataRepresentation.getNumberOfDimensions();
-                
-                set(obj.coefficientEditBox, 'String', num2str(value));
-            end
-            
-            imageData = obj.dataRepresentation.getProjectedImage(value);
-            obj.imageDisplay.setData(Image(imageData));
-            obj.regionOfInterestPanel.setImageForEditor(Image(imageData));
-            
-            % Set the diverging colourmap to be enabled
-            obj.imageDisplay.setDivergingColourMap();
-            
-            spectrum = SpectralData(obj.dataRepresentation.spectralChannels, obj.dataRepresentation.projectionMatrix(:, value));
-            spectrum.setIsContinuous(0);
-            
-            spectrum.setDescription(['Coefficient ' num2str(value) ' (Out of ' num2str(size(obj.dataRepresentation.projectionMatrix, 2)) ')']);
-            obj.spectrumList.set(1, spectrum);
-            obj.updateSpectrumSelectionPopup();
-            set(obj.spectrumSelectionPopup, 'Value', 1);
-            
-            obj.spectrumDisplay.setData(spectrum);
         end
         
         function generateSpectralRepresentation(obj, representationIndex)
@@ -725,6 +631,11 @@ classdef DataViewer < Figure
             end
         end
         
+        function addSpectra(this, spectrumList)
+            this.spectrumList.addAll(spectrumList);
+            this.updateSpectrumSelectionPopup();
+        end
+        
         function addSpectrumToListCallback(this)
             this.spectrumList.add(this.spectrumList.get(1));
             
@@ -1104,17 +1015,6 @@ classdef DataViewer < Figure
                                 
                 addlistener(obj.spectrumDisplay, 'PeakSelected', @(src, evnt)obj.peakSelected(evnt));
                 
-                obj.switchSpectrumViewButton = uicontrol('Parent', obj.handle, 'String', '<>', 'Callback', @(src, evnt)obj.switchSpectrumView(), ...
-                        'Units', 'normalized', 'Position', [0.85 0.55 0.05 0.05], 'Visible', 'Off');
-                    
-                    obj.previousCoefficientButton = uicontrol('Parent', obj.handle, 'String', '<', 'Callback', @(src, evnt)obj.previousCoefficientPlotCallback(), ...
-                        'Units', 'normalized', 'Position', [0.1 0.55 0.05 0.05], 'Visible', 'Off');
-                    obj.nextCoefficientButton = uicontrol('Parent', obj.handle, 'String', '>', 'Callback', @(src, evnt)obj.nextCoefficientPlotCallback(), ...
-                        'Units', 'normalized', 'Position', [0.8 0.55 0.05 0.05], 'Visible', 'Off');
-                    obj.coefficientEditBox = uicontrol('Parent', obj.handle, 'Style', 'edit', 'Callback', @(src, evnt)obj.coefficientEditBoxCallback(), ...
-                        'Units', 'normalized', 'Position', [0.15 0.55 0.05 0.05], 'String', '1', 'Visible', 'Off');
-                    obj.coefficientLabel = uicontrol('Parent', obj.handle, 'Style', 'text', 'String', [''], ...
-                        'Units', 'normalized', 'Position', [0.49 0.56 0.1 0.05], 'HorizontalAlignment', 'left');
                 
                 obj.preprocessingPanel = uipanel('Parent', obj.handle, 'Title', 'Spectral Preprocessing', ...
                     'Position', [.525 .05 .425 .2]);
@@ -1130,15 +1030,7 @@ classdef DataViewer < Figure
             end
         end
         
-        function showProjectedInterface(obj)
-            set(obj.switchSpectrumViewButton, 'Visible', 'On');
-            set(obj.previousCoefficientButton, 'Visible', 'On');
-            set(obj.nextCoefficientButton, 'Visible', 'On');
-            set(obj.coefficientEditBox, 'Visible', 'On');
-            set(obj.coefficientLabel, 'Visible', 'On');
-            
-            set(obj.coefficientLabel, 'String', [' / ' num2str(obj.dataRepresentation.getNumberOfDimensions())]);
-        end
+        
         
         function imageListTableSelected(obj, src, evnt)
             obj.imageListPanelLastSelected = evnt.Indices;
@@ -1254,13 +1146,7 @@ classdef DataViewer < Figure
                 
                 Figure.setObjectPositionInPixels(obj.imageTitleLabel, [xPositionForImage+widthForImage/2-100, imageRegionY+imageRegionHeight+2, 200, 15]);
                 
-                xPositionForCoeffs = xPositionForImage+widthForImage/2 - 90;
                 
-                Figure.setObjectPositionInPixels(obj.previousCoefficientButton, [xPositionForCoeffs, imageRegionY-20, 50, 30]);
-                Figure.setObjectPositionInPixels(obj.coefficientEditBox, [xPositionForCoeffs+60, imageRegionY-20, 50, 30]);
-                Figure.setObjectPositionInPixels(obj.coefficientLabel, [xPositionForCoeffs+120, imageRegionY-20, 50, 20]);
-                Figure.setObjectPositionInPixels(obj.nextCoefficientButton, [xPositionForCoeffs + 180, imageRegionY-20, 50, 30]);
-%                 get(obj.coefficientLabel)
                 
                 % Sort spectrum region
                 if(obj.showSpectrumList)

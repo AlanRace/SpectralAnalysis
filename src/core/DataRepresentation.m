@@ -59,8 +59,8 @@ classdef DataRepresentation < handle
             obj.minY = min(obj.pixels(:, 2));
             obj.maxY = max(obj.pixels(:, 2));
             
-            obj.width = (obj.maxX - obj.minX) + 1;
-            obj.height = (obj.maxY - obj.minY) + 1;
+            obj.width = obj.regionOfInterest.width; %(obj.maxX - obj.minX) + 1;
+            obj.height = obj.regionOfInterest.height; %(obj.maxY - obj.minY) + 1;
             
             if(obj.isRowMajor)
                 % Sort by rows and then columns
