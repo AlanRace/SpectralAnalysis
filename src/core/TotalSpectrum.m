@@ -29,7 +29,7 @@ classdef TotalSpectrum < SpectralRepresentation
                 ped = ProgressEventData(0, ['Using fast methods. Generating Total Spectrum']);
                 notify(this, 'ProcessingProgress', ped);
                 
-                spectrumGeneration = com.alanmrace.JSpectralAnalysis.spectralrepresentation.MultithreadedSpectralRepresentationGeneration(javaDataRepresentation, workflow, roiList);
+                spectrumGeneration = com.alanmrace.JSpectralAnalysis.spectralrepresentation.MultithreadedSpectralRepresentationGeneration(this.javaDataRepresentation, workflow, this.javaROIList);
                 spectrumGeneration.generateTotalSpectrum();
                 
                 while(~spectrumGeneration.isDone())

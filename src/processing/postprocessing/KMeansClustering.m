@@ -11,18 +11,18 @@ classdef KMeansClustering < Clustering
     
     properties
         k;
+        distanceMetric;
         replicates;
-        distance;
         minFeatureSize;
     end
     
     methods
-        function this = KMeansClustering(k, replicates, distance, minFeatureSize)
+        function this = KMeansClustering(k, replicates, distanceMetric, minFeatureSize)
             if nargin < 4
                 minFeatureSize = 0;
             end
             if nargin < 3
-                distance = 'cosine';
+                distanceMetric = 'cosine';
             end
             if nargin < 2
                 replicates = 5;
@@ -30,7 +30,7 @@ classdef KMeansClustering < Clustering
             
             this.k = k;
             this.replicates = replicates;
-            this.distance = distance;
+            this.distanceMetric = distanceMetric;
             this.minFeatureSize = minFeatureSize;
             
 %                 obj.Parameters = [Parameter(KMeansClustering.ParameterDefinitions(1), k), ...
@@ -65,7 +65,7 @@ classdef KMeansClustering < Clustering
             this.regionOfInterestLists = {};
             
             for i = 1:numel(dataRepresentations)
-                res = kmeans(dataRepresentations{i}.data, this.k, 'replicates', this.replicates, 'distance', this.distance);
+                res = kmeans(dataRepresentations{i}.data, this.k, 'replicates', this.replicates, 'distance', this.distanceMetric);
                 
 %                curPixels = dataRepresentations{i}.regionOfInterest.pixelSelection;
                 kmeansImage = zeros(dataRepresentation.height, dataRepresentation.width); %size(curPixels));

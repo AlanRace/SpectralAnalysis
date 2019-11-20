@@ -188,13 +188,13 @@ classdef DatacubeReduction < DataReduction
                     end
                     
                     if(this.imageGenerationMethod == 0)
-                        imageGeneration = com.alanmrace.JSpectralAnalysis.MultithreadedDatacubeGeneration();
+                        imageGeneration = com.alanmrace.JSpectralAnalysis.MultithreadedDatacubeGeneration(dataRepresentation.parser.imzML);
                         imageGeneration.generateDatacube(dataRepresentation.parser.imzML, workflow, peakList, pixels);
                     elseif(this.imageGenerationMethod == 1)
                         peakWidths = this.peakDetails(:, 3) - this.peakDetails(:, 1);
                         centroids = this.peakDetails(:, 1) + peakWidths ./ 2;
                         
-                        imageGeneration = com.alanmrace.JSpectralAnalysis.MultithreadedDatacubeGeneration();
+                        imageGeneration = com.alanmrace.JSpectralAnalysis.MultithreadedDatacubeGeneration(dataRepresentation.parser.imzML);
                         
                         imageGeneration.generateDatacube(dataRepresentation.parser.imzML, workflow, centroids, peakWidths, pixels);
                     end

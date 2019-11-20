@@ -34,6 +34,8 @@ classdef DataViewer < Figure
         
         dataRepresentation;
         
+        regionOfInterestPanel;
+        
         title;
     end
     
@@ -92,8 +94,6 @@ classdef DataViewer < Figure
         subtractSpectrumButton;
         removeSpectrumButton;
         
-
-        regionOfInterestPanel;
         
         % TODO: Separate this out into a different class
         preprocessingPanel;
