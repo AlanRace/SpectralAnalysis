@@ -9,3 +9,5 @@ If downloading the source, please be aware that the latest version of [MOOGL](ht
 
 ![SpectralAnalysis Interface](https://i.imgur.com/XZy72vR.png)
 
+## Contributing to SpectralAnalysis
+We welcome all contributions to make SpectralAnalysis better. If you would like to contribute to SpectralAnalysis, please see the [contributing guide](docs/CONTRIBUTING.md).
