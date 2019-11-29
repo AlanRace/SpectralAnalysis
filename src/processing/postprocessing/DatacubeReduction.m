@@ -3,7 +3,7 @@ classdef DatacubeReduction < DataReduction
         Name = 'Datacube';
         Description = '';
         
-        ParameterDefinitions = [ParameterDescription('Image Generation', ParameterType.Selection, {'Extract at location', 'Integrate over peak'}), ...
+        ParameterDefinitions = [ParameterDescription('Image Generation', ParameterType.Selection, {'Integrate over peak', 'Extract at location'}), ...
             ParameterDescription('Output', ParameterType.Selection, {'New Window', 'ImzML'}), ...
             ParameterDescription('Intensity Data Type', ParameterType.Selection, {'Double', 'Single', '64-Bit Integer', ...
             '32-Bit Integer', '16-Bit Integer', '8-Bit Integer'}), ...
@@ -20,8 +20,17 @@ classdef DatacubeReduction < DataReduction
     methods
         function obj = DatacubeReduction(imageGeneration, output, intensityDataType, storageType)
             obj.imageGeneration = imageGeneration;
-            obj.output = output;
-            obj.intensityDataType = intensityDataType;
+            
+            if nargin > 1
+                obj.output = output;
+            else 
+                obj.output = 'Integrate over peak';
+            end
+            
+            if nargin > 2
+                obj.intensityDataType = intensityDataType;
+                obj.storageType = storageType;
+            end
             
             switch(obj.imageGeneration)
                 case 'Extract at location'
@@ -29,8 +38,6 @@ classdef DatacubeReduction < DataReduction
                 case 'Integrate over peak'
                     obj.setIntegrateOverPeak()
             end
-            
-            obj.storageType = storageType;
         end
         
         function dataRepresentationList = process(this, dataRepresentation)
@@ -149,6 +156,8 @@ classdef DatacubeReduction < DataReduction
                     canUseFastMethods = 1;
                 end
             end
+            
+            notify(this, 'UsingFastMethods', canUseFastMethods);
             
             % If no peak list has been selected, and no preprocessing is...
             %             if(isempty(this.peakList) && (isempty(preprocessingWorkflow) || ~isempty(workflow)))
