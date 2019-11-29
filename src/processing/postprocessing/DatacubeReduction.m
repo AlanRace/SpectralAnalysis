@@ -157,7 +157,7 @@ classdef DatacubeReduction < DataReduction
                 end
             end
             
-            notify(this, 'UsingFastMethods', canUseFastMethods);
+            notify(this, 'FastMethods', BooleanEventData(canUseFastMethods));
             
             % If no peak list has been selected, and no preprocessing is...
             %             if(isempty(this.peakList) && (isempty(preprocessingWorkflow) || ~isempty(workflow)))

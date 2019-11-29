@@ -12,7 +12,9 @@ classdef PostProcessing < Processing
     end
     
     events
-        UsingFastMethods
+        % Event triggered when it is determined whether fast methods can be
+        % used or not
+        FastMethods
     end
     
     methods (Abstract)
@@ -153,7 +155,7 @@ classdef PostProcessing < Processing
                 this.javaDataRepresentation = com.alanmrace.JSpectralAnalysis.datarepresentation.DataOnDisk(javaParser);
             end
             
-            notify(this, 'UsingFastMethods', canUseFastMethods);
+            notify(this, 'FastMethods', BooleanEventData(canUseFastMethods));
         end
     end
 end
