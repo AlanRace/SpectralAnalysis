@@ -155,6 +155,7 @@ classdef PostProcessing < Processing
                 this.javaDataRepresentation = com.alanmrace.JSpectralAnalysis.datarepresentation.DataOnDisk(javaParser);
             end
             
+            % Notify listeners whether we are using FastMethods or not
             notify(this, 'FastMethods', BooleanEventData(canUseFastMethods));
         end
     end

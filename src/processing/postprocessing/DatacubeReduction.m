@@ -157,6 +157,7 @@ classdef DatacubeReduction < DataReduction
                 end
             end
             
+            % Notify listeners whether we are using FastMethods or not
             notify(this, 'FastMethods', BooleanEventData(canUseFastMethods));
             
             % If no peak list has been selected, and no preprocessing is...
