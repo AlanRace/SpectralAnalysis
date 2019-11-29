@@ -238,18 +238,11 @@ classdef DataInMemory < DataRepresentation
         function loadObjectParameters(this, obj)
             loadObjectParameters@DataRepresentation(this, obj);
             
-            this.width = obj.width;
-            this.height = obj.height;
-            
-            this.name = obj.name;
-            
-            this.isContinuous = obj.isContinuous;
-            
-%             regionOfInterest;
-            this.pixels = obj.pixels;
-            this.pixelIndicies = obj.pixelIndicies;
-            
-            this.isRowMajor = obj.isRowMajor;
+            this.spectralChannels = obj.spectralChannels;
+            this.data = obj.data;
+        
+            this.spectralChannelRange = obj.spectralChannelRange;
+%             s.zeroFilling;
         end
     end
     

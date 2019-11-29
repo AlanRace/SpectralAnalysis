@@ -11,6 +11,10 @@ classdef PostProcessing < Processing
         javaDataRepresentation
     end
     
+    events
+        UsingFastMethods
+    end
+    
     methods (Abstract)
         dataRepresentation = process(obj, dataRepresentation);
         resultsViewer = displayResults(this, dataViewer);
@@ -95,7 +99,7 @@ classdef PostProcessing < Processing
             javaPixelList = com.alanmrace.jimzmlparser.imzml.PixelLocation(pixelList(1, 1), pixelList(1, 2), 1);
             
             for i = 2:size(pixelList, 1)
-                javaPixelList(i) = com.alanmrace.jimzmlparser.imzml.PixelLocation(pixelList(i, 1), pixelList(i, 2), 1)
+                javaPixelList(i) = com.alanmrace.jimzmlparser.imzml.PixelLocation(pixelList(i, 1), pixelList(i, 2), 1);
             end
         end
     end
@@ -148,6 +152,8 @@ classdef PostProcessing < Processing
                 javaParser = com.alanmrace.JSpectralAnalysis.io.ImzMLParser(dataRepresentation.parser.imzML);
                 this.javaDataRepresentation = com.alanmrace.JSpectralAnalysis.datarepresentation.DataOnDisk(javaParser);
             end
+            
+            notify(this, 'UsingFastMethods', canUseFastMethods);
         end
     end
 end
