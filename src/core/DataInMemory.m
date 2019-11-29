@@ -221,5 +221,52 @@ classdef DataInMemory < DataRepresentation
             image = Image(image);
             image.setDescription('Overview Image');
         end
+        
+        % Handle export of object
+        function s = saveobj(obj)
+            s = saveobj@DataRepresentation(obj);
+            
+            s.spectralChannels = obj.spectralChannels;
+            s.data = obj.data;
+        
+            s.spectralChannelRange = obj.spectralChannelRange;
+%             s.zeroFilling;
+        end
+    end
+    
+    methods (Access = protected)
+        function loadObjectParameters(this, obj)
+            loadObjectParameters@DataRepresentation(this, obj);
+            
+            this.width = obj.width;
+            this.height = obj.height;
+            
+            this.name = obj.name;
+            
+            this.isContinuous = obj.isContinuous;
+            
+%             regionOfInterest;
+            this.pixels = obj.pixels;
+            this.pixelIndicies = obj.pixelIndicies;
+            
+            this.isRowMajor = obj.isRowMajor;
+        end
+    end
+    
+    
+    methods (Static)
+        function obj = loadobj(s)
+          if isstruct(s)
+              % TODO: Check that the class name matches 
+              % TODO: Write a helper function which generates the class
+              % automatically from the name and then calls loadObjectParameters
+             newObj = DataInMemory(); 
+             
+             newObj.loadObjectParameters(s);
+            obj = newObj;
+          else
+             obj = s;
+          end
+       end
     end
 end

@@ -111,5 +111,39 @@ classdef DataRepresentation < handle
                 end
             end
         end
+        
+        % Handle export of object
+        function s = saveobj(obj)
+            s.class = class(obj);
+            s.width = obj.width;
+            s.height = obj.height;
+            
+            s.name = obj.name;
+            
+            s.isContinuous = obj.isContinuous;
+            
+%             regionOfInterest;
+            s.pixels = obj.pixels;
+            s.pixelIndicies = obj.pixelIndicies;
+            
+            s.isRowMajor = obj.isRowMajor;
+        end
+    end
+    
+    methods (Access = protected)
+        function loadObjectParameters(this, obj)
+            this.width = obj.width;
+            this.height = obj.height;
+            
+            this.name = obj.name;
+            
+            this.isContinuous = obj.isContinuous;
+            
+%             regionOfInterest;
+            this.pixels = obj.pixels;
+            this.pixelIndicies = obj.pixelIndicies;
+            
+            this.isRowMajor = obj.isRowMajor;
+        end
     end
 end
