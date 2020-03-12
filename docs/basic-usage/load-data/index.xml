@@ -1,44 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Load data on SpectralAnalysis: Software for the masses</title>
-    <link>/basic-usage/load-data/</link>
-    <description>Recent content in Load data on SpectralAnalysis: Software for the masses</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-	<atom:link href="/basic-usage/load-data/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-    <item>
-      <title>Parser</title>
-      <link>/basic-usage/load-data/parser/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/basic-usage/load-data/parser/</guid>
-      <description>A parser is something that understands a specific file format and enables the translation and loading of data.
-To create a parser for a currently unsupported file type, extend the Parser class and add the new class into the same folder.</description>
-    </item>
-    
-    <item>
-      <title>Continuous vs Profile</title>
-      <link>/basic-usage/load-data/continuous-vs-profile/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/basic-usage/load-data/continuous-vs-profile/</guid>
-      <description>Continuous - data points follow one another across entire spectral range and are consistent for all spectra within the dataset.
-Profile - data stored as [spectral channel, intensity] tuples.</description>
-    </item>
-    
-    <item>
-      <title>Data Representation</title>
-      <link>/basic-usage/load-data/data-representation/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/basic-usage/load-data/data-representation/</guid>
-      <description>A data representation is a means of accessing data.
- DataInMemory - data is loaded into memory and stored within this class. DataOnDisk - not data is loaded into memory and each access to any portion of the data results in a disk read.  To create a data representation for a currently unsupported style of data access, extend the DataRepresentation class and add the new class into the same folder.</description>
-    </item>
-    
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Load data on SpectralAnalysis: Software for the masses</title><link>/basic-usage/load-data/</link><description>Recent content in Load data on SpectralAnalysis: Software for the masses</description><generator>Hugo -- gohugo.io</generator><language>en-gb</language><atom:link href="/basic-usage/load-data/index.xml" rel="self" type="application/rss+xml"/><item><title>Parser</title><link>/basic-usage/load-data/parser/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/basic-usage/load-data/parser/</guid><description>A parser is something that understands a specific file format and enables the translation and loading of data.
+To create a parser for a currently unsupported file type, extend the Parser class and add the new class into the same folder.</description></item><item><title>Continuous vs Profile</title><link>/basic-usage/load-data/continuous-vs-profile/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/basic-usage/load-data/continuous-vs-profile/</guid><description>Continuous - data points follow one another across entire spectral range and are consistent for all spectra within the dataset.
+Profile - data stored as [spectral channel, intensity] tuples.</description></item><item><title>Data Representation</title><link>/basic-usage/load-data/data-representation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/basic-usage/load-data/data-representation/</guid><description>A data representation is a means of accessing data.
+DataInMemory - data is loaded into memory and stored within this class. DataOnDisk - not data is loaded into memory and each access to any portion of the data results in a disk read. To create a data representation for a currently unsupported style of data access, extend the DataRepresentation class and add the new class into the same folder.</description></item></channel></rss>

@@ -1,14 +1,2 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Spectral Preprocessing on SpectralAnalysis: Software for the masses</title>
-    <link>/basic-usage/preprocessing/</link>
-    <description>Recent content in Spectral Preprocessing on SpectralAnalysis: Software for the masses</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-gb</language>
-    
-	<atom:link href="/basic-usage/preprocessing/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Spectral Preprocessing on SpectralAnalysis: Software for the masses</title><link>/basic-usage/preprocessing/</link><description>Recent content in Spectral Preprocessing on SpectralAnalysis: Software for the masses</description><generator>Hugo -- gohugo.io</generator><language>en-gb</language><atom:link href="/basic-usage/preprocessing/index.xml" rel="self" type="application/rss+xml"/><item><title>Normalisation</title><link>/basic-usage/preprocessing/normalisation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/basic-usage/preprocessing/normalisation/</guid><description>Background The goal of normalisation is to scale the intensities of each pixel to remove systematic artefacts that affect intensity. For further reading on normalisation methods there are a number of articles that discuss this further
+Normalization in MALDI-TOF imaging datasets of proteins: practical considerations Robust data processing and normalization strategy for MALDI mass spectrometric imaging Exploring Ion Suppression in Mass Spectrometry Imaging of a Heterogeneous Tissue Applying a method in SpectralAnalysis Select a spectrum by clicking on a pixel in the image.</description></item></channel></rss>
