@@ -4,7 +4,7 @@ title = "SpectralAnalysis: Software for the masses"
 
 theme = "hugo-theme-learn"
 
-publishDir = "..\\docs"
+publishDir = "../docs"
 relativeURLs = "true"
 
 [params]
