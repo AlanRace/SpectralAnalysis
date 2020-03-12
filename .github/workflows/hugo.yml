@@ -22,12 +22,7 @@ jobs:
 
       - name: Build
         run: |
-          pwd
-          cd docs-src
-          hugo --minify
-          pwd
-          ls
-          cp -r public/* ../docs/*
+          hugo -s docs-src --minify
         
 
       - name: Deploy
