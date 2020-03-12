@@ -22,8 +22,10 @@ jobs:
 
       - name: Build
         run: |
+          pwd
           hugo -s docs-src -d docs --minify
-          cp -r *  docs-src/docs/* docs/*
+          pwd
+          cp -r *  docs-src/docs/* ../docs/*
         
 
       - name: Deploy
