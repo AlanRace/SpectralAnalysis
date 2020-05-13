@@ -1,3 +1,6 @@
 [submodule "src/gui/MOOGL"]
 	path = src/gui/MOOGL
 	url = https://github.com/AlanRace/MOOGL
+[submodule "docs-src/themes/hugo-theme-learn"]
+	path = docs-src/themes/hugo-theme-learn
+	url = https://github.com/matcornic/hugo-theme-learn.git

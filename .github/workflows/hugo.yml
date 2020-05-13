@@ -1,0 +1,37 @@
+name: Hugo CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1  # v2 does not have submodules option now
+        with:
+          submodules: true
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: 'latest'
+          # extended: true
+
+      - name: Build
+        run: |
+          hugo -s docs-src --minify
+        
+
+      - name: Deploy
+        run: |
+          git remote set-url origin https://AlanRace:${{ secrets.GITHUB_TOKEN }}@github.com/AlanRace/SpectralAnalysis.git
+          git config --global user.email "alan.m.race@gmail.com"
+          git config --global user.name "AlanRace"
+          git add docs/*
+          git commit -m "Updated docs"
+          git show-ref
+          git push origin HEAD:master
+        
