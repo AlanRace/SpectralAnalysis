@@ -24,7 +24,7 @@ classdef DatacubeReduction < DataReduction
             if nargin > 1
                 obj.output = output;
             else 
-                obj.output = 'Integrate over peak';
+                obj.output = 'New Window';
             end
             
             if nargin > 2
