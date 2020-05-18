@@ -34,7 +34,7 @@ Prior to running SpectralAnalysis, it is advisable to increase the 'Java Heap Si
 ### Installation without Git
 
 1. Download the source code of the [latest release](https://github.com/AlanRace/SpectralAnalysis/releases)
-2. Download the latest version of [MOOGL](https://github.com/AlanRace/MOOGL/tree/develop) and place in the `SpectralAnalysis\src\gui\MOOGL` folder
+2. Download the latest version of [MOOGL](https://github.com/AlanRace/MOOGL/) and place in the `SpectralAnalysis\src\gui\MOOGL` folder
 2. Open MATLAB and navigate to the folder containing the source code 
 3. Run the command `runSpectralAnalysis`
 
