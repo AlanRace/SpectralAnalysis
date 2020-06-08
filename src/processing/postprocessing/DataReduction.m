@@ -3,9 +3,9 @@ classdef DataReduction < PostProcessing
         peakList;
         peakDetails;
         
-        % 0 - extract at location
-        % 1 - integrate over peak
-        imageGenerationMethod = 0;
+%         % 0 - extract at location
+%         % 1 - integrate over peak
+% %         imageGenerationMethod = 0;
         
         dataRepresentationList;
     end
@@ -19,13 +19,13 @@ classdef DataReduction < PostProcessing
             obj.peakDetails = peakDetails;
         end
         
-        function setExtractAtLocation(this)
-            this.imageGenerationMethod = 0;
-        end
-        
-        function setIntegrateOverPeak(this)
-            this.imageGenerationMethod = 1;
-        end
+%         function setExtractAtLocation(this)
+%             this.imageGenerationMethod = 0;
+%         end
+%         
+%         function setIntegrateOverPeak(this)
+%             this.imageGenerationMethod = 1;
+%         end
         
         function spectrum = getProcessedSpectrum(this, dataRepresentation, x, y)
             spectrum = getProcessedSpectrum@PostProcessing(this, dataRepresentation, x, y);

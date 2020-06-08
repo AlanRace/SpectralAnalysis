@@ -3,7 +3,9 @@ classdef DatacubeReduction < DataReduction
         Name = 'Datacube';
         Description = '';
         
-        ParameterDefinitions = [ParameterDescription('Image Generation', ParameterType.Selection, {'Integrate over peak', 'Extract at location'}), ...
+        ParameterDefinitions = [...
+            ParameterDescription('Peak Tolerance (if < 0, detected peak width used)', ParameterType.Double, 0), ...
+            ParameterDescription('Tolerance Unit', ParameterType.Selection, {'PPM', 'Spectrum Unit'}), ...
             ParameterDescription('Output', ParameterType.Selection, {'New Window', 'ImzML'}), ...
             ParameterDescription('Intensity Data Type', ParameterType.Selection, {'Double', 'Single', '64-Bit Integer', ...
             '32-Bit Integer', '16-Bit Integer', '8-Bit Integer'}), ...
@@ -11,32 +13,30 @@ classdef DatacubeReduction < DataReduction
     end
     
     properties
-        imageGeneration;
+        peakTolerance;
+        toleranceUnit;
         output;
         intensityDataType;
         storageType;
     end
     
     methods
-        function obj = DatacubeReduction(imageGeneration, output, intensityDataType, storageType)
-            obj.imageGeneration = imageGeneration;
+        function obj = DatacubeReduction(peakTolerance, toleranceUnit, output, intensityDataType, storageType)
+            obj.peakTolerance = peakTolerance;
             
             if nargin > 1
-                obj.output = output;
-            else 
-                obj.output = 'New Window';
+                obj.toleranceUnit = toleranceUnit;
             end
             
             if nargin > 2
-                obj.intensityDataType = intensityDataType;
-                obj.storageType = storageType;
+                obj.output = output;
+            else
+                obj.output = 'New Window';
             end
             
-            switch(obj.imageGeneration)
-                case 'Extract at location'
-                    obj.setExtractAtLocation()
-                case 'Integrate over peak'
-                    obj.setIntegrateOverPeak()
+            if nargin > 3
+                obj.intensityDataType = intensityDataType;
+                obj.storageType = storageType;
             end
         end
         
@@ -56,8 +56,13 @@ classdef DatacubeReduction < DataReduction
         end
         
         function resultsViewerList = displayResults(this, dataViewer)
+            % displayResults is the callback function, called once
+            % DatacubeReduction is complete. This creates a DataViewerList and
+            % adds all newly created DataRepresentation to a DataViewer and
+            % returns the DataViewerList.
+        
             resultsViewerList = DataViewerList();
-            this.dataRepresentationList.getSize()
+            
             for i = 1:this.dataRepresentationList.getSize()
                 this.dataRepresentationList.get(i)
                 resultsViewerList.add(DataViewer(this.dataRepresentationList.get(i)));
@@ -95,11 +100,11 @@ classdef DatacubeReduction < DataReduction
                 imageData(:, i) = image(:);
             end
             
-            peakList = this.peakDetails(:, 2);
+            this.peakList = this.peakDetails(:, 2);
             data{1} = imageData;
             pixelLists{1} = this.getPixelListToProcess(dataRepresentation);
             
-            dataRepresentationList = generateDataRepresentationList(this, dataRepresentation, peakList, data, rois);
+            dataRepresentationList = generateDataRepresentationList(this, dataRepresentation, this.peakList, data, rois);
         end
         
         function dataRepresentationList = generateDataRepresentationList(this, dataRepresentation, peakList, data, rois)
@@ -137,11 +142,6 @@ classdef DatacubeReduction < DataReduction
             data = {};
             pixelLists = {};
             
-%             size(pixels)
-            
-            channelSize = length(this.peakList);
-            peakList = this.peakList;
-            
             canUseFastMethods = 0;
             preprocessingWorkflow = this.preprocessingWorkflow;
             
@@ -173,19 +173,19 @@ classdef DatacubeReduction < DataReduction
             
             %             canUseFastMethods = 0;
             
+            % TODO: this.peakList vs this.peakDetails - which is used and
+            % why?
+            
             if(canUseFastMethods && strcmp(this.output, 'New Window') && isa(dataRepresentation, 'DataOnDisk'))
-                
                 ped = ProgressEventData(0, ['Using fast methods. Generating ' num2str(length(this.peakList)) ' image(s)']);
                 notify(this, 'ProcessingProgress', ped);
                 
                 try
-                    peakList = this.peakList;
-                    
                     % Generate the peak list using the JSpectralAnalysis methods,
                     % otherwise small numerical errors cause different
                     % results and prevent the zero filling from working
                     % correctly
-                    if(isempty(peakList))
+                    if(isempty(this.peakList))
                         s = dataRepresentation.getSpectrum(pixels(1, 1), pixels(1, 2));
                         spectrum = com.alanmrace.JSpectralAnalysis.Spectrum(s.spectralChannels, s.intensities);
                         
@@ -193,50 +193,52 @@ classdef DatacubeReduction < DataReduction
                             spectrum = workflow.process(spectrum);
                         end
                         
-                        peakList = spectrum.getSpectralChannels();
-                        this.peakList = peakList;
+                        this.peakList = spectrum.getSpectralChannels();
                     end
                     
-                    if(this.imageGenerationMethod == 0)
-                        imageGeneration = com.alanmrace.JSpectralAnalysis.MultithreadedDatacubeGeneration(dataRepresentation.parser.imzML);
-                        imageGeneration.generateDatacube(dataRepresentation.parser.imzML, workflow, peakList, pixels);
-                    elseif(this.imageGenerationMethod == 1)
+                    % Determine peak limits based on supplied options
+                    if isempty(this.peakDetails)
+                        centroids = this.peakList;
+                    else
                         peakWidths = this.peakDetails(:, 3) - this.peakDetails(:, 1);
                         centroids = this.peakDetails(:, 1) + peakWidths ./ 2;
-                        
-                        imageGeneration = com.alanmrace.JSpectralAnalysis.MultithreadedDatacubeGeneration(dataRepresentation.parser.imzML);
-                        
-                        imageGeneration.generateDatacube(dataRepresentation.parser.imzML, workflow, centroids, peakWidths, pixels);
                     end
                     
+                    if(this.peakTolerance < 0 && ~isempty(this.peakDetails))
+                        peakWidths = this.peakDetails(:, 3) - this.peakDetails(:, 1);
+                    else
+                        if(strcmpi(this.toleranceUnit, 'PPM'))
+                            peakWidths = (centroids .* this.peakTolerance) / 1e6;
+                        else
+                            peakWidths = ones(size(centroids)) .* this.peakTolerance;
+                        end
+                    end
+                    
+                    imageGeneration = com.alanmrace.JSpectralAnalysis.MultithreadedDatacubeGeneration(dataRepresentation.parser.imzML);
+                    
+                    % Generate the datacube
+                    imageGeneration.generateDatacube(dataRepresentation.parser.imzML, workflow, centroids, peakWidths, pixels);
+                    
                     while(~imageGeneration.isDone())
-                        ped = ProgressEventData(imageGeneration.getProgress(), ['Using fast methods. Generating ' num2str(length(peakList)) ' image(s)']);
+                        ped = ProgressEventData(imageGeneration.getProgress(), ['Using fast methods. Generating ' num2str(length(this.peakList)) ' image(s)']);
                         notify(this, 'ProcessingProgress', ped);
                         
                         pause(0.05);
                     end
                     
-                    if(this.imageGenerationMethod == 0)
-                        images = imageGeneration.getDatacube();
-                    elseif(this.imageGenerationMethod == 1)
-                        images = imageGeneration.getDatacube();
-                        %                         images = imageGeneration.getImageList();
-                        %                         images = permute(images, [2 1 3]);
-                        %                         images = reshape(images, size(images, 1)*size(images, 2), []);
-                    end
-%                     data{1} = images;
-                    %                         peakList = this.peakList;
+                    % Get the images from the ImageGeneration Java class 
+                    images = imageGeneration.getDatacube();
                     
                     for i = 1:size(pixels, 1)
                         if(isempty(data))
                             if(this.processEntireDataset)
-                                data{end+1} = zeros(size(pixels, 1), channelSize);
+                                data{end+1} = zeros(size(pixels, 1), length(this.peakList));
                                 pixelLists{end+1} = pixels;
                             end
                             
                             for roiIndex = 1:numel(rois)
                                 pixelLists{end+1} = rois{roiIndex}.getPixelList();
-                                data{end+1} = zeros(size(pixelLists{end}, 1), channelSize);
+                                data{end+1} = zeros(size(pixelLists{end}, 1), length(this.peakList));
                             end
                         end
                         
@@ -268,7 +270,6 @@ classdef DatacubeReduction < DataReduction
                         
                         
                         this.peakList = preprocessedSpectrum.spectralChannels;
-                        channelSize = length(this.peakList);
                     end
                     
                     for i = 1:size(pixels, 1)
@@ -283,13 +284,13 @@ classdef DatacubeReduction < DataReduction
                         % Create the data based on the first spectrum acquired
                         if(isempty(data))
                             if(this.processEntireDataset)
-                                data{end+1} = zeros(size(pixels, 1), channelSize);
+                                data{end+1} = zeros(size(pixels, 1), length(this.peakList));
                                 pixelLists{end+1} = pixels;
                             end
                             
                             for roiIndex = 1:numel(rois)
                                 pixelLists{end+1} = rois{roiIndex}.getPixelList();
-                                data{end+1} = zeros(size(pixelLists{end}, 1), channelSize);
+                                data{end+1} = zeros(size(pixelLists{end}, 1), length(this.peakList));
                             end
                         end
                         

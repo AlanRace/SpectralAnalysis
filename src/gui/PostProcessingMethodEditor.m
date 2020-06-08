@@ -100,7 +100,7 @@ classdef PostProcessingMethodEditor < handle
 %
 %                 set(dataReductionPanel, 'Visible', 'off');
 
-                obj.specificOptionsPanel = uipanel(obj.figureHandle, 'Title', 'Common PostProcessing Options', ...
+                obj.specificOptionsPanel = uipanel(obj.figureHandle, 'Title', 'PostProcessing Options', ...
                     'Position', [0.05 0.2 0.9 0.7], 'Visible', 'off');
                 
                 
@@ -113,7 +113,7 @@ classdef PostProcessingMethodEditor < handle
                     
                     defaultValue = obj.parameterDefinitions(i).defaultValue;
                     
-                    height = 0.075;
+                    height = 0.1;
                     
                     if(type == ParameterType.List)
                         height = height *2;
@@ -125,25 +125,29 @@ classdef PostProcessingMethodEditor < handle
                             'Units', 'normalized', 'Position', [0.05 0.05 0.4 0.9], 'Callback', @(src, evnt)obj.changedListChoice(i));
                         uicontrol(obj.parameterInterfaceHandles(i), 'Style', 'edit', 'String', defaultValue(i).defaultValue, ...
                             'Units', 'normalized', 'Position', [0.55 0.05 0.4 0.9]);
-                    else
-%                         height = 0.05;
-                        
+                    else                        
                         uicontrol(obj.specificOptionsPanel, 'Style', 'text', 'String', obj.parameterDefinitions(i).name, 'HorizontalAlignment', 'left', ...
-                            'Units', 'normalized', 'Position', [.25 yPosition .25 height]);
+                            'Units', 'normalized', 'Position', [.05 yPosition-0.015 .5 height]);
 
                         if(type == ParameterType.Integer || type == ParameterType.Double)
                             obj.parameterInterfaceHandles(i) = uicontrol(obj.specificOptionsPanel, 'Style', 'edit', 'String', defaultValue, ...
-                                'Units', 'normalized', 'Position', [.55 yPosition .2 height], 'Callback', @(src, evnt)obj.parameterChanged());
+                                'Units', 'normalized', 'Position', [.55 yPosition .35 height], 'Callback', @(src, evnt)obj.parameterChanged());
                         elseif(type == ParameterType.Selection)
                             obj.parameterInterfaceHandles(i) = uicontrol(obj.specificOptionsPanel, 'Style', 'popup', 'String', defaultValue, ...
-                                'Units', 'normalized', 'Position', [.55 yPosition .2 height], 'Callback', @(src, evnt)obj.parameterChanged());
+                                'Units', 'normalized', 'Position', [.55 yPosition .35 height], 'Callback', @(src, evnt)obj.parameterChanged());
                         end
                     end
                     
                     yPosition = yPosition - height;
                 end
                 
-                obj.okButton = uicontrol(obj.figureHandle, 'String', 'Next >', ...
+                if(isempty(obj.parameterDefinitions))
+                    okButtonText = 'OK';
+                else
+                    okButtonText = 'Next >';
+                end
+                
+                obj.okButton = uicontrol(obj.figureHandle, 'String', okButtonText, ...
                     'Units', 'normalized', 'Position', [0.8 0.05 0.15 0.05], 'Callback', @(src, evnt)obj.okButtonCallback());
                 obj.backButton = uicontrol(obj.figureHandle, 'String', '< Back', 'Visible', 'off', ...
                     'Units', 'normalized', 'Position', [0.05 0.05 0.15 0.05], 'Callback', @(src, evnt)obj.backButtonCallback());
@@ -236,7 +240,7 @@ classdef PostProcessingMethodEditor < handle
         function okButtonCallback(obj)
             % Check if the common options panel is displayed, if so then
             % swap to the next one
-            if(strcmp(get(obj.commonOptionsPanel, 'Visible'), 'on'))
+            if(~isempty(obj.parameterDefinitions) && strcmp(get(obj.commonOptionsPanel, 'Visible'), 'on'))
                 set(obj.commonOptionsPanel, 'Visible', 'off');
                 set(obj.specificOptionsPanel, 'Visible', 'on');
                 
