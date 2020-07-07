@@ -49,13 +49,15 @@ Eraser
 : Toggle button. When active, use any shape to define an area to remove from the current region of interest. When deactivated, areas are added to the ROI.
 
 Threshold
-: Assign all pixels ... (see [Threshold](#threshold) for more details).
+: Assign all pixels based on thresholds applied (see [Threshold](#threshold) for more details).
 
 Move
 : Allows dragging of the ROI to a new location.
 
 
 #### Threshold {#threshold}
+
+
 
 ### Calculate statistics {#calculate-statistics}
 

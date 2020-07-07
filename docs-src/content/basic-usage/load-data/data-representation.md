@@ -2,9 +2,15 @@
 title = "Data Representation"
 +++
 
-A data representation is a means of accessing data.
+A data representation is a means of accessing data. Currently two general data representations are implemented `DataInMemory` and `DataOnDisk`. 
 
-* DataInMemory - data is loaded into memory and stored within this class. 
-* DataOnDisk - not data is loaded into memory and each access to any portion of the data results in a disk read.
+**DataInMemory** data is loaded into memory on initialisation, resulting in faster processing of data at the cost of RAM. 
 
-To create a data representation for a currently unsupported style of data access, extend the `DataRepresentation` class and add the new class into the same folder.
+**DataOnDisk** only the metadata is loaded into memory, with data being accessed from the disk only when needed. This is slower than `DataInMemory` but allows processing of datasets much larger than the available RAM.
+
+
+---
+
+#### Advanced
+
+To create a data representation for a currently unsupported style of data access, the `DataRepresentation` class should be extended and the new class added into the same folder.

@@ -6,7 +6,7 @@ weight = 1
 
 ![SpectralAnalysis Interface](/images/SpectralAnalysis-initialInterface-labelled.png)
 
-1. [Open Data](#openData)
+1. [Load Dataset (Open)](#openData)
 2. Convert data to SpectralAnalysis format
 3. View memory usage interface
 4. Progress bar
@@ -14,7 +14,7 @@ weight = 1
 
 <a name="openData"></a>
 
-## Opening Data
+### Load Dataset (Open)
 
 When selecting the 'Open' menu, the list of currently implemented [parsers]({{< ref "parser.md" >}}) will be shown, select the appropriate parser for the type of data to be opened.
 

@@ -20,13 +20,9 @@ This method of storing spectra can cause issues for spectral visualisation, comb
 ![Select a zero filling method](/images/SpectralAnalysis-preprocessing-zeroFilling.gif)
 
 1. Select a spectrum by clicking on a pixel in the image.
-
 2. Open `Preprocessing Workflow Editor` by selecting `Edit` button in `Spectral Preprocessing` panel.
-
 3. Select most appropriate `Zero Filling` method (see **Choosing the most appropriate method** section below) and click the adjacent `+` button.
-
 4. Enter desired parameters for the chosen method (if appropriate, and applicable), optionally checking the effect of the zero filling method by zooming into the spectrum and observing the 'before' and 'after' spectra.
-
 5. Click `OK` to close the `Edit Preprocesing Method` window and then `OK` again to close the `Preprocessing Workflow Editor`.  The chosen method(s) will now be automatically applied to any viewed spectrum.
 
    
@@ -34,7 +30,6 @@ This method of storing spectra can cause issues for spectral visualisation, comb
 ### Choosing the most appropriate method
 
 The most appropriate method to use depends on the data and the desired next step in the processing workflow. The methods included in SpectralAnalysis are described below.
-
 
 
 * Combine Bins
@@ -47,7 +42,6 @@ The most appropriate method to use depends on the data and the desired next step
 * Rebin
 * Calibration
 * Synapt
-
 
 
 ##### Rebin
