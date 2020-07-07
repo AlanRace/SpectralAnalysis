@@ -4,7 +4,7 @@ weight = 1
 +++
 
 
-![SpectralAnalysis Interface](https://i.imgur.com/a5lLeVM.png)
+![SpectralAnalysis Interface](/images/SpectralAnalysis-initialInterface-labelled.png)
 
 1. [Open Data](#openData)
 2. Convert data to SpectralAnalysis format
@@ -18,11 +18,11 @@ weight = 1
 
 When selecting the 'Open' menu, the list of currently implemented [parsers]({{< ref "parser.md" >}}) will be shown, select the appropriate parser for the type of data to be opened.
 
-![Select file type to open](https://i.imgur.com/uIHUqOG.png)
+![Select file type to open](/images/SpectralAnalysis-initialInterface-open.png)
 
 After selecting the file to open, the 'Select Data Representation' interface will be shown. This enables loading all data in memory (most memory intensive, fastest processing), loading only a subset of the data (limited spectral range and/or a selected region of interest) into memory or leaving the data on the disk (very little memory consumed, slower processing).
 
-![Select Data Representation interface](https://i.imgur.com/VZgBeXm.png)
+![Select Data Representation interface](/images/SpectralAnalysis-dataRepresentation-select.png)
 
 1. Select the [data representation]({{< ref "data-representation.md" >}}) to use to load the data (this interface is specific to Data In Memory).
 2. Optional spectral channel range to impose when loading data.

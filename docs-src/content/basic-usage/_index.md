@@ -12,7 +12,7 @@ weight = 2
 * Clustering
 * Multimodality data analysis
 
-![SpectralAnalysis Interface](https://i.imgur.com/XZy72vR.png)
+![SpectralAnalysis Interface](/images/SpectralAnalysis-interface.png)
 
 
 

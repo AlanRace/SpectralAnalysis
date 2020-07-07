@@ -14,7 +14,7 @@ Regions of interest (ROIs) are areas of an image, which can be used as input int
 ### Overview {#overview}
 The ROI panel can be found on the right on the main interface (number 1 in the image below).
 
-![Data Visualisation Interface](https://i.imgur.com/GeRcrGG.png)
+![Data Visualisation Interface](/images/SpectralAnalysis-ROI-labelled.png)
 
 1. Region of interest list
 2. Save region of interest list
@@ -26,7 +26,7 @@ The ROI panel can be found on the right on the main interface (number 1 in the i
 
 To create an ROI manually, the `Edit` button on the main interface in the [ROI panel](#overview) must be clicked. This then opens the `ROI List Editor`, shown below, displaying the ion image which was previously active in the main interface. 
 
-![Edit a region of interest](/images/2019-02-18-ROIEditor.gif)
+![Edit a region of interest](/images/SpectralAnalysis-ROIListEditor.png)
 
 To create a new ROI, first click the `+` button, and then in the new window, select an ROI name and colour and then click `OK`. This then adds the new ROI to the list (bottom left in the interface). The highlighted ROI is then displayed on top of the image, and any selected tool (defined below) can then be applied directly to the image by clicking and/or dragging.
 

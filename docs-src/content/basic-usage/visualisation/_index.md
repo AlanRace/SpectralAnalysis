@@ -13,7 +13,7 @@ weight = 2
 
 ### Overview
 
-![Data Visualisation Interface](https://i.imgur.com/209NDrs.png)
+![Data Visualisation Interface](/images/SpectralAnalysis-interface-labelled.png)
 
 1. Generate a [spectral representation]({{< ref "spectral-representation.md" >}})
 2. Perform [data reduction]({{< ref "data-reduction.md" >}})
@@ -25,7 +25,7 @@ weight = 2
 * Zooming into a spectrum is performed by click-and-drag below the spectrum axis (see below)
 * Zooming out is performed by double clicking below the spectrum axis
 
-![Spectral Zooming](https://i.imgur.com/xGenxPZ.gif)
+![Spectral Zooming](/images/SpectralAnalysis-interface-zooming.gif)
 
 ## Image Generation
 When the data is loaded as ['On Disk'](/basic-usage/load-data/data-representation), ion images are not automatically generated. As the generation of 10, 20, or even 100 ion images takes approximately the same amount of time when data is on disk, the generation process is only triggered when the user clicks the `G` button in the `Image List`, demonstrated in the image below. Once this button is clicked, all images that have not been previously generated (which do not have a tick next to them) in the image list will be generated.
@@ -37,4 +37,4 @@ There are four ways to add _m/z_ ranges to the `Image List`:
 3. Type a centroid value only into the `Image List`. When the images are generated, SpectralAnalysis will then automatically apply the range (+/-) with the units chosen (either PPM or Da) defined above the `Image List`.
 4. Load a previous list (of either centroid values, or ranges).
 
-![Image Generation](https://i.imgur.com/J7ZxGd4.gif)
+![Image Generation](/images/SpectralAnalysis-interface-imageGeneration.gif)

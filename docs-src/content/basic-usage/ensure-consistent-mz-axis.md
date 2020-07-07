@@ -17,7 +17,7 @@ This method of storing spectra can cause issues for spectral visualisation, comb
 
 ### Applying a method in SpectralAnalysis
 
-![Select a zero filling method](/images/2019-02-11-ZeroFilling.gif)
+![Select a zero filling method](/images/SpectralAnalysis-preprocessing-zeroFilling.gif)
 
 1. Select a spectrum by clicking on a pixel in the image.
 
