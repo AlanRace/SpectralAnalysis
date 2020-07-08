@@ -18,8 +18,8 @@ classdef SkeletonParser < Parser
             notify(this, 'ParsingStarted');
             
             % TODO: Perform any parsing of the data here. Making sure that width and height are filled in
-            this.width = ??;
-            this.height = ??;
+%             this.width = ??;
+%             this.height = ??;
             
             % Close the message and notify the user that parsing is complete
             notify(this, 'ParsingComplete');
@@ -28,8 +28,8 @@ classdef SkeletonParser < Parser
         function [spectralChannels, intensities] = getSpectrum(this, x, y)
             % TODO: Read in the data for the spectrum at location (x, y). If one doesn't exist then set spectralChannels and intensities to be empty
             
-            spectralChannels = ??;
-            intensities = ??;
+%             spectralChannels = ??;
+%             intensities = ??;
         end
         
         function image = getOverviewImage(this)

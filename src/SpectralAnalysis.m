@@ -7,7 +7,7 @@ if(isdeployed())
     path = ctfroot();
     disp(path);
 else
-    path = [fileparts(mfilename('fullpath'))];
+    path = fileparts(mfilename('fullpath'));
     
     % Ensure all folders are on the path
     addpath(genpath(path));
@@ -22,7 +22,7 @@ try
 catch err
     if((strcmp(err.identifier, 'MATLAB:class:undefinedMethod') || strcmp(err.identifier, 'MATLAB:class:InvalidSuperClass')) ...
             && ~isempty(strfind(err.message, 'Figure')))
-        disp(['ERROR: Missing MOOGL. Download from https://github.com/AlanRace/MOOGL and place in src/gui/MOOGL folder']);
+        disp('ERROR: Missing MOOGL. Download from https://github.com/AlanRace/MOOGL and place in src/gui/MOOGL folder');
         
         return;
     else
