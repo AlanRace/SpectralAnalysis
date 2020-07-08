@@ -12,11 +12,13 @@ Alan M. Race, Andrew D. Palmer, Alex Dexter, Rory T. Steven, Iain B. Styles, and
 </p>
 {{% /notice %}}
 
-![SpectralAnalysis Interface](/images/SpectralAnalysis-interface.png)
+![SpectralAnalysis Interface](/images/SpectralAnalysis-interface.png?width=45pc)
 
 
+#### Download 
+* [Get the latest standalone version](https://github.com/AlanRace/SpectralAnalysis/releases/). 
 
-[Get the latest version](https://github.com/AlanRace/SpectralAnalysis/releases/). 
+* [Get the latest source code](https://github.com/AlanRace/SpectralAnalysis).
 
 If downloading the source, please be aware that the latest version of [MOOGL](https://github.com/AlanRace/MOOGL/tree/master) must also be downloaded and included in the `SpectralAnalysis\src\gui\MOOGL` folder.
 

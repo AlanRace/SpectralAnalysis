@@ -3,7 +3,7 @@ title = "General Use"
 weight = 2
 +++
 
-
+![SpectralAnalysis Interface](/images/SpectralAnalysis-interface.png?width=40pc)
 
 ### Feature List
 * [Load spectral imaging data]({{< ref "basic-usage/load-data/_index.md" >}}) (mass spectrometry imaging, Raman)
@@ -19,7 +19,7 @@ weight = 2
 * ION-TOF export (.grd or .tof)
 * ASCII export from Raman spectroscopy (*.txt)
 
-![SpectralAnalysis Interface](/images/SpectralAnalysis-interface.png)
+
 
 
 
