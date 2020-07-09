@@ -31,5 +31,5 @@ jobs:
           git config --global user.email "alan.m.race@gmail.com"
           git config --global user.name "AlanRace"
           git add docs/*
-          git diff --quiet && git diff --staged --quiet || git commit -m "Updated docs" || git show-ref || git push origin HEAD:master
+          git diff --quiet || git commit -m "Updated docs" || git push origin HEAD:master
         
