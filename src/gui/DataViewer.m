@@ -62,7 +62,7 @@ classdef DataViewer < Figure
         clusteringMethods;
         
         toolsMenu;
-        
+        toolsMethods;
         contextMenu;
         
         % Store handles of each child interface element
@@ -205,6 +205,20 @@ classdef DataViewer < Figure
 
                 addlistener(obj.postProcessingMethodEditor, 'FinishedEditingPostProcessingMethod', @(src, evnt)obj.finishedEditingPostProcessingMethod());
             end
+        end
+        
+        function performTool(obj, toolsIndex)
+            if(isa(obj.postProcessingMethodEditor, 'PostProcessingEditor') && isvalid(obj.postProcessingMethodEditor))
+                figure(obj.postProcessingMethodEditor.handle);
+            else
+                obj.postProcessingMethodEditor = PostProcessingMethodEditor(obj.toolsMethods{toolsIndex});
+                
+                obj.postProcessingMethodEditor.setRegionOfInterestList(obj.regionOfInterestPanel.regionOfInterestList);
+
+                addlistener(obj.postProcessingMethodEditor, 'FinishedEditingPostProcessingMethod', @(src, evnt)obj.finishedEditingPostProcessingMethod());
+            end
+            close(gcf)
+            eval([obj.toolsMethods{toolsIndex}])
         end
         
         function finishedEditingPostProcessingMethod(obj)
@@ -929,9 +943,13 @@ classdef DataViewer < Figure
                         'Callback', @(src, evnt) obj.performClustering(i));
                 end
                 
-                obj.toolsMenu = uimenu(obj.handle, 'Label', 'Tools');
-                uimenu(obj.toolsMenu, 'Label', 'Export images', 'Callback', @(src, evnt) obj.showExportImagesTool());
+             obj.toolsMenu = uimenu(obj.handle, 'Label', 'Tools');
+                [obj.toolsMethods toolsNames] = getSubclasses('Tools', 0);
                 
+                for i = 1:length(toolsNames)
+                    uimenu(obj.toolsMenu, 'Label', toolsNames{i}, ...
+                        'Callback', @(src, evnt) obj.performTool(i));
+                end                
                 obj.createContextMenu();
                 set(obj.handle, 'uicontextmenu', obj.contextMenu);
                 
