@@ -6,7 +6,7 @@ Example ways to contribute include:
 - Reporting a [bug](https://github.com/AlanRace/SpectralAnalysis/issues/new).
 - Discussing the current state of the code
 - Submitting a [fix](https://github.com/AlanRace/SpectralAnalysis/pulls)
-- Proposing new features
+- Proposing [new features](https://alanrace.github.io/SpectralAnalysis/roadmap/)
 - Becoming a maintainer
 
 ## Contributing using GitHub
