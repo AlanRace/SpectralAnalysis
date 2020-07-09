@@ -1,5 +1,7 @@
 # SpectralAnalysis
-Analysis software for spectral imaging data. [Please read the manual](https://alanrace.github.io/SpectralAnalysis/).
+Software for the analysis and interactive exploration of spectral imaging data, including visualisation of both images and spectra, preprocessing, multivariate analysis and machine learning. 
+
+[Please read the manual](https://alanrace.github.io/SpectralAnalysis/) for a full list of features and how to use them.
 
 If you find this useful please cite:  Alan M. Race, Andrew D. Palmer, Alex Dexter, Rory T. Steven, Iain B. Styles, and Josephine Bunch, *Anal. Chem.*, 2016, 88 (19), pp 9451–9458. http://dx.doi.org/10.1021/acs.analchem.6b01643
 
