@@ -13,7 +13,7 @@ Example ways to contribute include:
 We use GitHub to host code, to track issues and feature requests, as well as accept pull requests. To contribute code or documentation:
 
 1. Fork the repo and create your branch from `master`.
-2. Add your new code and test against the example data.
+2. Add your new code and test against the [example data](https://alanrace.github.io/SpectralAnalysis/tutorials/).
 3. Update the documentation to describe any new or changed features, ideally using the example data to demonstrate this.
 4. Issue that pull request!
 
@@ -25,8 +25,3 @@ We use GitHub issues to track public bugs. Report a bug by [opening a new issue]
 
 Bug reports should be as detailed as possible. Maintainers need enough information to be able to recreate the issue to start to fix it. 
 
-## Use a Consistent Coding Style
-
-
-## License
-By contributing, you agree that your contributions will be licensed under its Apache Licence 2.0.
