@@ -1,6 +1,6 @@
-classdef KMeansClustering < Clustering
+classdef BasicKMeansClustering < Clustering
     properties (Constant)
-        Name = 'k-means';
+        Name = 'Basic k-means';
         Description = '';
         
         ParameterDefinitions = [ParameterDescription('k (Number of clusters)', ParameterType.Integer, 5), ...
