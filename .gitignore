@@ -19,3 +19,5 @@ requiredMCRProducts.txt
 run_SpectralAnalysis.sh
 
 SpectralAnalysis
+
+*.m~

@@ -164,6 +164,22 @@ classdef DataViewer < Figure
                 obj.spectrumDisplay.setData(totalSpectrum);
             end
             
+            % If data is in memory, then automatically generate the mean
+            % spectrum
+            if(isa(dataRepresentation, 'DataInMemory'))
+                meanSpectrumData = mean(dataRepresentation.data, 1);
+                
+                meanSpectrum = SpectralData(dataRepresentation.spectralChannels, meanSpectrumData);
+                meanSpectrum.setDescription('Mean spectrum');
+                meanSpectrum.setIsContinuous(dataRepresentation.isContinuous);
+                
+                obj.spectrumList.add(meanSpectrum);
+                obj.spectrumList.add(meanSpectrum);
+                
+                obj.updateSpectrumSelectionPopup();
+                obj.spectrumDisplay.setData(meanSpectrum);
+            end
+            
             % Ensure that all proportions are correct
             obj.sizeChanged();
             
