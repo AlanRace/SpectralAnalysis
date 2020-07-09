@@ -21,4 +21,4 @@ If downloading the source, please be aware that the latest version of [MOOGL](ht
 </p>
 
 ## Contributing to SpectralAnalysis
-We welcome all contributions to make SpectralAnalysis better. If you would like to contribute to SpectralAnalysis, please see the [contributing guide](docs/CONTRIBUTING.md).
+We welcome all contributions to make SpectralAnalysis better. If you would like to contribute to SpectralAnalysis, please first read our [code of conduct](CODE_OF_CONDUCT.md) and then see the [contributing guide](docs/CONTRIBUTING.md).
