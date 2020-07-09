@@ -1,18 +1,20 @@
 # Contributing to SpectralAnalysis
-SpectralAnalysis is now a community project and welcomes all input, including, but not exlusively:
+SpectralAnalysis is now a community project and welcomes input from anyone and everyone. 
 
-- Reporting a bug
+Example ways to contribute include:
+
+- Reporting a [bug](https://github.com/AlanRace/SpectralAnalysis/issues/new).
 - Discussing the current state of the code
-- Submitting a fix
+- Submitting a [fix](https://github.com/AlanRace/SpectralAnalysis/pulls)
 - Proposing new features
 - Becoming a maintainer
 
 ## Contributing using GitHub
-We use GitHub to host code, to track issues and feature requests, as well as accept pull requests. The 
+We use GitHub to host code, to track issues and feature requests, as well as accept pull requests. To contribute code or documentation:
 
 1. Fork the repo and create your branch from `master`.
-2. If you've added code that should be tested, add tests.
-3. If you've changed APIs, update the documentation.
+2. Add your new code and test against the example data.
+3. Update the documentation to describe any new or changed features, ideally using the example data to demonstrate this.
 4. Issue that pull request!
 
 ## Any contributions you make will be under the Apache License 2.0
