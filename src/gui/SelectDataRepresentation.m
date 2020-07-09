@@ -149,7 +149,7 @@ classdef SelectDataRepresentation < handle
             
             representation = representations{selectedRep};
             
-            if(~isempty(strfind(representation, 'In Memory')))
+            if(contains(representation, 'In Memory'))
                 set(obj.dataInMemoryPanel, 'Visible', 'on');
             else
                 set(obj.dataInMemoryPanel, 'Visible', 'off');
@@ -205,7 +205,7 @@ classdef SelectDataRepresentation < handle
 %             
 %             fileList = dir([spectralAnalysisPath filesep '*.m'])
             
-            [obj.zeroFillingMethodFiles zeroFillingClasses] = getSubclasses('SpectralZeroFilling', 1);
+            [obj.zeroFillingMethodFiles, zeroFillingClasses] = getSubclasses('SpectralZeroFilling', 1);
             
 %             zeroFillingClasses = {'None'};
 %             obj.zeroFillingMethodFiles = {'None'};
@@ -276,7 +276,7 @@ classdef SelectDataRepresentation < handle
             
             representation = representations{selectedRep};
                         
-            if(~isempty(strfind(representation, 'In Memory')))
+            if(contains(representation, 'In Memory'))
                 if(obj.parser.isProjectedData())
                     obj.dataRepresentation = ProjectedDataInMemory();
                 elseif(obj.parser.isSparseData())
@@ -292,7 +292,7 @@ classdef SelectDataRepresentation < handle
             notify(obj, 'DataRepresentationSelected');
             
             % Load data if necessary
-            if(~isempty(strfind(representation, 'In Memory')))
+            if(contains(representation, 'In Memory'))
                 try
                     obj.dataRepresentation.loadData(obj.parser, obj.regionOfInterest, [minValue maxValue], obj.zeroFilling);
                     

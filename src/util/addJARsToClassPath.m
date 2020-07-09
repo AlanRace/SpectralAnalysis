@@ -1,6 +1,6 @@
 function addJARsToClassPath()
 
-    jimzMLParserVersion = '1.0.8-jar-with-dependencies';
+    jimzMLParserVersion = '1.0.6-jar-with-dependencies';
     jSpectralAnalysisVersion = '1.0.2';
     jSIMSVersion = '1.0.0';
     
