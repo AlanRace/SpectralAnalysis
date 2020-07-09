@@ -19,7 +19,7 @@ function [classFiles classNames] = getSubclasses(superclass, includeNone)
     if(strcmp(superclass, 'Parser') || strcmp(superclass, 'ToBinaryConverter'))
         spectralAnalysisPath = [spectralAnalysisPath 'io' filesep];
     elseif(strcmp(superclass, 'SpectralZeroFilling'))    
-        spectralAnalysisPath = [spectralAnalysisPath 'processing' filesep 'preprocessing' filesep];
+        spectralAnalysisPath = [spectralAnalysisPath 'processing' filesep 'preprocessing' filesep 'axistransform' filesep];
     end
     
     % This file is located within ./util folder so go to parent directory

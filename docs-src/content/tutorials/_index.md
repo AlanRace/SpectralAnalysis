@@ -8,7 +8,7 @@ Here you can find complete examples of common analysis tasks using freely availa
 #### Example Data
 
 ##### Mouse Brain (MALDI MSI QTOF)
-This mouse brain dataset is available alongside [SpectralAnalysis](). It was acquired using MALDI MSI with a QSTAR XL mass spectrometer.
+This mouse brain dataset is available alongside [SpectralAnalysis](https://github.com/AlanRace/SpectralAnalysis/tree/master/example-data/mouse-brain). It was acquired using MALDI MSI with a QSTAR XL mass spectrometer.
 
 ![MALDI mouse brain data]()
 
@@ -17,6 +17,3 @@ This mouse bladded dataset is available from the [PRIDE repository](https://www.
 
 ![MALDI mouse bladder data](https://ms-imaging.org/wp/wp-content/uploads/2009/08/blue741green798red743_pride-imzml.jpg?width=30pc)
 
-{{% notice info %}}
-The dataset has already been peak picked as part of the conversion process, and so each spectrum contains _m/z_, peak intensity pairs. This requires specific preprocessing to be performed.
-{{% /notice %}} 

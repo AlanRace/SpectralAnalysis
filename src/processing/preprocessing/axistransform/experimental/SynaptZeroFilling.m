@@ -3,7 +3,7 @@ classdef SynaptZeroFilling < SpectralZeroFilling
         Name = 'Synapt';
         Description = '';
         
-        ParameterDefinitions = [ParameterDescription('Full m/z List', ParameterType.Double, [0 1000])];
+        ParameterDefinitions = [ParameterDescription('Full m/z List', ParameterType.Double, [0, 1000])];
     end
     
     properties (Access = public)
