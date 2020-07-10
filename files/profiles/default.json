@@ -1,0 +1,45 @@
+{
+	"name": "Default",
+	"SpectralZeroFilling": {
+		"folders": [
+			"$SPECTRALANALYSIS/src/processing/preprocessing/axistransform"
+		],
+		"files": []
+	},
+	"SpectralSmoothing": {
+		"folders": [
+			"$SPECTRALANALYSIS/src/processing/preprocessing/smoothing"
+		],
+		"files": []
+	},
+	"SpectralBaselineCorrection": {
+		"folders": [
+			"$SPECTRALANALYSIS/src/processing/preprocessing/baselinecorrection"
+		],
+		"files": []
+	},
+	"SpectralBaselineCorrection": {
+		"folders": [
+			"$SPECTRALANALYSIS/src/processing/preprocessing/baselinecorrection"
+		],
+		"files": []
+	},
+	"SpectralNormalisation": {
+		"folders": [
+			"$SPECTRALANALYSIS/src/processing/preprocessing/normalisation"
+		],
+		"files": []
+	},
+	"SpectralPeakDetection": {
+		"folders": [
+			"$SPECTRALANALYSIS/src/processing/peakdetection"
+		],
+		"files": []
+	},
+	"PeakFilter": {
+		"folders": [
+			"$SPECTRALANALYSIS/src/processing/peakdetection/peakfilter"
+		],
+		"files": []
+	}
+}

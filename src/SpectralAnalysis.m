@@ -16,6 +16,18 @@ end
 % Ensure libraries are on the path
 addJARsToClassPath();
 
+% Check if SpectralAnalysis folder exists
+spectralAnalysisHome = [homepath filesep '.SpectralAnalysis'];
+
+% TODO: Check last version and if newer then copy over
+if ~exist(spectralAnalysisHome, 'file')
+    mkdir(spectralAnalysisHome);
+    
+    copyfile([path filesep '..' filesep 'files' filesep 'profiles'], [spectralAnalysisHome filesep 'profiles'])
+end
+
+% TODO: Check version on github to see if update available
+
 % Launch spectral analysis interface
 try 
     spectralAnalysis = SpectralAnalysisInterface();
