@@ -8,12 +8,11 @@ srcPath = [path filesep 'src'];
 addpath(genpath(srcPath));
 
 % Compile preprocessing methods
-cd([srcPath filesep 'processing' filesep 'preprocessing']);
-
+cd([srcPath filesep 'processing' filesep 'preprocessing' filesep 'axistransform']);
 mex -largeArrayDims rebin.c
-mex -largeArrayDims synaptReplaceZeros.c
 
-cd '../../../'
+cd([srcPath filesep 'processing' filesep 'preprocessing' filesep 'axistransform' filesep 'experimental']);
+mex -largeArrayDims synaptReplaceZeros.c
 
 % Compile MEPCA methods
 cd([srcPath filesep 'processing' filesep 'postprocessing' filesep 'mepca'])
