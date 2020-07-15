@@ -1,0 +1,20 @@
+#baseURL = "https://alanrace.github.io/SpectralAnalysis/"
+languageCode = "en-gb"
+title = "SpectralAnalysis: Software for the masses"
+
+theme = "hugo-theme-learn"
+
+publishDir = "../docs"
+relativeURLs = "true"
+
+[params]
+  # Change default color scheme with a variant one. Can be "red", "blue", "green".
+  themeVariant = "blue"
+  author = "Alan Race"
+  description = "SpectralAnalysis: software for the masses documentation"
+  disableAssetsBusting = true
+
+
+[outputs]
+home = [ "HTML", "RSS", "JSON"]
+

@@ -112,7 +112,7 @@ classdef PreprocessingMethodEditor < Editor
                 parameterString = parameterString(1:end-2); % Strip off the last ', '
             end
             
-            parameterString = [parameterString ');'];
+            parameterString = [parameterString ');']
             
             eval(parameterString);
             

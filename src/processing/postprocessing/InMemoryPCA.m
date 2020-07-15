@@ -147,6 +147,15 @@ classdef InMemoryPCA < DataReduction
                 
                 dataRepresentationList.add(projectedDataRepresentation);
             end
+            
+            this.dataRepresentationList = dataRepresentationList;
+        end
+        
+        function viewer = displayResults(this, dataViewer)
+            for i = 1:this.dataRepresentationList.getSize()
+                this.dataRepresentationList.get(i)
+                viewer = PCADataViewer(this.dataRepresentationList.get(i));
+            end
         end
     end
 end

@@ -11,3 +11,13 @@ Ontologies/
 mccExcludedFiles\.log
 
 *.exe
+
+readme.txt
+
+requiredMCRProducts.txt
+
+run_SpectralAnalysis.sh
+
+SpectralAnalysis
+
+*.m~

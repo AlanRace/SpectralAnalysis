@@ -1,21 +1,23 @@
 disp(['This script compiles SpectralAnalysis, if you instead intended to start SpectralAnalysis, please use the command runSpectralAnalysis']);
 
-path = [fileparts(mfilename('fullpath')) filesep 'src'];
+path = fileparts(mfilename('fullpath'));
+
+srcPath = [path filesep 'src'];
 
 % Ensure all folders are on the path
-addpath(genpath(path));
+addpath(genpath(srcPath));
 
 % Compile preprocessing methods
-cd 'src/processing/preprocessing/'
-
+cd([srcPath filesep 'processing' filesep 'preprocessing' filesep 'axistransform']);
 mex -largeArrayDims rebin.c
+
+cd([srcPath filesep 'processing' filesep 'preprocessing' filesep 'axistransform' filesep 'experimental']);
 mex -largeArrayDims synaptReplaceZeros.c
 
-cd '../../../'
-
 % Compile MEPCA methods
-cd 'src/processing/postprocessing/mepca'
+cd([srcPath filesep 'processing' filesep 'postprocessing' filesep 'mepca'])
 compileMEPCA
-cd '../../../../'
+
+cd(path)
 
 mcc -v -m SpectralAnalysis.m -a lib/ -a src/ -a *.m -a *.mex*

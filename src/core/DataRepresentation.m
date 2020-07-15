@@ -59,8 +59,8 @@ classdef DataRepresentation < handle
             obj.minY = min(obj.pixels(:, 2));
             obj.maxY = max(obj.pixels(:, 2));
             
-            obj.width = (obj.maxX - obj.minX) + 1;
-            obj.height = (obj.maxY - obj.minY) + 1;
+            obj.width = obj.regionOfInterest.width; %(obj.maxX - obj.minX) + 1;
+            obj.height = obj.regionOfInterest.height; %(obj.maxY - obj.minY) + 1;
             
             if(obj.isRowMajor)
                 % Sort by rows and then columns
@@ -110,6 +110,40 @@ classdef DataRepresentation < handle
                     variableName = inputdlg('Invalid variable name. Please specifiy a variable name:', 'Variable name', 1, variableName);
                 end
             end
+        end
+        
+        % Handle export of object
+        function s = saveobj(obj)
+            s.class = class(obj);
+            s.width = obj.width;
+            s.height = obj.height;
+            
+            s.name = obj.name;
+            
+            s.isContinuous = obj.isContinuous;
+            
+%             regionOfInterest;
+            s.pixels = obj.pixels;
+            s.pixelIndicies = obj.pixelIndicies;
+            
+            s.isRowMajor = obj.isRowMajor;
+        end
+    end
+    
+    methods (Access = protected)
+        function loadObjectParameters(this, obj)
+            this.width = obj.width;
+            this.height = obj.height;
+            
+            this.name = obj.name;
+            
+            this.isContinuous = obj.isContinuous;
+            
+%             regionOfInterest;
+            this.pixels = obj.pixels;
+            this.pixelIndicies = obj.pixelIndicies;
+            
+            this.isRowMajor = obj.isRowMajor;
         end
     end
 end

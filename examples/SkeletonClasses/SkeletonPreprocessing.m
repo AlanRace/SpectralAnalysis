@@ -1,4 +1,4 @@
-classdef SkeletonPreprocessing < ?? % TODO: Change SpectralSmoothing to appropriate parent class
+classdef SkeletonPreprocessing < SpectralSmoothing % TODO: Change SpectralSmoothing to appropriate parent class
     properties (Constant)
         Name = 'Skeleton Preprocessing'; % TODO: Provide a sensible name
         Description = 'This is just a template class';
@@ -23,7 +23,7 @@ classdef SkeletonPreprocessing < ?? % TODO: Change SpectralSmoothing to appropri
         function [spectralChannels, intensities] = smooth(obj, spectralChannels, intensities)
             % TODO: Smooth the spectrum using any parameters required
             
-            intensities = ??;
+%             intensities = ??;
         end
     end
 end

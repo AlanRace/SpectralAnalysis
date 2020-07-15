@@ -1,4 +1,4 @@
-classdef ProjectedDataInMemory < DataInMemory
+classdef ProjectedDataInMemory < DataInMemory & ProjectedDataRepresentation
     
     properties (SetAccess = protected)
         projectionMatrix;

@@ -204,6 +204,8 @@ classdef InMemorypLSA < DataReduction
                 
                 dataRepresentationList.add(projectedDataRepresentation);
             end
+            
+            this.dataRepresentationList = dataRepresentationList;
         end
     end
 end
