@@ -171,9 +171,9 @@ classdef SelectDataRepresentation < handle
                         y = 1;
                     end
                     
-                    [spectralChannels, intensities] = obj.parser.getSpectrum(floor(obj.parser.getWidth()/2), y);
+                    spectralData = obj.parser.getSpectrum(floor(obj.parser.getWidth()/2), y);
                     
-                    obj.preprocessingMethodEditor = PreprocessingMethodEditor(SpectralData(spectralChannels, intensities), obj.zeroFillingMethodFiles{index});
+                    obj.preprocessingMethodEditor = PreprocessingMethodEditor(spectralData, obj.zeroFillingMethodFiles{index});
                     
                     % Add a listener for updating preprocessingMethod list
                     addlistener(obj.preprocessingMethodEditor, 'FinishedEditing', @(src, evnt)obj.finishedEditingPreprocessingMethod());
