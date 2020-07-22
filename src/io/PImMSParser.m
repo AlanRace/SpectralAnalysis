@@ -140,5 +140,15 @@ classdef PImMSParser < Parser
 
             spectrum = SpectralData(spectralChannels, intensities);
         end
+                
+        function dataRepresentation = getDefaultDataRepresentation(this)
+            dataRepresentation = DataInMemory();
+            
+            obj.dataRepresentation.loadData(this, this.getAnalysedRegion(), [], []);
+        end
+        
+        function workflow = getDefaultPreprocessingWorkflow(obj)
+            workflow = PreprocessingWorkflow();
+        end
     end
 end

@@ -959,13 +959,16 @@ classdef DataViewer < Figure
                         'Callback', @(src, evnt) obj.performClustering(i));
                 end
                 
-             obj.toolsMenu = uimenu(obj.handle, 'Label', 'Tools');
+                obj.toolsMenu = uimenu(obj.handle, 'Label', 'Tools');
                 [obj.toolsMethods toolsNames] = getSubclasses('Tools', 0);
+                
+                uimenu(obj.toolsMenu, 'Label', 'Load in memory', 'Callback', @(src, evnt) obj.selectNewDataRepresentation());
                 
                 for i = 1:length(toolsNames)
                     uimenu(obj.toolsMenu, 'Label', toolsNames{i}, ...
                         'Callback', @(src, evnt) obj.performTool(i));
-                end                
+                end 
+                
                 obj.createContextMenu();
                 set(obj.handle, 'uicontextmenu', obj.contextMenu);
                 
@@ -1064,7 +1067,19 @@ classdef DataViewer < Figure
             end
         end
         
+        function selectNewDataRepresentation(obj)
+            sdr = SelectDataRepresentation(obj.dataRepresentation.parser);
+                        
+%             addlistener(sdr, 'DataRepresentationSelected', @(src, evnt)this.dataRepresentationSelected(src.dataRepresentation));
+            addlistener(sdr, 'DataRepresentationLoaded', @(src, evnt)obj.loadNewDataRepresentation(src.dataRepresentation));
+        end
         
+        function loadNewDataRepresentation(obj, dataRepresentation)
+            dataViewer = DataViewer(dataRepresentation);
+            
+%             this.addDataViewer(dataViewer);
+        end
+            
         
         function imageListTableSelected(obj, src, evnt)
             obj.imageListPanelLastSelected = evnt.Indices;

@@ -30,7 +30,7 @@ classdef ImzMLParser < Parser
             
             if(~strcmpi(ext, '.imzML'))
                 exception = MException('ImzMLParser:FailedToParse', ...
-                    ['Must supply an imzML file (*.imzML)']);
+                    'Must supply an imzML file (*.imzML)');
                 throw(exception);
             end
 
@@ -133,9 +133,17 @@ classdef ImzMLParser < Parser
             image = Image(obj.imzML.generateTICImage());
             image.setDescription('TIC Image');
         end
-        
+                
         function delete(obj) 
             obj.imzML.close();
+        end
+        
+        function dataRepresentation = getDefaultDataRepresentation(this)
+            dataRepresentation = DataOnDisk(this);
+        end
+        
+        function workflow = getDefaultPreprocessingWorkflow(obj)
+            workflow = PreprocessingWorkflow();
         end
         
         % For faster access to data, determine wether the data is stored by
