@@ -5,6 +5,7 @@ classdef DataViewer < Figure
     properties (SetAccess = private)
         %handle = 0;
         
+        
         %%
         % <html>
         % <a href="ImageDisplay.html">ImageDisplay</a>
@@ -25,7 +26,8 @@ classdef DataViewer < Figure
         % <a href="PreprocessingWorkflow.html">PreprocessingWorkflow</a>
         % preprocessingWorkflow;
         % </html>
-        preprocessingWorkflow;
+        spectrumPreprocessingWorkflow;
+        imageGenPreprocessingWorkflow;
         
         % Data that has been generated and should be shown in the 
         imageListGenerated;
@@ -99,6 +101,14 @@ classdef DataViewer < Figure
         preprocessingPanel;
         preprocessingLabel;
         editPreprocessingButton;
+        
+        spectrumPreprocessingLabel;
+        viewSpectrumPreprocessingButton;
+        editSpectrumPreprocessingButton;
+        
+        imageGenPreprocessingLabel;
+        viewImageGenPreprocessingButton;
+        editImageGenPreprocessingButton;
         
         progressBarAxis
         progressBar;
@@ -191,11 +201,11 @@ classdef DataViewer < Figure
             if(isa(obj.postProcessingMethodEditor, 'PostProcessingEditor') && isvalid(obj.postProcessingMethodEditor))
                 figure(obj.postProcessingMethodEditor.handle);
             else
-                obj.postProcessingMethodEditor = PostProcessingMethodEditor(obj.spectralRepresentationMethods{representationIndex});%MemoryEfficientPCAEditor(obj.spectrumDisplay.peakList, obj.preprocessingWorkflow);
+                obj.postProcessingMethodEditor = PostProcessingMethodEditor(obj.spectralRepresentationMethods{representationIndex});
                 
                 obj.postProcessingMethodEditor.setRegionOfInterestList(obj.regionOfInterestPanel.regionOfInterestList);
 
-                addlistener(obj.postProcessingMethodEditor, 'FinishedEditingPostProcessingMethod', @(src, evnt)obj.finishedEditingPostProcessingMethod());
+                addlistener(obj.postProcessingMethodEditor, 'FinishedEditingPostProcessingMethod', @(src, evnt)obj.finishedEditingSpectralRepresentationMethod());
             end
         end
         
@@ -203,7 +213,7 @@ classdef DataViewer < Figure
             if(isa(obj.postProcessingMethodEditor, 'PostProcessingEditor') && isvalid(obj.postProcessingMethodEditor))
                 figure(obj.postProcessingMethodEditor.handle);
             else
-                obj.postProcessingMethodEditor = PostProcessingMethodEditor(obj.dataReductionMethods{dataReductionIndex});%MemoryEfficientPCAEditor(obj.spectrumDisplay.peakList, obj.preprocessingWorkflow);
+                obj.postProcessingMethodEditor = PostProcessingMethodEditor(obj.dataReductionMethods{dataReductionIndex});
                 
                 obj.postProcessingMethodEditor.setRegionOfInterestList(obj.regionOfInterestPanel.regionOfInterestList);
 
@@ -237,6 +247,27 @@ classdef DataViewer < Figure
             eval([obj.toolsMethods{toolsIndex}])
         end
         
+        function finishedEditingSpectralRepresentationMethod(obj)
+            postProcessingMethod = obj.postProcessingMethodEditor.postProcessingMethod;
+            
+            if(isa(postProcessingMethod, 'DataReduction'))
+                postProcessingMethod.setPeakList(obj.spectrumDisplay.peakList);
+                postProcessingMethod.setPeakDetails(obj.spectrumDisplay.peakDetails);
+            end
+            
+            postProcessingMethod.setPreprocessingWorkflow(obj.spectrumPreprocessingWorkflow);
+            
+            obj.progressBar.updateProgress(ProgressEventData(0, ''));
+            addlistener(postProcessingMethod, 'ProcessingProgress', @(src, evnt)obj.progressBar.updateProgress(evnt));
+            
+            set(obj.progressBar.axisHandle, 'Visible', 'on');
+            
+            postProcessingMethod.process(obj.dataRepresentation);
+            postProcessingMethod.displayResults(obj);
+            
+            set(obj.progressBar.axisHandle, 'Visible', 'off');
+        end
+        
         function finishedEditingPostProcessingMethod(obj)
             postProcessingMethod = obj.postProcessingMethodEditor.postProcessingMethod;
             
@@ -245,7 +276,7 @@ classdef DataViewer < Figure
                 postProcessingMethod.setPeakDetails(obj.spectrumDisplay.peakDetails);
             end
             
-            postProcessingMethod.setPreprocessingWorkflow(obj.preprocessingWorkflow);
+            postProcessingMethod.setPreprocessingWorkflow(obj.imageGenPreprocessingWorkflow);
             
             obj.progressBar.updateProgress(ProgressEventData(0, ''));
             addlistener(postProcessingMethod, 'ProcessingProgress', @(src, evnt)obj.progressBar.updateProgress(evnt));
@@ -322,8 +353,8 @@ classdef DataViewer < Figure
             obj.updateSpectrumSelectionPopup();
             set(obj.spectrumSelectionPopup, 'Value', 1);
             
-            if(~isempty(obj.preprocessingWorkflow))
-                spectrum = obj.preprocessingWorkflow.performWorkflow(spectrum);
+            if(~isempty(obj.spectrumPreprocessingWorkflow))
+                spectrum = obj.spectrumPreprocessingWorkflow.performWorkflow(spectrum);
             end
             
             obj.spectrumDisplay.setData(spectrum);
@@ -364,7 +395,7 @@ classdef DataViewer < Figure
             else
                 listener = addlistener(obj.dataRepresentation, 'DataLoadProgress', @(src, evnt)obj.progressBar.updateProgress(evnt));
 
-                image = obj.dataRepresentation.generateImages(spectralRange(1)+halfWidth, halfWidth, obj.preprocessingWorkflow);
+                image = obj.dataRepresentation.generateImages(spectralRange(1)+halfWidth, halfWidth, obj.imageGenPreprocessingWorkflow);
 
                 delete(listener);
 
@@ -553,7 +584,7 @@ classdef DataViewer < Figure
             if(~isempty(spectralChannelList))
                 listener = addlistener(obj.dataRepresentation, 'DataLoadProgress', @(src, evnt)obj.progressBar.updateProgress(evnt));
             
-                imageList = obj.dataRepresentation.generateImages(spectralChannelList, widthList, obj.preprocessingWorkflow);
+                imageList = obj.dataRepresentation.generateImages(spectralChannelList, widthList, obj.imageGenPreprocessingWorkflow);
                 
                 delete(listener);
                 
@@ -694,8 +725,8 @@ classdef DataViewer < Figure
                         spectraToOverlayList(i) = obj.spectrumList.get(spectraToOverlay(i));
                     end
                     
-                    if(~isempty(obj.preprocessingWorkflow))
-                        spectraToOverlayList(i) = obj.preprocessingWorkflow.performWorkflow(spectraToOverlayList(i));
+                    if(~isempty(obj.spectrumPreprocessingWorkflow))
+                        spectraToOverlayList(i) = obj.spectrumPreprocessingWorkflow.performWorkflow(spectraToOverlayList(i));
                     end
                 end
                                 
@@ -717,9 +748,9 @@ classdef DataViewer < Figure
                 spectrum1 = this.spectrumList.get(spectraToSubstract(1));
                 spectrum2 = this.spectrumList.get(spectraToSubstract(2));
                 
-                if(~isempty(this.preprocessingWorkflow))
-                    spectrum1 = this.preprocessingWorkflow.performWorkflow(spectrum1);
-                    spectrum2 = this.preprocessingWorkflow.performWorkflow(spectrum2);
+                if(~isempty(this.spectrumPreprocessingWorkflow))
+                    spectrum1 = this.spectrumPreprocessingWorkflow.performWorkflow(spectrum1);
+                    spectrum2 = this.spectrumPreprocessingWorkflow.performWorkflow(spectrum2);
                 end
                 
                 try 
@@ -763,7 +794,7 @@ classdef DataViewer < Figure
                 else
                     spectrum = obj.spectrumList.get(spectrumIndex);
 
-                    obj.preprocessingWorkflowEditor = PreprocessingWorkflowEditor(spectrum, obj.preprocessingWorkflow);
+                    obj.preprocessingWorkflowEditor = PreprocessingWorkflowEditor(spectrum, obj.spectrumPreprocessingWorkflow);
 
                     addlistener(obj.preprocessingWorkflowEditor, 'FinishedEditing', @(src, evnt)obj.finishedEditingPreprocessingWorkflow());
                 end
@@ -772,10 +803,10 @@ classdef DataViewer < Figure
         
         %% finishedEditingPreprocessingWorkflow()
         function finishedEditingPreprocessingWorkflow(obj)
-            obj.preprocessingWorkflow = obj.preprocessingWorkflowEditor.preprocessingWorkflow;
+            obj.spectrumPreprocessingWorkflow = obj.preprocessingWorkflowEditor.preprocessingWorkflow;
             obj.preprocessingWorkflowEditor = [];
             
-            set(obj.preprocessingLabel, 'String', obj.preprocessingWorkflow.toCellArrayOfStrings());
+            set(obj.preprocessingLabel, 'String', obj.spectrumPreprocessingWorkflow.toCellArrayOfStrings());
             
 %             spectrumIndex = get(obj.spectrumSelectionPopup, 'Value');
             if(isempty(obj.spectrumListTableLastSelected))
@@ -849,8 +880,8 @@ classdef DataViewer < Figure
                 
 %                 figure; plot(spectrum.spectralChannels, spectrum.intensities);
 %                 
-                if(~isempty(this.preprocessingWorkflow))
-                    spectrum = this.preprocessingWorkflow.performWorkflow(spectrum);
+                if(~isempty(this.spectrumPreprocessingWorkflow))
+                    spectrum = this.spectrumPreprocessingWorkflow.performWorkflow(spectrum);
                 end
             
                 this.spectrumDisplay.setData(spectrum);
@@ -995,20 +1026,25 @@ classdef DataViewer < Figure
                     'CellSelectionCallback', @(src, evnt) obj.imageListTableSelected(src, evnt), ...
                     'CellEditCallback', @(src, evnt) obj.imageListTableEdited(src, evnt));
                 
-                obj.generateImageListButton = uicontrol('Parent', obj.imageListPanel, 'String', 'G', ...
+                obj.generateImageListButton = uicontrol('Parent', obj.imageListPanel, ...
                     'Callback', @(src, evnt) obj.generateImagesCallback(), ...
+                    'CData', getIcon('add_photo_alternate', obj.buttonColour, obj.iconColour), ...
                     'TooltipString', 'Generate all images in the list');
-                obj.overlayImagesButton = uicontrol('Parent', obj.imageListPanel, 'String', 'O', ...
+                obj.overlayImagesButton = uicontrol('Parent', obj.imageListPanel, ...
                     'Callback', @(src, evnt) obj.overlayImagesCallback(), ...
-                    'TooltipString', 'Overlay selected images');
-                obj.removeImageButton = uicontrol('Parent', obj.imageListPanel, 'String', '-', ...
+                    'CData', getIcon('compare', obj.buttonColour, obj.iconColour), ...
+                    'TooltipString', 'Generate RGB composite of selected images');
+                obj.removeImageButton = uicontrol('Parent', obj.imageListPanel, ...
                     'Callback', @(src, evnt) obj.removeImagesCallback(), ...
+                    'CData', getIcon('delete', obj.buttonColour, obj.iconColour), ...
                     'TooltipString', 'Remove all selected images');
-                obj.saveImageListButton = uicontrol('Parent', obj.imageListPanel, 'String', 'S', ...
+                obj.saveImageListButton = uicontrol('Parent', obj.imageListPanel, ...
                     'Callback', @(src, evnt) obj.saveImageListCallback(), ...
+                    'CData', getIcon('save_alt', obj.buttonColour, obj.iconColour), ...
                     'TooltipString', 'Save image list');
-                obj.loadImageListButton = uicontrol('Parent', obj.imageListPanel, 'String', 'L', ...
+                obj.loadImageListButton = uicontrol('Parent', obj.imageListPanel, ...
                     'Callback', @(src, evnt) obj.loadImageListCallback(), ...
+                    'CData', getIcon('folder_open', obj.buttonColour, obj.iconColour), ...
                     'TooltipString', 'Load image list');
 
                 obj.regionOfInterestPanel = RegionOfInterestPanel(obj);
@@ -1029,17 +1065,21 @@ classdef DataViewer < Figure
                 obj.spectrumListTable = uitable('Parent', obj.spectrumListPanel, 'ColumnName', {'Spectrum'}, 'RowName', [], ...
                     'ColumnWidth', {200}, 'CellSelectionCallback', @(src, evnt) obj.spectrumListTableSelected(src, evnt));
                 
-                obj.addSpectrumButton = uicontrol('Parent', obj.spectrumListPanel, 'String', '+', ...
+                obj.addSpectrumButton = uicontrol('Parent', obj.spectrumListPanel, ...
                     'Callback', @(src, evnt) obj.addSpectrumToListCallback(), ...
+                    'CData', getIcon('bookmark', obj.buttonColour, obj.iconColour), ...
                     'TooltipString', 'Add current spectrum to the list');
-                obj.overlaySpectrumButton = uicontrol('Parent', obj.spectrumListPanel, 'String', 'O', ...
+                obj.overlaySpectrumButton = uicontrol('Parent', obj.spectrumListPanel, ...
                     'Callback', @(src, evnt) obj.overlaySpectrumCallback(), ...
+                    'CData', getIcon('layers', obj.buttonColour, obj.iconColour), ...
                     'TooltipString', 'Overlay selected spectra');
-                obj.subtractSpectrumButton = uicontrol('Parent', obj.spectrumListPanel, 'String', 'S', ...
+                obj.subtractSpectrumButton = uicontrol('Parent', obj.spectrumListPanel, ...
                     'Callback', @(src, evnt) obj.subtractSpectrumCallback(), ...
+                    'CData', getIcon('remove', obj.buttonColour, obj.iconColour), ...
                     'TooltipString', 'Subtract selected spectra');
-                obj.removeSpectrumButton = uicontrol('Parent', obj.spectrumListPanel, 'String', '-', ...
+                obj.removeSpectrumButton = uicontrol('Parent', obj.spectrumListPanel, ...
                     'Callback', @(src, evnt) obj.removeSpectraFromListCallback(), ...
+                    'CData', getIcon('delete', obj.buttonColour, obj.iconColour), ...
                     'TooltipString', 'Remove selected spectra from the list');
                 
 %                 obj.spectrumAxis = axes('Parent', obj.handle, 'Position', [.1 .3 .8 .25]);
@@ -1053,12 +1093,35 @@ classdef DataViewer < Figure
                 addlistener(obj.spectrumDisplay, 'PeakSelected', @(src, evnt)obj.peakSelected(evnt));
                 
                 
-                obj.preprocessingPanel = uipanel('Parent', obj.handle, 'Title', 'Spectral Preprocessing', ...
+                obj.preprocessingPanel = uipanel('Parent', obj.handle, 'Title', 'Preprocessing', ...
                     'Position', [.525 .05 .425 .2]);
-                obj.preprocessingLabel = uicontrol('Parent', obj.preprocessingPanel, 'Style', 'text', ...
-                    'String', '', 'HorizontalAlignment', 'left', 'Units', 'normalized', 'Position', [0.05 0.05 0.9 0.9]);
-                obj.editPreprocessingButton = uicontrol('Parent', obj.preprocessingPanel, 'String', 'Edit', ...
-                    'Units', 'normalized', 'Position', [0.65 0.1 0.3 0.3], 'Callback', @(src, evnt)obj.editPreprocessingWorkflow());
+                
+                obj.spectrumPreprocessingLabel = uicontrol('Parent', obj.preprocessingPanel, 'Style', 'text', ...
+                    'HorizontalAlignment', 'left', ...
+                    'Units', 'normalized', 'Position', [0.05 0.7 0.5 0.2], 'String', 'Spectrum');
+                obj.viewSpectrumPreprocessingButton = uicontrol('Parent', obj.preprocessingPanel, ...
+                    'Units', 'normalized', 'Position', [0.55 0.75 0.2 0.2], ...
+                    'CData', getIcon('notes', obj.buttonColour, obj.iconColour));
+                obj.editSpectrumPreprocessingButton = uicontrol('Parent', obj.preprocessingPanel, ...
+                    'Units', 'normalized', 'Position', [0.75 0.75 0.2 0.2], ...
+                    'Callback', @(src, evnt)obj.editPreprocessingWorkflow(), ...
+                    'CData', getIcon('edit', obj.buttonColour, obj.iconColour));
+                
+                obj.imageGenPreprocessingLabel = uicontrol('Parent', obj.preprocessingPanel, 'Style', 'text', ...
+                    'HorizontalAlignment', 'left', ...
+                    'Units', 'normalized', 'Position', [0.05 0.5 0.5 0.2], 'String', 'Image Generation');
+                obj.viewImageGenPreprocessingButton = uicontrol('Parent', obj.preprocessingPanel, ...
+                    'Units', 'normalized', 'Position', [0.55 0.55 0.2 0.2], ...
+                    'CData', getIcon('notes', obj.buttonColour, obj.iconColour));
+                obj.editImageGenPreprocessingButton = uicontrol('Parent', obj.preprocessingPanel, ...
+                    'Units', 'normalized', 'Position', [0.75 0.55 0.2 0.2], ...
+                    'CData', getIcon('edit', obj.buttonColour, obj.iconColour));
+                
+                
+%                 obj.preprocessingLabel = uicontrol('Parent', obj.preprocessingPanel, 'Style', 'text', ...
+%                     'String', '', 'HorizontalAlignment', 'left', 'Units', 'normalized', 'Position', [0.05 0.05 0.9 0.9]);
+%                 obj.editPreprocessingButton = uicontrol('Parent', obj.preprocessingPanel, 'String', 'Edit', ...
+%                     'Units', 'normalized', 'Position', [0.65 0.1 0.3 0.3], 'Callback', @(src, evnt)obj.editPreprocessingWorkflow());
                 
                 obj.progressBarAxis = axes('Parent', obj.handle, 'Position', [.05 .01 .9 .03], 'Visible', 'off');
                 obj.progressBar = ProgressBar(obj.progressBarAxis);          
@@ -1134,7 +1197,9 @@ classdef DataViewer < Figure
                 colourBarSize = 80;
                 spectrumExtraSize = 30;
                 spectrumExtraSize = 0;
-                buttonHeight = 25;
+                buttonHeight = 28;
+                editBoxHeight = buttonHeight - 4;
+                selectBoxHeight = editBoxHeight;
                 
                 widthForImage = newPosition(3) - margin*2 - colourBarSize;
                 widthForSpectrum = newPosition(3) - margin*2 - spectrumExtraSize;
@@ -1159,21 +1224,21 @@ classdef DataViewer < Figure
                     panelPosition = Figure.getPositionInPixels(obj.imageListPanel);
                     
                     if(~isempty(panelPosition))
-                        Figure.setObjectPositionInPixels(obj.toleranceSelectionPopup, [margin, panelPosition(4) - buttonHeight - margin*4, panelPosition(3)/2 - margin*2, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.toleranceEditBox, [margin + panelPosition(3)/2, panelPosition(4) - buttonHeight - margin*4, panelPosition(3)/2 - margin*2, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.toleranceSelectionPopup, [margin, panelPosition(4) - editBoxHeight - margin*4, panelPosition(3)/2 - margin*2, selectBoxHeight]);
+                        Figure.setObjectPositionInPixels(obj.toleranceEditBox, [margin + panelPosition(3)/2, panelPosition(4) - editBoxHeight - margin*4, panelPosition(3)/2 - margin*2, editBoxHeight]);
                         
-                        Figure.setObjectPositionInPixels(obj.imageListTable, [margin, buttonHeight + margin, panelPosition(3) - margin*2, panelPosition(4) - margin*2 - buttonHeight*2 - 20]);
+                        Figure.setObjectPositionInPixels(obj.imageListTable, [margin, buttonHeight + margin, panelPosition(3) - margin*2, panelPosition(4) - margin*2 - (buttonHeight + editBoxHeight) - 20]);
 
     %                     generateImageListButton;
     %         removeImageButton;
     %         saveImageListButton;
     %         loadImageListButton;
 
-                        Figure.setObjectPositionInPixels(obj.generateImageListButton, [margin, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.overlayImagesButton, [margin+panelPosition(3)/5, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.removeImageButton, [margin+panelPosition(3)*2/5, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.saveImageListButton, [margin+panelPosition(3)*3/5, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.loadImageListButton, [margin+panelPosition(3)*4/5, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.generateImageListButton, [margin, margin, buttonHeight, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.overlayImagesButton, [margin+panelPosition(3)/5, margin, buttonHeight, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.removeImageButton, [margin+panelPosition(3)*2/5, margin, buttonHeight, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.saveImageListButton, [margin+panelPosition(3)*3/5, margin, buttonHeight, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.loadImageListButton, [margin+panelPosition(3)*4/5, margin, buttonHeight, buttonHeight]);
                     end
                     
                     widthForImage = widthForImage - widthOfImageList - margin;
@@ -1208,10 +1273,10 @@ classdef DataViewer < Figure
                     if(~isempty(panelPosition))
                         Figure.setObjectPositionInPixels(obj.spectrumListTable, [margin, buttonHeight + margin, panelPosition(3) - margin*2, panelPosition(4) - margin*2 - buttonHeight - 20]);
 
-                        Figure.setObjectPositionInPixels(obj.addSpectrumButton, [margin, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.overlaySpectrumButton, [margin+panelPosition(3)/5, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.subtractSpectrumButton, [margin+panelPosition(3)*2/5, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.removeSpectrumButton, [margin+panelPosition(3)*3/5, margin, panelPosition(3)/5 - margin*2, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.addSpectrumButton, [margin, margin, buttonHeight, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.overlaySpectrumButton, [margin+panelPosition(3)/5, margin, buttonHeight, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.subtractSpectrumButton, [margin+panelPosition(3)*2/5, margin, buttonHeight, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.removeSpectrumButton, [margin+panelPosition(3)*3/5, margin, buttonHeight, buttonHeight]);
                     end
                     
                     widthForSpectrum = widthForSpectrum - widthOfSpectrumList - margin;
@@ -1227,7 +1292,13 @@ classdef DataViewer < Figure
                     panelPosition = Figure.getPositionInPixels(obj.preprocessingPanel);
                     
                     if(~isempty(panelPosition))
-%                     Figure.setObjectPositionInPixels(obj.regionOfInterestTable, [margin, buttonHeight + margin, panelPosition(3) - margin*2, panelPosition(4) - margin*2 - buttonHeight - 20]);
+                        Figure.setObjectPositionInPixels(obj.spectrumPreprocessingLabel, [margin, panelPosition(4)-margin-buttonHeight*2.25, panelPosition(3)/2 - margin, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.viewSpectrumPreprocessingButton, [panelPosition(3)-margin*2-buttonHeight*2, panelPosition(4)-margin-buttonHeight*2, buttonHeight, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.editSpectrumPreprocessingButton, [panelPosition(3)-margin-buttonHeight, panelPosition(4)-margin-buttonHeight*2, buttonHeight, buttonHeight]);
+                        
+                        Figure.setObjectPositionInPixels(obj.imageGenPreprocessingLabel, [margin, panelPosition(4)-margin*2-buttonHeight*3.25, panelPosition(3) - margin, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.viewImageGenPreprocessingButton, [panelPosition(3)-margin*2-buttonHeight*2, panelPosition(4)-margin*2-buttonHeight*3, buttonHeight, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.editImageGenPreprocessingButton, [panelPosition(3)-margin-buttonHeight, panelPosition(4)-margin*2-buttonHeight*3, buttonHeight, buttonHeight]);
 
                         Figure.setObjectPositionInPixels(obj.editPreprocessingButton, [panelPosition(3)/2, margin, panelPosition(3)/2 - margin, buttonHeight]);
                     end
@@ -1235,7 +1306,6 @@ classdef DataViewer < Figure
                 
                 if(~isempty(obj.spectrumDisplay))
                     Figure.setObjectPositionInPixels(obj.spectrumPanel.handle, [xPositionForSpectrum, spectrumRegionY, widthForSpectrum, spectrumRegionHeight]);
-%                     Figure.setObjectPositionInPixels(obj.spectrumDisplay.axisHandle, [xPositionForSpectrum, spectrumRegionY, widthForSpectrum, spectrumRegionHeight]);
                 end
                 
                 Figure.setObjectPositionInPixels(obj.progressBarAxis, [margin, margin, newPosition(3)-margin*2, progressBarHeight]);
