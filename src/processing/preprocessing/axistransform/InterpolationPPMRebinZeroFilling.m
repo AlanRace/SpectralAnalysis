@@ -22,11 +22,30 @@ classdef InterpolationPPMRebinZeroFilling < SpectralZeroFilling
             minmz = obj.Parameters(1).value;
             maxmz = obj.Parameters(2).value;
             
-            obj.sChannels = minmz;
+            tempArray = zeros(1, 10000);
+            
+            tempArray(1) = minmz;
+            lastValue = tempArray(1);
+            currentIndex = 2;
 
-            while(obj.sChannels(end) < maxmz)
-                obj.sChannels(end+1) = obj.sChannels(end) + ((obj.sChannels(end) * obj.Parameters(3).value) / 1e6);
+            while(true)
+                if currentIndex > length(tempArray)
+                    obj.sChannels = [obj.sChannels tempArray];
+                    currentIndex = 1;
+                end
+                
+                newValue = lastValue + ((lastValue * obj.Parameters(3).value) / 1e6);
+                tempArray(currentIndex) = newValue;
+                
+                if newValue > maxmz
+                    break
+                end
+                
+                lastValue = newValue;
+                currentIndex = currentIndex + 1;
             end
+            
+            obj.sChannels = [obj.sChannels tempArray(1:currentIndex)];
         end
         
         function [spectralChannels, intensities] = zeroFill(obj, spectralChannels, intensities)
