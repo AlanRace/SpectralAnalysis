@@ -24,6 +24,8 @@ classdef InterpolationPPMRebinZeroFilling < SpectralZeroFilling
             
             tempArray = zeros(1, 10000);
             
+            ppmValue = obj.Parameters(3).value / 1e6;
+            
             tempArray(1) = minmz;
             lastValue = tempArray(1);
             currentIndex = 2;
@@ -34,7 +36,7 @@ classdef InterpolationPPMRebinZeroFilling < SpectralZeroFilling
                     currentIndex = 1;
                 end
                 
-                newValue = lastValue + ((lastValue * obj.Parameters(3).value) / 1e6);
+                newValue = lastValue + (lastValue * ppmValue);
                 tempArray(currentIndex) = newValue;
                 
                 if newValue > maxmz
