@@ -31,6 +31,5 @@ jobs:
           git config --global user.email "alan.m.race@gmail.com"
           git config --global user.name "AlanRace"
           git add docs/*
-          git status --porcelain | grep . || git commit -m "Updated docs"
-          git push origin HEAD:master
+          test -z "$(git status --porcelain | grep .)" || git commit -m "Updated docs" || git push origin HEAD:master
         
