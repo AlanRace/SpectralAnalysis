@@ -142,8 +142,47 @@ classdef ImzMLParser < Parser
             dataRepresentation = DataOnDisk(this);
         end
         
-        function workflow = getDefaultPreprocessingWorkflow(obj)
+        function workflow = getDefaultPreprocessingWorkflow(this)
             workflow = PreprocessingWorkflow();
+            
+            instrumentModel = this.getMassSpectrometer();
+            
+            obo = instrumentModel.getOntology();
+            sciexInstrument = obo.getTerm('MS:1000121');
+            watersInstrument = obo.getTerm('MS:1000126');
+            thermoInstrument = obo.getTerm('MS:1000494');
+            
+            if sciexInstrument.isParentOf(instrumentModel.getID())
+                switch(char(instrumentModel.getID()))
+                    case {'MS:1000190', 'MS:1000655', 'MS:1000656', 'MS:1000657'}
+                        % QSTAR, QSTAR Elite, QSTAR Pulsar or QSTAR XL
+                        % Add in QSTAR zero filling to the preprocessing list
+
+                        % TODO: Could check multiple spectra to find the best
+                        % values for zero filling
+                        spectralData = this.getSpectrum(1, 1);
+
+                        workflow.addPreprocessingMethod(QSTARZeroFilling.generateFromSpectrum(spectralData));
+                end
+            elseif watersInstrument.isParentOf(instrumentModel.getID()) || instrumentModel.equals(watersInstrument)
+                firstSpectrum = this.imzML.getSpectrumList().getSpectrum(0);
+                firstScan = firstSpectrum.getScanList().getScan(0);
+                scanWindow = firstScan.getScanWindowList().getScanWindow(0);
+                
+                lowerLimit = scanWindow.getCVParam('MS:1000501').getValueAsDouble();
+                upperLimit = scanWindow.getCVParam('MS:1000500').getValueAsDouble();
+                
+                workflow.addPreprocessingMethod(InterpolationPPMRebinZeroFilling(lowerLimit, upperLimit, 5));
+            elseif thermoInstrument.isParentOf(instrumentModel.getID())
+            end
+        end
+        
+        function instrumentModel = getMassSpectrometer(this)
+            instrumentConfiguration = this.imzML.getInstrumentConfigurationList().getInstrumentConfiguration(0);
+            
+            % Check whether the 'instrument model' (MS:1000031) parameter
+            % is included
+            instrumentModel = instrumentConfiguration.getCVParamOrChild('MS:1000031').getTerm();
         end
         
         % For faster access to data, determine wether the data is stored by

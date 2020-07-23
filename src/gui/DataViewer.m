@@ -145,6 +145,8 @@ classdef DataViewer < Figure
             
             if(~isempty(obj.dataRepresentation.parser))
                 obj.title = obj.dataRepresentation.parser.getShortFilename();
+                
+                obj.spectrumPreprocessingWorkflow = obj.dataRepresentation.parser.getDefaultPreprocessingWorkflow();
             else
                 obj.title = obj.dataRepresentation.name;
             end

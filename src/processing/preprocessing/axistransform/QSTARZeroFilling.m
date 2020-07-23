@@ -42,16 +42,9 @@ classdef QSTARZeroFilling < SpectralZeroFilling
         end
     end
     
-    methods (Static)
-        function bool = defaultsRequireGenerating()
-            bool = 1;
-        end                
-        
-        function Parameters = generateDefaultsFromSpectrum(spectrum)
-            Parameters = Parameter(QSTARZeroFilling.ParameterDefinitions(1), min(spectrum.spectralChannels));
-            Parameters(2) = Parameter(QSTARZeroFilling.ParameterDefinitions(2), max(spectrum.spectralChannels));
-            
-            time = sqrt(spectrum.spectralChannels);
+    methods (Static, Access = private)
+        function detectorBinSize = calculateDetectorBinSizeFromSpectrum(spectralData)
+            time = sqrt(spectralData.spectralChannels);
             
             timeDiff = time(2:end) - time(1:end-1);
     
@@ -60,8 +53,24 @@ classdef QSTARZeroFilling < SpectralZeroFilling
             end
 
             detectorBinSize = mode(timeDiff(timeDiff < 1.5*min(timeDiff)));
+        end
+    end
+    
+    methods (Static)
+        function bool = defaultsRequireGenerating()
+            bool = 1;
+        end                
+        
+        function zeroFilling = generateFromSpectrum(spectralData)
+            zeroFilling = QSTARZeroFilling(min(spectralData.spectralChannels), max(spectralData.spectralChannels), QSTARZeroFilling.calculateDetectorBinSizeFromSpectrum(spectralData));
             
-            Parameters(3) = Parameter(QSTARZeroFilling.ParameterDefinitions(3), detectorBinSize);
+        end
+        
+        function Parameters = generateDefaultsFromSpectrum(spectrum)
+            Parameters = Parameter(QSTARZeroFilling.ParameterDefinitions(1), min(spectrum.spectralChannels));
+            Parameters(2) = Parameter(QSTARZeroFilling.ParameterDefinitions(2), max(spectrum.spectralChannels));
+            
+            Parameters(3) = Parameter(QSTARZeroFilling.ParameterDefinitions(3), QSTARZeroFilling.calculateDetectorBinSizeFromSpectrum(spectrum));
         end
     end
 end
