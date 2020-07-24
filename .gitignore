@@ -21,3 +21,5 @@ run_SpectralAnalysis.sh
 SpectralAnalysis
 
 *.m~
+
+*.ibh

@@ -12,7 +12,7 @@ Alan M. Race, Andrew D. Palmer, Alex Dexter, Rory T. Steven, Iain B. Styles, and
 </p>
 {{% /notice %}}
 
-![SpectralAnalysis Interface](/images/SpectralAnalysis-interface.png?width=45pc)
+![SpectralAnalysis Interface](/images/SpectralAnalysis-interface-1.3.0.png?width=45pc)
 
 
 #### Download 
