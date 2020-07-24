@@ -1,0 +1,2 @@
+classdef BasicMOOGLExample < Figure
+end
