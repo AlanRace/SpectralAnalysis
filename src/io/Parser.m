@@ -32,6 +32,9 @@ classdef Parser < handle
         
         spectrum = getSpectrum(obj, x, y);
         image = getOverviewImage(obj);
+       
+        label = getSpectrumXAxisLabel(this);
+        label = getSpectrumYAxisLabel(this);
         
         % getDefaultDataRepresentation
         % Returns: dataRepresentation of type (or subclass) DataRepresentation

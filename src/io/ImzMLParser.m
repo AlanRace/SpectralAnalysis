@@ -185,6 +185,15 @@ classdef ImzMLParser < Parser
             instrumentModel = instrumentConfiguration.getCVParamOrChild('MS:1000031').getTerm();
         end
         
+        
+        function label = getSpectrumXAxisLabel(this)
+            label = '{\it m/z}';
+        end
+        
+        function label = getSpectrumYAxisLabel(this)
+            label = 'Intensity (a.u.)';
+        end
+        
         % For faster access to data, determine wether the data is stored by
         % spectrum or by image
 %         function bool = isSpectrumOrientated(obj)

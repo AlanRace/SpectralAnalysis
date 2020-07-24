@@ -192,6 +192,8 @@ classdef DataViewer < Figure
                 obj.spectrumDisplay.setData(meanSpectrum);
             end
             
+            obj.spectrumDisplay.setLabels(dataRepresentation.spectrumXAxisLabel, dataRepresentation.spectrumYAxisLabel);
+                        
             % Ensure that all proportions are correct
             obj.sizeChanged();
             
