@@ -17,7 +17,7 @@ If downloading the source, please be aware that the latest version of [MOOGL](ht
 [![View SpectralAnalysis on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://de.mathworks.com/matlabcentral/fileexchange/77942-spectralanalysis)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/AlanRace/SpectralAnalysis/master/docs-src/static/images/SpectralAnalysis-interface.png" width="70%">
+  <img src="https://raw.githubusercontent.com/AlanRace/SpectralAnalysis/master/docs-src/static/images/SpectralAnalysis-interface-1.3.0.png" width="70%">
 </p>
 
 ## Contributing to SpectralAnalysis
