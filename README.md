@@ -12,7 +12,6 @@ If you find this software useful in your research please cite:
 
 * [Get the latest source code](https://github.com/AlanRace/SpectralAnalysis).
 
-If downloading the source, please be aware that the latest version of [MOOGL](https://github.com/AlanRace/MOOGL/tree/master) must also be downloaded and included in the `SpectralAnalysis\src\gui\MOOGL` folder.
 
 [![View SpectralAnalysis on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://de.mathworks.com/matlabcentral/fileexchange/77942-spectralanalysis)
 
