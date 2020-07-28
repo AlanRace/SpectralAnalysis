@@ -23,14 +23,13 @@ classdef PeakDecimalFractionFilter < PeakFilter
             end
         end
         
-        function [spectralChannels, intensities, peakDetails] = applyFilter(this, spectralChannels, intensities, peakDetails)
-            decimalPart = spectralChannels - floor(spectralChannels);
+        function peaks = applyFilter(this, spectralData, peaks)
+            centroids = [peaks.centroid];
+            decimalPart = centroids - floor(centroids);
 
             toKeep = decimalPart >= this.minimum & decimalPart <= this.maximum;
             
-            spectralChannels = spectralChannels(toKeep);
-            intensities = intensities(toKeep);
-            peakDetails = peakDetails(toKeep, :);
+            peaks = peaks(toKeep);
         end
     end
 end

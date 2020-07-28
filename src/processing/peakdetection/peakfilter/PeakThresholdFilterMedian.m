@@ -23,20 +23,22 @@ classdef PeakThresholdFilterMedian < PeakFilter
             end
         end
         
-        function [spectralChannels, intensities, peakDetails] = applyFilter(this, spectralChannels, intensities, peakDetails)
+        function peaks = applyFilter(this, spectralData, peaks)
+            intensities = spectralData.intensities;
+            
+            peakIntensities = [peaks.intensity];
+            
             if(this.absolute)
                 nzm = median(nonzeros(intensities));
                 threshold = this.multiplier * nzm;
-                spectralChannels(intensities < threshold) = [];
-                peakDetails(intensities < threshold, :) = [];
-                intensities(intensities < threshold) = [];
+                
+                peaks(peakIntensities < threshold) = [];
             else
                 relIntensities = intensities ./ max(intensities);
                 nzm = median(nonzeros(relIntensities));
                 relThreshold = this.multiplier * nzm;
-                spectralChannels(relIntensities < relThreshold) = [];
-                intensities(relIntensities < relThreshold) = [];
-                peakDetails(relIntensities < relThreshold, :) = [];
+                
+                peaks(relIntensities < relThreshold) = [];
             end
         end
     end

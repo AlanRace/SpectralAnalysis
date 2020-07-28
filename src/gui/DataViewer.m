@@ -256,7 +256,6 @@ classdef DataViewer < Figure
             
             if(isa(postProcessingMethod, 'DataReduction'))
                 postProcessingMethod.setPeakList(obj.spectrumDisplay.peakList);
-                postProcessingMethod.setPeakDetails(obj.spectrumDisplay.peakDetails);
             end
             
             postProcessingMethod.setPreprocessingWorkflow(obj.spectrumPreprocessingWorkflow);
@@ -277,7 +276,6 @@ classdef DataViewer < Figure
             
             if(isa(postProcessingMethod, 'DataReduction'))
                 postProcessingMethod.setPeakList(obj.spectrumDisplay.peakList);
-                postProcessingMethod.setPeakDetails(obj.spectrumDisplay.peakDetails);
             end
             
             postProcessingMethod.setPreprocessingWorkflow(obj.imageGenPreprocessingWorkflow);

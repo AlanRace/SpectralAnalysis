@@ -2,28 +2,40 @@ classdef Peak < Data
     % Peak Class for storing peak data. 
     
     properties (SetAccess = private) 
-        spectralChannels;
-        intensities;
+        % Reference to SpectralData where the peak was detected
+        spectralData;
         
-        peakCentroid;
-        centroidIntensity;
+        % Description of the peak itself
+        centroid;
+        intensity;
+        
+        minSpectralChannel;
+        maxSpectralChannel;
+        
+        
+%         sumIntensity;
     end
     
     methods
-        function this = Peak(spectralChannels, intensities, peakCentroid, centroidIntensity)
+        function this = Peak(spectralData, centroid, intensity, minSpectralChannel, maxSpectralChannel)
             % Peak Constructor for Peak.
             %
-            %   Peak(spectralChannels, intensities, peakCentroid, centroidIntensity)
-            %       spectralChannels  - Array that describes the spectral channels for only the peak region
-            %       intensities       - Array for the peak region
-            %       peakCentroid      - Spectral channel for the peak centroid
-            %       centroidIntensity - Intensity at the peak centroid channel
+            %   Peak(spectralData, centroid, minSpectralChannel, maxSpectralChannel)
+            %       spectralData        - SpectralData instance where the
+            %                           peak was detected
+            %       centroid            - Centroid value for the peak
+            %       intensity           - Peak intensity
+            %       minSpectralChannel  - Minimum spectral channel for the
+            %                           peak limits
+            %       maxSpectralChannel  - Maximum spectral channel for the
+            %                           peak limits
             
-            this.spectralChannels = spectralChannels;
-            this.intensities = intensities;
+            this.spectralData = spectralData;
             
-            this.peakCentroid = peakCentroid;
-            this.centroidIntensity = centroidIntensity;
+            this.centroid = centroid;
+            this.intensity = intensity;
+            this.minSpectralChannel = minSpectralChannel;
+            this.maxSpectralChannel = maxSpectralChannel;
         end
         
         function ppmError = calculatePPMErrorTo(this, spectralChannel)

@@ -4,15 +4,15 @@ classdef SpectralPeakDetection < SpectralPreprocessing
     end
     
     methods (Abstract)
-        [spectralChannels, intensities, peakDetails] = detectPeaks(spectralChannels, intensities);     
+        peaks = detectPeaks(spectralChannels, intensities);     
     end
     
     methods
-        function [spectralChannels, intensities, peakDetails] = process(this, spectralChannels, intensities)
-            [spectralChannels, intensities, peakDetails] = this.detectPeaks(spectralChannels, intensities);
+        function peaks = process(this, spectralData)
+            peaks = this.detectPeaks(spectralData);
             
             % Filter the results of the peak detection
-            [spectralChannels, intensities, peakDetails] = this.applyFilters(spectralChannels, intensities, peakDetails);
+            peaks = this.applyFilters(spectralData, peaks);
         end
         
         function this = addPeakFilter(this, peakFilter)
@@ -61,9 +61,9 @@ classdef SpectralPeakDetection < SpectralPreprocessing
             obj.peakFilters(index) = [];
         end
         
-        function [spectralChannels, intensities, peakDetails] = applyFilters(this, spectralChannels, intensities, peakDetails)
+        function peaks = applyFilters(this, spectralData, peaks)
             for i = 1:this.numberOfFilters()
-                [spectralChannels, intensities, peakDetails] = this.peakFilters{i}.applyFilter(spectralChannels, intensities, peakDetails);
+                peaks = this.peakFilters{i}.applyFilter(spectralData, peaks);
             end
         end
     end

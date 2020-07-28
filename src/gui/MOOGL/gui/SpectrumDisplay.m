@@ -6,8 +6,6 @@ classdef SpectrumDisplay < Display
         plotHandle; % Handle for either the bar or line plot
         
         peakList;
-        peakDetails;
-        peakHeight;
     end
     
     properties (Access = protected)
@@ -231,8 +229,6 @@ classdef SpectrumDisplay < Display
                 obj.peakDetectionMethod = [];
                 
                 obj.peakList = [];
-                obj.peakHeight = [];
-                obj.peakDetails = [];
             end
             
             obj.updateDisplay();
@@ -245,9 +241,9 @@ classdef SpectrumDisplay < Display
         end
         
         function updatePeakDetection(obj)
-            [obj.peakList, obj.peakHeight, obj.peakDetails] = obj.peakDetectionMethod.process(obj.data.spectralChannels, obj.data.intensities);
+            obj.peakList = obj.peakDetectionMethod.process(obj.data);
             
-            assignin('base', 'peakDetails', obj.peakDetails);
+            assignin('base', 'peakList', obj.peakList);
             
             obj.updateDisplay();
         end
@@ -339,10 +335,14 @@ classdef SpectrumDisplay < Display
             obj.updateLimits();
             
             if(~isempty(obj.peakList))
-                indicies = obj.peakList >= obj.xLimit(1) & obj.peakList <= obj.xLimit(2);
+                peakCentroids = [obj.peakList.centroid];
                 
-                xData = obj.peakList(indicies);
-                yData = obj.peakHeight(indicies);
+                indicies = peakCentroids >= obj.xLimit(1) & peakCentroids <= obj.xLimit(2);
+                
+                peaksToDisplay = obj.peakList(indicies);
+                
+                xData = [peaksToDisplay.centroid];
+                yData = [peaksToDisplay.intensity];
                 
                 yPos = ((obj.yLimit(2) - obj.yLimit(1)) * 0.95) + obj.yLimit(1);
                 

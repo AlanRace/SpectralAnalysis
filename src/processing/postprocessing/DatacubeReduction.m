@@ -108,23 +108,27 @@ classdef DatacubeReduction < DataReduction
         end
         
         function dataRepresentationList = generateDataRepresentationList(this, dataRepresentation, peakList, data, rois)
+            % TODO: Pass peak list to DataRepresentation to keep track of
+            % the limits used to generate the data
+            centroids = [peakList.centroid];
+            
             dataRepresentationList = DataRepresentationList();
             
             for i = 1:numel(data)
                 dataInMemory = DataInMemory();
                 
                 if(~dataRepresentation.isContinuous || (~isempty(this.preprocessingWorkflow) && this.preprocessingWorkflow.containsPeakPicking()) ...
-                        || ~isempty(this.peakDetails))
+                        || ~isempty(centroids))
                     dataInMemory.setIsContinuous(false);
                 end
                 
                 if(this.processEntireDataset && i == 1)
                     dataInMemory.setData(data{i}, dataRepresentation.regionOfInterest, ...
-                        dataRepresentation.isRowMajor, peakList, [dataRepresentation.name ' (Processed)']);
+                        dataRepresentation.isRowMajor, centroids, [dataRepresentation.name ' (Processed)']);
                 elseif(this.processEntireDataset)
-                    dataInMemory.setData(data{i}, rois{i-1}, dataRepresentation.isRowMajor, peakList, rois{i-1}.getName());
+                    dataInMemory.setData(data{i}, rois{i-1}, dataRepresentation.isRowMajor, centroids, rois{i-1}.getName());
                 else
-                    dataInMemory.setData(data{i}, rois{i}, dataRepresentation.isRowMajor, peakList, rois{i}.getName());
+                    dataInMemory.setData(data{i}, rois{i}, dataRepresentation.isRowMajor, centroids, rois{i}.getName());
                 end
                 
                 dataInMemory.setParser(dataRepresentation.parser);
@@ -197,16 +201,10 @@ classdef DatacubeReduction < DataReduction
                     end
                     
                     % Determine peak limits based on supplied options
-                    if isempty(this.peakDetails)
-                        centroids = this.peakList;
-                    else
-                        peakWidths = this.peakDetails(:, 3) - this.peakDetails(:, 1);
-                        centroids = this.peakDetails(:, 1) + peakWidths ./ 2;
-                    end
+                    peakWidths = [this.peakList.maxSpectralChannel] - [this.peakList.minSpectralChannel];
+                    centroids = [this.peakList.centroid];
                     
-                    if(this.peakTolerance < 0 && ~isempty(this.peakDetails))
-                        peakWidths = this.peakDetails(:, 3) - this.peakDetails(:, 1);
-                    else
+                    if(this.peakTolerance > 0)
                         if(strcmpi(this.toleranceUnit, 'PPM'))
                             peakWidths = (centroids .* this.peakTolerance) / 1e6;
                         else

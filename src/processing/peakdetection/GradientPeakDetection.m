@@ -7,7 +7,10 @@ classdef GradientPeakDetection < SpectralPeakDetection
     end
     
     methods        
-        function [spectralChannels, intensities, peakDetails] = detectPeaks(obj, spectralChannels, intensities)
+        function peaks = detectPeaks(obj, spectralData)
+            spectralChannels = spectralData.spectralChannels;
+            intensities = spectralData.intensities;
+            
             % Ensure that the intensities are oriented as a row
             if(size(intensities, 2) == 1)
                 intensities = intensities';
@@ -52,8 +55,9 @@ classdef GradientPeakDetection < SpectralPeakDetection
             indicies(intensities(indicies) <= 0) = [];
 
             % Determine the peak details
-            if(nargout > 2)
-                peakDetails = zeros(length(indicies), 7);
+%             if(nargout > 2)
+%                 peakDetails = zeros(length(indicies), 7);
+                peaks = [];
                 
                 for i = 1:length(indicies)
                     ind = indicies(i);
@@ -74,13 +78,20 @@ classdef GradientPeakDetection < SpectralPeakDetection
                         right = right + 1;
                     end
                     
-                    peakDetails(i, :) = [spectralChannels(left) spectralChannels(ind) spectralChannels(right) intensities(ind) right-left left right];                    
+%                     peakDetails(i, :) = [spectralChannels(left) spectralChannels(ind) spectralChannels(right) intensities(ind) right-left left right];                    
+                    peak = Peak(spectralData, spectralChannels(ind), intensities(ind), spectralChannels(left), spectralChannels(right));
+                    
+                    if isempty(peaks)
+                        peaks = peak;
+                    else
+                        peaks(i) = peak;
+                    end
                 end
-            end
+%             end
             
             % Select the peaks
-            spectralChannels = spectralChannels(indicies);
-            intensities = intensities(indicies);
+%             spectralChannels = spectralChannels(indicies);
+%             intensities = intensities(indicies);
         end
     end
 end

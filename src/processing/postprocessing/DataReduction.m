@@ -1,7 +1,6 @@
 classdef DataReduction < PostProcessing
     properties (SetAccess = protected)
         peakList;
-        peakDetails;
         
 %         % 0 - extract at location
 %         % 1 - integrate over peak
@@ -14,11 +13,7 @@ classdef DataReduction < PostProcessing
         function setPeakList(obj, peakList)
             obj.peakList = peakList;
         end
-        
-        function setPeakDetails(obj, peakDetails)
-            obj.peakDetails = peakDetails;
-        end
-        
+                
 %         function setExtractAtLocation(this)
 %             this.imageGenerationMethod = 0;
 %         end
@@ -30,12 +25,14 @@ classdef DataReduction < PostProcessing
         function spectrum = getProcessedSpectrum(this, dataRepresentation, x, y)
             spectrum = getProcessedSpectrum@PostProcessing(this, dataRepresentation, x, y);
             
-            if(~isempty(this.peakList) || ~isempty(this.peakDetails))
+            if(~isempty(this.peakList))
+                centroids = [this.peakList.centroid];
+                
                 intensities = zeros(1, length(this.peakList));
                 
                 switch(this.imageGenerationMethod)
                     case 0
-                        [indicesList, pList] = ismember(this.peakList, spectrum.spectralChannels);
+                        [indicesList, pList] = ismember(centroids, spectrum.spectralChannels);
 
                         pList(pList == 0) = [];
                         intensities(indicesList) = spectrum.intensities(pList);
@@ -49,7 +46,7 @@ classdef DataReduction < PostProcessing
 %                         intensities(i)
                 end
                 
-                spectrum = SpectralData(this.peakList, intensities);
+                spectrum = SpectralData(centroids, intensities);
             end
         end
         

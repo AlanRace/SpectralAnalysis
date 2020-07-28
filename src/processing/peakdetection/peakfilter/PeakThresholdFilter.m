@@ -23,18 +23,16 @@ classdef PeakThresholdFilter < PeakFilter
             end
         end
         
-        function [spectralChannels, intensities, peakDetails] = applyFilter(this, spectralChannels, intensities, peakDetails)
+        function peaks = applyFilter(this, spectralData, peaks)
+            peakIntensities = [peaks.intensity];
+            
             if(this.absolute)
-                spectralChannels(intensities < this.threshold) = [];
-                peakDetails(intensities < this.threshold, :) = [];
-                intensities(intensities < this.threshold) = [];
+                peaks(peakIntensities < this.threshold) = [];
             else
-                relIntensities = intensities ./ max(intensities);
+                relIntensities = peakIntensities ./ max(peakIntensities);
                 relThreshold = this.threshold / 100;
                 
-                spectralChannels(relIntensities < relThreshold) = [];
-                intensities(relIntensities < relThreshold) = [];
-                peakDetails(relIntensities < relThreshold, :) = [];
+                peaks(relIntensities < relThreshold) = [];
             end
         end
     end
