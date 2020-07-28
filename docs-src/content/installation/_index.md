@@ -20,12 +20,10 @@ The source code version requires a valid MATLAB licence.
 
 #### Installation with Git
 
-1. Clone the repository and initialise the submodules
+1. Clone the repository
 
 ```bash
 git clone https://github.com/AlanRace/SpectralAnalysis
-cd SpectralAnalysis
-git submodule update --init
 ```
 
 2. Open MATLAB and navigate to the folder containing the source code 
