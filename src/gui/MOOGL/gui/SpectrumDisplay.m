@@ -38,6 +38,8 @@ classdef SpectrumDisplay < Display
         % PeakSelected is triggered when a peak has been selected within
         % the display.
         PeakSelected;
+        
+        PeakListUpdated;
     end
     
     methods
@@ -242,6 +244,7 @@ classdef SpectrumDisplay < Display
         
         function updatePeakDetection(obj)
             obj.peakList = obj.peakDetectionMethod.process(obj.data);
+            notify(obj, 'PeakListUpdated', PeakListChangedEventData(obj.peakList));
             
             assignin('base', 'peakList', obj.peakList);
             

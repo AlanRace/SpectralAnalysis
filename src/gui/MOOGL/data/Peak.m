@@ -36,6 +36,8 @@ classdef Peak < Data
             this.intensity = intensity;
             this.minSpectralChannel = minSpectralChannel;
             this.maxSpectralChannel = maxSpectralChannel;
+            
+            this.setDescription([num2str(this.centroid) ' (' num2str(this.minSpectralChannel) ' - ' num2str(this.maxSpectralChannel) ')']);
         end
         
         function ppmError = calculatePPMErrorTo(this, spectralChannel)

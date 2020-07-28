@@ -68,7 +68,6 @@ classdef MultiSpectrumDisplay < SpectrumDisplay
                 size(obj.peakList)
             else
                 obj.peakList = [];
-                obj.peakHeight = [];
             end
             
             obj.updateDisplay();
