@@ -6,7 +6,7 @@ classdef Container < handle
         
         % Whether the new uifigure functionality should be used rather than
         % GUIDE
-        isUIFigure = false;
+        isUIFigureDefault = false;
         
         buttonColour = [36 160 237]./255;%[0.8 0.8 0.8]; % get(obj.spectrumPreprocessingLabel, 'BackgroundColor')
         iconColour = [1 1 1];
@@ -83,9 +83,17 @@ classdef Container < handle
             
             set(this.handle, 'Position', currentPosition, 'Units', units);
         end
+        
+        % isUIFigure determines whether to use uifigure or figure to
+        % generate interface.
+        % New figures should all use uifigure (unless displaying spectrum)
+        function useUIFigure = isUIFigure(this)
+            useUIFigure = this.isUIFigureDefault;
+        end
     end
     
     methods (Access = protected)
+        
         function label = createLabel(this, parent, defaultValue, textAlignment)
             if this.isUIFigure
                 label = uilabel(parent, 'Text', defaultValue, 'HorizontalAlignment', textAlignment);
