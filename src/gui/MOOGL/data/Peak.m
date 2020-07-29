@@ -39,9 +39,9 @@ classdef Peak < Data
                 this.minSpectralChannel = minSpectralChannel;
                 this.maxSpectralChannel = maxSpectralChannel;
 
-                this.setDescription([num2str(this.centroid) ' (' num2str(this.minSpectralChannel) ' - ' num2str(this.maxSpectralChannel) ')']);
+                this.setDescription([num2str(this.centroid, '%.5f') ' (' num2str(this.minSpectralChannel, '%.5f') ' - ' num2str(this.maxSpectralChannel, '%.5f') ')']);
             else
-                this.setDescription(num2str(this.centroid));
+                this.setDescription(num2str(this.centroid, '%.5f'));
             end
         end
         
