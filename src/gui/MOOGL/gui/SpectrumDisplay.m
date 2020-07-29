@@ -331,6 +331,7 @@ classdef SpectrumDisplay < Display
             %TODO
         end
         
+        
         function updateDisplay(obj)            
             obj.plotSpectrum();
             
@@ -357,10 +358,20 @@ classdef SpectrumDisplay < Display
                     text(xData(indicies(i)), yData(indicies(i)), num2str(xData(indicies(i))), 'Parent', obj.axisHandle);
                 end
             end
-                        
-            % Set up callback functions such as button down functions
-            set(obj.plotHandle, 'ButtonDownFcn', @(src, evnt)obj.buttonDownCallback());
-            set(obj.axisHandle, 'ButtonDownFcn', @(src, evnt)obj.buttonDownCallback());
+            
+            if ~obj.isUIFigure
+                % Set up callback functions such as button down functions
+                set(obj.plotHandle, 'ButtonDownFcn', @(src, evnt)obj.buttonDownCallback());
+                set(obj.axisHandle, 'ButtonDownFcn', @(src, evnt)obj.buttonDownCallback());
+            else
+%                 tb = axtoolbar(obj.axisHandle, {'pan', 'zoomin','zoomout','restoreview'});
+%                 btn = axtoolbarbtn(tb,'state');
+%                 % btn.Icon = 'mygridicon.png';
+%                 btn.Tooltip = 'Grid Lines';
+%                 btn.ValueChangedFcn = @(src, event) obj.test(src, event);
+                
+                
+            end
             
             if(~isempty(obj.contextMenu))
                 set(obj.axisHandle, 'UIContextMenu', obj.contextMenu);
@@ -393,7 +404,11 @@ classdef SpectrumDisplay < Display
                         obj.currentLine = line([obj.startPoint(1) obj.mouseLocation(1)], [yMidPoint yMidPoint], 'Color', [1 0 0]);
                     end
                 end
+                
+                set(obj.currentLine, 'LineWidth', 2);
+                get(obj.currentLine)
             end
+            
         end
         
         function mouseButtonUpCallback(obj)

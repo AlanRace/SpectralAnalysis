@@ -16,6 +16,8 @@ classdef Display < handle
         exportMenu; % Context sub-menu storing details about exporting data
         
         lastSavedPath = ''; % The last used path for saving data to the harddisk
+        
+        isUIFigure;
     end
 
     events
@@ -38,10 +40,16 @@ classdef Display < handle
                 throw(exception);
             end
             
+            obj.isUIFigure = parent.isUIFigure;
+            
             obj.parent = parent;
             parentHandle = parent.handle;
             
-            obj.axisHandle = axes('Parent', parentHandle);
+            if obj.isUIFigure
+                obj.axisHandle = uiaxes('Parent', parentHandle);
+            else
+                obj.axisHandle = axes('Parent', parentHandle);
+            end
             
             obj.setData(data);
             

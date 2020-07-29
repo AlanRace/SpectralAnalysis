@@ -19,7 +19,7 @@ classdef Panel < Container
     
     methods(Access = protected)
         function createPanel(this)
-            this.handle = uipanel(this.parent.handle);
+            this.handle = uipanel(this.parent.handle, 'AutoResizeChildren', 'off');
             
             if this.isUIFigure
                 this.handle.BorderType = 'none';
