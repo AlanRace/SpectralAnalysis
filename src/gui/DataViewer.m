@@ -205,6 +205,13 @@ classdef DataViewer < Figure
                 
                 obj.updateSpectrumSelectionPopup();
                 obj.spectrumDisplay.setData(meanSpectrum);
+                
+                % Set up peak list
+                obj.peakList = Peak(meanSpectrum, dataRepresentation.spectralChannels(1), meanSpectrumData(1));
+                for i = 2:length(dataRepresentation.spectralChannels)
+                    obj.peakList(i) = Peak(meanSpectrum, dataRepresentation.spectralChannels(i), meanSpectrumData(i));
+                end
+                obj.updatePeakList();
             end
             
             obj.spectrumDisplay.setLabels(dataRepresentation.spectrumXAxisLabel, dataRepresentation.spectrumYAxisLabel);
@@ -427,6 +434,10 @@ classdef DataViewer < Figure
         function peakListUpdated(this, event)
             this.peakList = event.peakList;
             
+            this.updatePeakList()
+        end
+        
+        function updatePeakList(this)    
             if(~isempty(this.peakList))
                 descriptionList = {this.peakList(1).getDescription()};
 
@@ -435,13 +446,7 @@ classdef DataViewer < Figure
                 end
                 
                 descriptionList = descriptionList';
-                
-%                 for i = 1:length(obj.imageListGenerated)
-%                     descriptionList(i, 2) = {obj.imageListGenerated(i) == 1};
-%                 end
-                
-%                 descriptionList(end+1, :) = {'', false};
-                
+                                
                 set(this.peakListTable, 'Data', descriptionList);
             else
                 set(this.peakListTable, 'Data', {});
