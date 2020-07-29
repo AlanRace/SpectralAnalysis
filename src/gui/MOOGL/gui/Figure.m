@@ -3,7 +3,6 @@ classdef Figure < Container
     
     properties (SetAccess = protected)
         toolbarHandle;
-        
     end
     
     events
@@ -76,6 +75,17 @@ classdef Figure < Container
             this.showStandardMenu();
             this.showStandardToolbar();
         end
+        
+        function setWidthPixels(this, width)
+            oldUnits = get(this.handle, 'Units');
+            set(this.handle, 'Units', 'pixels');
+            
+            position = get(this.handle, 'Position');
+            position(3) = width;
+            
+            set(this.handle, 'Position', position);
+            set(this.handle, 'Units', oldUnits);
+        end
     end
     
     methods (Access = protected)
@@ -85,21 +95,31 @@ classdef Figure < Container
             %
             %   createFigure()
             if(isempty(this.handle))
-                this.handle = figure(...
-                    'Name', 'Figure', 'NumberTitle','off',...
-                    'Units','characters',...
-                    'MenuBar','none',...
-                    'Toolbar','none', ...
-                    'CloseRequestFcn', @(src, evnt)this.closeRequest(), ...
-                    'WindowButtonMotionFcn', @(src, evnt)this.buttonMotion(), ...
-                    'WindowButtonUpFcn', @(src, evnt)this.buttonUp());
+                if this.isUIFigure
+                    this.handle = uifigure(...
+                        'Name', 'Figure', ...
+                        'AutoResizeChildren', 'off', ...
+                        'CloseRequestFcn', @(src, evnt)this.closeRequest(), ...
+                        'WindowButtonMotionFcn', @(src, evnt)this.buttonMotion(), ...
+                        'WindowButtonUpFcn', @(src, evnt)this.buttonUp());
+                else
+                    this.handle = figure(...
+                        'Name', 'Figure', ...
+                        'NumberTitle','off',...
+                        'Units','characters',...
+                        'MenuBar','none',...
+                        'Toolbar','none', ...
+                        'CloseRequestFcn', @(src, evnt)this.closeRequest(), ...
+                        'WindowButtonMotionFcn', @(src, evnt)this.buttonMotion(), ...
+                        'WindowButtonUpFcn', @(src, evnt)this.buttonUp());
+                end
                 
                 % Set the callback for when the window is resized
                 if(isprop(this.handle, 'SizeChangedFcn'))
                     set(this.handle, 'SizeChangedFcn', @(src, evnt)this.sizeChanged());
                 else
                     set(this.handle, 'ResizeFcn', @(src, evnt)this.sizeChanged());
-                end 
+                end
             end
             
             this.createMenu();

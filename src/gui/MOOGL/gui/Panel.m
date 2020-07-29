@@ -11,7 +11,7 @@ classdef Panel < Container
             
             addlistener(parent, 'ButtonMotion', @(src, evnt) this.buttonMotion());
             addlistener(parent, 'ButtonUp', @(src, evnt) this.buttonUp());
-            addlistener(parent, 'SizeChanged', @(src, evnt) this.sizeChanged());
+%             addlistener(parent, 'SizeChanged', @(src, evnt) this.sizeChanged());
             
             this.createPanel();
         end
@@ -19,9 +19,18 @@ classdef Panel < Container
     
     methods(Access = protected)
         function createPanel(this)
-            this.handle = uipanel(this.parent.handle, 'BorderWidth', 0);
+            this.handle = uipanel(this.parent.handle);
             
-            set(this.handle, 'ButtonDownFcn', @(src, evnt) this.buttonDown());
+            if this.isUIFigure
+                this.handle.BorderType = 'none';
+                this.handle.AutoResizeChildren = 'off';
+                this.handle.SizeChangedFcn = @(src, evnt) this.sizeChanged;
+            else
+                set(this.handle, 'BorderWidth', 0);
+                set(this.handle, 'ButtonDownFcn', @(src, evnt) this.buttonDown());
+                
+                addlistener(this.parent, 'SizeChanged', @(src, evnt) this.sizeChanged());
+            end
         end
     end
 end

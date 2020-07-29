@@ -4,6 +4,10 @@ classdef Container < handle
         % MATLAB figure handle
         handle = [];
         
+        % Whether the new uifigure functionality should be used rather than
+        % GUIDE
+        isUIFigure = false;
+        
         buttonColour = [36 160 237]./255;%[0.8 0.8 0.8]; % get(obj.spectrumPreprocessingLabel, 'BackgroundColor')
         iconColour = [1 1 1];
         
@@ -82,6 +86,44 @@ classdef Container < handle
     end
     
     methods (Access = protected)
+        function label = createLabel(this, parent, defaultValue, textAlignment)
+            if this.isUIFigure
+                label = uilabel(parent, 'Text', defaultValue, 'HorizontalAlignment', textAlignment);
+            else
+                label = uicontrol('Parent', parent, 'Style', 'text', 'String', defaultValue, 'HorizontalAlignment', textAlignment);
+            end
+        end
+        
+        function textBox = createTextBox(this, parent, defaultValue)
+            if this.isUIFigure
+                textBox = uieditfield(parent, 'Value', defaultValue);
+            else
+                textBox = uicontrol('Parent', parent, 'Style', 'edit', 'String', defaultValue);
+            end
+        end
+        
+        function dropDown = createDropDown(this, parent, items)
+            if this.isUIFigure
+                dropDown = uidropdown(parent, 'Items', items);
+            else
+                dropDown = uicontrol('Parent', parent, 'Style', 'popup', 'String', items);
+            end
+        end
+        
+        function button = createButtonWithIcon(this, parent, callback, icon, tooltip)
+            if this.isUIFigure
+                button = uibutton(parent, 'Icon', getIcon(icon, this.buttonColour, this.iconColour), ...
+                    'Text', '', ...
+                    'ButtonPushedFcn', callback, ...
+                    'ToolTip', tooltip);
+            else
+                button = uicontrol('Parent', parent, ...
+                    'CData', getIcon(icon, this.buttonColour, this.iconColour), ...
+                    'Callback', callback, ...
+                    'TooltipString', tooltip);
+            end
+        end
+        
         function buttonDown(this)
             notify(this, 'ButtonDown');
         end
@@ -126,10 +168,11 @@ classdef Container < handle
             
             % Ensure that we're setting the size to a valid one
             if(newPosition(3) > 0 && newPosition(4) > 0)
-                oldUnits = get(object, 'Units');
-                set(object, 'Units', 'pixels');
+                if isprop(object, 'Units')
+                    set(object, 'Units', 'pixels');
+                end
+                
                 set(object, 'Position', newPosition);
-                set(object, 'Units', oldUnits);
             end
         end
     end

@@ -394,11 +394,18 @@ classdef DataViewer < Figure
                     spectralRange = [obj.dataRepresentation.spectralChannels(minLoc) obj.dataRepresentation.spectralChannels(minLoc)];
                     description = num2str(obj.dataRepresentation.spectralChannels(minLoc));
                 else
-                    units = get(obj.toleranceSelectionPopup, 'String');
-                    unit = units{get(obj.toleranceSelectionPopup, 'Value')};
+                    if ~obj.isUIFigure
+                        units = get(obj.toleranceSelectionPopup, 'String');
+                        unit = units{get(obj.toleranceSelectionPopup, 'Value')};
+                        
+                        tolerance = get(obj.toleranceEditBox, 'String');
+                    else
+                        unit = get(obj.toleranceSelectionPopup, 'Value');
+                        tolerance = get(obj.toleranceEditBox, 'Value');
+                    end
 
                     spectralRange = [peakSelectionEvent.peakDetails peakSelectionEvent.peakDetails];
-                    description = [num2str(peakSelectionEvent.peakDetails, 10) ' +/- ' get(obj.toleranceEditBox, 'String') ' ' unit];
+                    description = [num2str(peakSelectionEvent.peakDetails, 10) ' +/- ' tolerance ' ' unit];
                 end
             else
                 spectralRange = peakSelectionEvent.peakDetails;
@@ -922,7 +929,12 @@ classdef DataViewer < Figure
             % Check that there is actually an image to view
             if(isnumeric(imageIndex) && imageIndex <= length(obj.imageList) && obj.imageListGenerated(imageIndex))
                 set(obj.imageSelectionPopup, 'Value', imageIndex);
-                set(obj.imageTitleLabel, 'String', obj.imageList(imageIndex).getDescription());
+                
+                if isprop(obj.imageTitleLabel, 'Text')
+                    set(obj.imageTitleLabel, 'Text', obj.imageList(imageIndex).getDescription());
+                else
+                    set(obj.imageTitleLabel, 'String', obj.imageList(imageIndex).getDescription());
+                end
                 
                 obj.imageDisplay.setData(obj.imageList(imageIndex));
                 obj.regionOfInterestPanel.setImageForEditor(obj.imageList(imageIndex));
@@ -1065,22 +1077,22 @@ classdef DataViewer < Figure
                 % Create GUI controls
                 
                 % --- Image View Details ---
-                obj.imageSelectionPopup = uicontrol('Style', 'popup', 'String', {'Default'}, ...
-                    'Units', 'normalized', 'Position', [.1 .925 .8 .05], 'Callback', @(src, evnt)obj.displayImage(get(src, 'Value')), ...
-                    'Visible', 'off');
+%                 obj.imageSelectionPopup = uicontrol('Style', 'popup', 'String', {'Default'}, ...
+%                     'Units', 'normalized', 'Position', [.1 .925 .8 .05], 'Callback', @(src, evnt)obj.displayImage(get(src, 'Value')), ...
+%                     'Visible', 'off');
 %                 obj.imageSelectionPopup = uitable('ColumnName', {'m/z'}, 'RowName', [], ...
 %                     'Units', 'normalized', 'Position', [.025 .62 .2 .35], 'CellSelectionCallback', @(src, evnt)obj.displayImage(get(src, 'Value'))); 
 %                 get( obj.imageSelectionPopup)
                 
-                obj.imageListPanel = uipanel('Parent', obj.handle, 'Title', 'Image List');
+                obj.imageListPanel = uipanel('Parent', obj.handle, 'Title', 'Image List', 'AutoResizeChildren', 'off');
                 
-                obj.imageListTabGroup = uitabgroup('Parent', obj.imageListPanel, 'TabLocation', 'top');
-                obj.userImageTab = uitab('Parent', obj.imageListTabGroup, 'Title', 'User');
-                obj.peaksImageTab = uitab('Parent', obj.imageListTabGroup, 'Title', 'Peaks');
-                obj.annotatedImageTab = uitab('Parent', obj.imageListTabGroup, 'Title', 'Annotated');
+                obj.imageListTabGroup = uitabgroup('Parent', obj.imageListPanel, 'TabLocation', 'top', 'AutoResizeChildren', 'off');
+                obj.userImageTab = uitab('Parent', obj.imageListTabGroup, 'Title', 'User', 'AutoResizeChildren', 'off');
+                obj.peaksImageTab = uitab('Parent', obj.imageListTabGroup, 'Title', 'Peaks', 'AutoResizeChildren', 'off');
+                obj.annotatedImageTab = uitab('Parent', obj.imageListTabGroup, 'Title', 'Annotated', 'AutoResizeChildren', 'off');
                 
-                obj.toleranceEditBox = uicontrol('Parent', obj.userImageTab, 'Style', 'edit', 'String', '3');
-                obj.toleranceSelectionPopup = uicontrol('Parent', obj.userImageTab,'Style', 'popup', 'String', {'PPM', 'Da'});
+                obj.toleranceEditBox = obj.createTextBox(obj.userImageTab, '3');%uicontrol('Parent', obj.userImageTab, 'Style', 'edit', 'String', '3');
+                obj.toleranceSelectionPopup = obj.createDropDown(obj.userImageTab, {'PPM', 'Da'});
                 
                 obj.imageListTable = uitable('Parent', obj.userImageTab,'RowName', [], ...
                     'ColumnName', {'Image', 'Generated'}, ...
@@ -1090,27 +1102,21 @@ classdef DataViewer < Figure
                     'CellSelectionCallback', @(src, evnt) obj.imageListTableSelected(src, evnt), ...
                     'CellEditCallback', @(src, evnt) obj.imageListTableEdited(src, evnt));
                 
-                obj.generateImageListButton = uicontrol('Parent', obj.userImageTab, ...
-                    'Callback', @(src, evnt) obj.generateImagesCallback(), ...
-                    'CData', getIcon('add_photo_alternate', obj.buttonColour, obj.iconColour), ...
-                    'TooltipString', 'Generate all images in the list');
-                obj.overlayImagesButton = uicontrol('Parent', obj.userImageTab, ...
-                    'Callback', @(src, evnt) obj.overlayImagesCallback(), ...
-                    'CData', getIcon('compare', obj.buttonColour, obj.iconColour), ...
-                    'TooltipString', 'Generate RGB composite of selected images');
-                obj.removeImageButton = uicontrol('Parent', obj.userImageTab, ...
-                    'Callback', @(src, evnt) obj.removeImagesCallback(), ...
-                    'CData', getIcon('delete', obj.buttonColour, obj.iconColour), ...
-                    'TooltipString', 'Remove all selected images');
-                obj.saveImageListButton = uicontrol('Parent', obj.userImageTab, ...
-                    'Callback', @(src, evnt) obj.saveImageListCallback(), ...
-                    'CData', getIcon('save_alt', obj.buttonColour, obj.iconColour), ...
-                    'TooltipString', 'Save image list');
-                obj.loadImageListButton = uicontrol('Parent', obj.userImageTab, ...
-                    'Callback', @(src, evnt) obj.loadImageListCallback(), ...
-                    'CData', getIcon('folder_open', obj.buttonColour, obj.iconColour), ...
-                    'TooltipString', 'Load image list');
+                obj.generateImageListButton = obj.createButtonWithIcon(obj.userImageTab, ...
+                    @(src, evnt) obj.generateImagesCallback(), 'add_photo_alternate', 'Generate all images in the list');
                 
+                obj.overlayImagesButton = obj.createButtonWithIcon(obj.userImageTab, ...
+                    @(src, evnt) obj.overlayImagesCallback(), 'compare', 'Generate RGB composite of selected images');
+                
+                obj.removeImageButton = obj.createButtonWithIcon(obj.userImageTab, ...
+                    @(src, evnt) obj.removeImagesCallback(), 'delete', 'Remove all selected images');
+                
+                obj.saveImageListButton = obj.createButtonWithIcon(obj.userImageTab, ...
+                    @(src, evnt) obj.saveImageListCallback(), 'save_alt', 'Save image list');
+                
+                obj.loadImageListButton = obj.createButtonWithIcon(obj.userImageTab, ...
+                    @(src, evnt) obj.loadImageListCallback(), 'folder_open', 'Load image list');
+                                
                 
                 obj.peakListTable = uitable('Parent', obj.peaksImageTab,'RowName', [], ...
                     'ColumnName', {'Centroid', 'Generated'}, ...
@@ -1118,60 +1124,43 @@ classdef DataViewer < Figure
                     'ColumnEditable', [false, false], ...
                     'ColumnWidth', {120, 40} , ...
                     'CellSelectionCallback', @(src, evnt) obj.peakListTableSelected(src, evnt));
-                obj.annotatePeakImagesButton = uicontrol('Parent', obj.peaksImageTab, ...
-                    'Callback', @(src, evnt) obj.annotatePeakImagesCallback(), ...
-                    'CData', getIcon('label', obj.buttonColour, obj.iconColour), ...
-                    'TooltipString', 'Annotate peaks in the list');
-                obj.savePeakImagesButton = uicontrol('Parent', obj.peaksImageTab, ...
-                    'Callback', @(src, evnt) obj.savePeakImagesCallback(), ...
-                    'CData', getIcon('save_alt', obj.buttonColour, obj.iconColour), ...
-                    'TooltipString', 'Save peak list');
                 
-%         peakListTable;
-%         generatePeakImageListButton;
-%         overlayPeakImagesButton;
-%         annotatePeakImagesButton;
-%         savePeakImageListButton;
+                obj.annotatePeakImagesButton = obj.createButtonWithIcon(obj.peaksImageTab, ...
+                    @(src, evnt) obj.annotatePeakImagesCallback(), 'label', 'Annotate peaks in the list');
+                obj.savePeakImagesButton = obj.createButtonWithIcon(obj.peaksImageTab, ...
+                    @(src, evnt) obj.savePeakImagesCallback(), 'save_alt', 'Save peak list');
 
                 obj.regionOfInterestPanel = RegionOfInterestPanel(obj);
                 addlistener(obj.regionOfInterestPanel, 'InfoButtonClicked', @(src, evnt) obj.infoRegionOfInterest());
                 addlistener(obj.regionOfInterestPanel, 'RegionOfInterestSelected', @(src, evnt) obj.updateRegionOfInterestDisplay());
                               
                 
-%                 obj.imageAxis = axes('Parent', obj.handle, 'Position', [.25 .62 .7 .3]);
-                
-                obj.imageTitleLabel = uicontrol('Parent', obj.handle, 'Style', 'text');
+                obj.imageTitleLabel = obj.createLabel(obj.handle, '', 'center'); 
                 
                 % --- Spectrum View Details ---
                 obj.spectrumSelectionPopup = uicontrol('Style', 'popup', 'String', {''}, ...
                     'Units', 'normalized', 'Position', [.2 .375 .6 .05], 'Callback', @(src, evnt)obj.displayStoredSpectrum(get(src, 'Value')), ...
                     'Visible', 'off');
                 
-                obj.spectrumListPanel = uipanel('Parent', obj.handle, 'Title', 'Spectrum List');
+                obj.spectrumListPanel = uipanel('Parent', obj.handle, 'Title', 'Spectrum List', 'AutoResizeChildren', 'off');
                 obj.spectrumListTable = uitable('Parent', obj.spectrumListPanel, 'ColumnName', {'Spectrum'}, 'RowName', [], ...
                     'ColumnWidth', {200}, 'CellSelectionCallback', @(src, evnt) obj.spectrumListTableSelected(src, evnt));
                 
-                obj.addSpectrumButton = uicontrol('Parent', obj.spectrumListPanel, ...
-                    'Callback', @(src, evnt) obj.addSpectrumToListCallback(), ...
-                    'CData', getIcon('bookmark', obj.buttonColour, obj.iconColour), ...
-                    'TooltipString', 'Add current spectrum to the list');
-                obj.overlaySpectrumButton = uicontrol('Parent', obj.spectrumListPanel, ...
-                    'Callback', @(src, evnt) obj.overlaySpectrumCallback(), ...
-                    'CData', getIcon('layers', obj.buttonColour, obj.iconColour), ...
-                    'TooltipString', 'Overlay selected spectra');
-                obj.subtractSpectrumButton = uicontrol('Parent', obj.spectrumListPanel, ...
-                    'Callback', @(src, evnt) obj.subtractSpectrumCallback(), ...
-                    'CData', getIcon('remove', obj.buttonColour, obj.iconColour), ...
-                    'TooltipString', 'Subtract selected spectra');
-                obj.removeSpectrumButton = uicontrol('Parent', obj.spectrumListPanel, ...
-                    'Callback', @(src, evnt) obj.removeSpectraFromListCallback(), ...
-                    'CData', getIcon('delete', obj.buttonColour, obj.iconColour), ...
-                    'TooltipString', 'Remove selected spectra from the list');
+                obj.addSpectrumButton = obj.createButtonWithIcon(obj.spectrumListPanel, ...
+                    @(src, evnt) obj.addSpectrumToListCallback(), 'bookmark', 'Add current spectrum to the list');
                 
-%                 obj.spectrumAxis = axes('Parent', obj.handle, 'Position', [.1 .3 .8 .25]);
+                obj.overlaySpectrumButton = obj.createButtonWithIcon(obj.spectrumListPanel, ...
+                    @(src, evnt) obj.overlaySpectrumCallback(), 'layers', 'Overlay selected spectra');
                 
+                obj.subtractSpectrumButton = obj.createButtonWithIcon(obj.spectrumListPanel, ...
+                    @(src, evnt) obj.subtractSpectrumCallback(), 'remove', 'Subtract selected spectra');
+                
+                obj.removeSpectrumButton = obj.createButtonWithIcon(obj.spectrumListPanel, ...
+                    @(src, evnt) obj.removeSpectraFromListCallback(), 'delete', 'Remove selected spectra from the list');
+                                
+               
                 obj.spectrumPanel = SpectrumPanel(obj, SpectralData(0, 0));
-                obj.spectrumDisplay = obj.spectrumPanel.spectrumDisplay; %SpectrumDisplay(obj, SpectralData(0, 0));
+                obj.spectrumDisplay = obj.spectrumPanel.spectrumDisplay; 
                 
 %                 addlistener(obj.spectrumDisplay, 'MouseDownInsideAxis', @(src, evnt)obj.mouseDownInsideSpectrum(evnt.x));
 %                 addlistener(obj.spectrumDisplay, 'MouseUpInsideAxis', @(src, evnt)obj.mouseUpInsideSpectrum(evnt.x));
@@ -1180,40 +1169,25 @@ classdef DataViewer < Figure
                 addlistener(obj.spectrumDisplay, 'PeakListUpdated', @(src, evnt)obj.peakListUpdated(evnt));
                 
                 
-                obj.preprocessingPanel = uipanel('Parent', obj.handle, 'Title', 'Preprocessing', ...
-                    'Position', [.525 .05 .425 .2]);
+                obj.preprocessingPanel = uipanel('Parent', obj.handle, 'Title', 'Preprocessing', 'AutoResizeChildren', 'off');
                 
-                obj.spectrumPreprocessingLabel = uicontrol('Parent', obj.preprocessingPanel, 'Style', 'text', ...
-                    'HorizontalAlignment', 'left', ...
-                    'Units', 'normalized', 'Position', [0.05 0.7 0.5 0.2], 'String', 'Spectrum');
-                obj.viewSpectrumPreprocessingButton = uicontrol('Parent', obj.preprocessingPanel, ...
-                    'Units', 'normalized', 'Position', [0.55 0.75 0.2 0.2], ...
-                    'CData', getIcon('notes', obj.buttonColour, obj.iconColour));
-                obj.editSpectrumPreprocessingButton = uicontrol('Parent', obj.preprocessingPanel, ...
-                    'Units', 'normalized', 'Position', [0.75 0.75 0.2 0.2], ...
-                    'Callback', @(src, evnt)obj.editPreprocessingWorkflow(), ...
-                    'CData', getIcon('edit', obj.buttonColour, obj.iconColour));
+                obj.spectrumPreprocessingLabel = obj.createLabel(obj.preprocessingPanel, 'Spectrum', 'left');
+                obj.viewSpectrumPreprocessingButton = obj.createButtonWithIcon(obj.preprocessingPanel, ...
+                    @(src, evnt)obj.viewPreprocessingWorkflow(), 'notes', 'View spectrum preprocessing details');
+                obj.editSpectrumPreprocessingButton = obj.createButtonWithIcon(obj.preprocessingPanel, ...
+                    @(src, evnt)obj.editPreprocessingWorkflow(), 'edit', 'Edit spectrum preprocessing workflow');
                 
-                obj.imageGenPreprocessingLabel = uicontrol('Parent', obj.preprocessingPanel, 'Style', 'text', ...
-                    'HorizontalAlignment', 'left', ...
-                    'Units', 'normalized', 'Position', [0.05 0.5 0.5 0.2], 'String', 'Image Generation');
-                obj.viewImageGenPreprocessingButton = uicontrol('Parent', obj.preprocessingPanel, ...
-                    'Units', 'normalized', 'Position', [0.55 0.55 0.2 0.2], ...
-                    'CData', getIcon('notes', obj.buttonColour, obj.iconColour));
-                obj.editImageGenPreprocessingButton = uicontrol('Parent', obj.preprocessingPanel, ...
-                    'Units', 'normalized', 'Position', [0.75 0.55 0.2 0.2], ...
-                    'CData', getIcon('edit', obj.buttonColour, obj.iconColour));
+                obj.imageGenPreprocessingLabel = obj.createLabel(obj.preprocessingPanel, 'Image Generation', 'left');
                 
+                obj.viewImageGenPreprocessingButton = obj.createButtonWithIcon(obj.preprocessingPanel, ...
+                    @(src, evnt)obj.viewImageGenPreprocessingWorkflow(), 'notes', 'View image generation preprocessing details');
+                obj.editImageGenPreprocessingButton = obj.createButtonWithIcon(obj.preprocessingPanel, ...
+                    @(src, evnt)obj.editImageGenPreprocessingWorkflow(), 'edit', 'Edit image generation preprocessing workflow');
                 
-%                 obj.preprocessingLabel = uicontrol('Parent', obj.preprocessingPanel, 'Style', 'text', ...
-%                     'String', '', 'HorizontalAlignment', 'left', 'Units', 'normalized', 'Position', [0.05 0.05 0.9 0.9]);
-%                 obj.editPreprocessingButton = uicontrol('Parent', obj.preprocessingPanel, 'String', 'Edit', ...
-%                     'Units', 'normalized', 'Position', [0.65 0.1 0.3 0.3], 'Callback', @(src, evnt)obj.editPreprocessingWorkflow());
-                
+                                
                 obj.progressBarAxis = axes('Parent', obj.handle, 'Position', [.05 .01 .9 .03], 'Visible', 'off');
                 obj.progressBar = ProgressBar(obj.progressBarAxis);          
                 
-                set(obj.handle, 'units','normalized','outerposition',[0.2 0.4 0.5 0.5]);
             end
         end
         
@@ -1311,22 +1285,27 @@ classdef DataViewer < Figure
                     
                     panelPosition = Figure.getPositionInPixels(obj.imageListPanel);
                     
+                    
                     if(~isempty(panelPosition))
-                        Figure.setObjectPositionInPixels(obj.toleranceSelectionPopup, [margin, panelPosition(4) - editBoxHeight*2 - margin*5, panelPosition(3)/2 - margin*2, selectBoxHeight]);
-                        Figure.setObjectPositionInPixels(obj.toleranceEditBox, [margin + panelPosition(3)/2, panelPosition(4) - editBoxHeight*2 - margin*5, panelPosition(3)/2 - margin*2, editBoxHeight]);
+                        Figure.setObjectPositionInPixels(obj.imageListTabGroup, [margin, margin, panelPosition(3)-margin*2, panelPosition(4)-20-margin*2]);
                         
-                        Figure.setObjectPositionInPixels(obj.imageListTable, [margin, buttonHeight + margin, panelPosition(3) - margin*2, panelPosition(4) - margin*2 - (buttonHeight + editBoxHeight)*2]);
+                        groupPosition = Figure.getPositionInPixels(obj.imageListTabGroup);
+                        
+                        Figure.setObjectPositionInPixels(obj.toleranceSelectionPopup, [margin, groupPosition(4) - editBoxHeight*2 - margin*5, groupPosition(3)/2 - margin*2, selectBoxHeight]);
+                        Figure.setObjectPositionInPixels(obj.toleranceEditBox, [margin + groupPosition(3)/2, groupPosition(4) - editBoxHeight*2 - margin*5, groupPosition(3)/2 - margin*2, editBoxHeight]);
+                        
+                        Figure.setObjectPositionInPixels(obj.imageListTable, [margin, buttonHeight + margin, groupPosition(3) - margin*2, groupPosition(4) - margin*2 - (buttonHeight + editBoxHeight)*2]);
 
                         Figure.setObjectPositionInPixels(obj.generateImageListButton, [margin, margin, buttonHeight, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.overlayImagesButton, [margin+panelPosition(3)/5, margin, buttonHeight, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.removeImageButton, [margin+panelPosition(3)*2/5, margin, buttonHeight, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.saveImageListButton, [margin+panelPosition(3)*3/5, margin, buttonHeight, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.loadImageListButton, [margin+panelPosition(3)*4/5, margin, buttonHeight, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.overlayImagesButton, [margin+groupPosition(3)/5, margin, buttonHeight, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.removeImageButton, [margin+groupPosition(3)*2/5, margin, buttonHeight, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.saveImageListButton, [margin+groupPosition(3)*3/5, margin, buttonHeight, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.loadImageListButton, [margin+groupPosition(3)*4/5, margin, buttonHeight, buttonHeight]);
                         
                         % Fix sizes for 'Peaks' tab
-                        Figure.setObjectPositionInPixels(obj.peakListTable, [margin, buttonHeight + margin, panelPosition(3) - margin*2, panelPosition(4) - margin*2 - (buttonHeight + editBoxHeight*2)]);
+                        Figure.setObjectPositionInPixels(obj.peakListTable, [margin, buttonHeight + margin, groupPosition(3) - margin*2, groupPosition(4) - margin*2 - (buttonHeight + editBoxHeight*2)]);
                         Figure.setObjectPositionInPixels(obj.annotatePeakImagesButton, [margin, margin, buttonHeight, buttonHeight]);
-                        Figure.setObjectPositionInPixels(obj.savePeakImagesButton, [margin+panelPosition(3)*3/5, margin, buttonHeight, buttonHeight]);
+                        Figure.setObjectPositionInPixels(obj.savePeakImagesButton, [margin+groupPosition(3)*3/5, margin, buttonHeight, buttonHeight]);
                     end
                     
                     widthForImage = widthForImage - widthOfImageList - margin;
@@ -1404,7 +1383,7 @@ classdef DataViewer < Figure
         
         function createContextMenu(obj)
             % Set up the context menu
-            obj.contextMenu = uicontextmenu();
+            obj.contextMenu = uicontextmenu(obj.handle);
             exportMenu = uimenu(obj.contextMenu, 'Label', 'Export Data', 'Callback', []);
             uimenu(exportMenu, 'Label', 'To workspace', 'Callback', @(src,evnt)obj.dataRepresentation.exportToWorkspace());
         end
