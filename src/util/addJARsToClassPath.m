@@ -3,10 +3,12 @@ function addJARsToClassPath()
     jimzMLParserVersion = '1.0.6-jar-with-dependencies';
     jSpectralAnalysisVersion = '1.0.2';
     jSIMSVersion = '1.0.0';
+    cdkVersion = '2.3';
     
     jimzMLParserJar = ['jimzmlparser-' jimzMLParserVersion '.jar'];
     jSpectralAnalysisJar = ['JSpectralAnalysis-' jSpectralAnalysisVersion '.jar'];
     jSIMSJar = ['JSIMS-' jSIMSVersion '.jar'];
+    cdkJar = ['cdk-' cdkVersion '.jar'];
 
     % Ensure that imzMLConverter is on the path
     found = checkJAROnPath(jimzMLParserJar);
@@ -36,6 +38,8 @@ function addJARsToClassPath()
 %         javaaddpath(strrep([pathstr filesep 'JSpectralAnalysis' filesep 'guava-18.0.jar'], '\', '\\'));
         javaaddpath([pathstr filesep 'JSpectralAnalysis' filesep jSIMSJar]); %strrep([pathstr filesep 'JSpectralAnalysis' filesep 'JSIMS.jar'], '\', '\\'));
         javaaddpath([pathstr filesep 'JSpectralAnalysis' filesep jSpectralAnalysisJar]); %strrep([pathstr filesep 'JSpectralAnalysis' filesep 'JSpectralAnalysis.jar'], '\', '\\'));
+        
+        javaaddpath([pathstr filesep 'cdk' filesep cdkJar]); %strrep([pathstr filesep 'JSpectralAnalysis' filesep 'JSpectralAnalysis.jar'], '\', '\\'));
 
         % Check that it has been added to the path now, and if not throw an
         % exception
