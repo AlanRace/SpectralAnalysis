@@ -1,4 +1,5 @@
-# SpectralAnalysis
+<img src="https://raw.githubusercontent.com/AlanRace/SpectralAnalysis/master/docs-src/static/images/SpectralAnalysis_logo_nobg.png" width="70%">
+
 Software for the analysis and interactive exploration of spectral imaging data, including visualisation of both images and spectra, preprocessing, multivariate analysis and machine learning. 
 
 [Please read the manual](https://alanrace.github.io/SpectralAnalysis/) for a full list of features and how to use them.
@@ -24,3 +25,6 @@ If you find this software useful in your research please cite:
 
 #### Contributing to SpectralAnalysis
 We welcome all contributions to make SpectralAnalysis better. If you would like to contribute to SpectralAnalysis, please first read our [code of conduct](CODE_OF_CONDUCT.md) and then see the [contributing guide](docs/CONTRIBUTING.md).
+
+#### Acknowledgements
+Logo made by the very talented [Buffy Randall](http://www.buffyrandall.com).
