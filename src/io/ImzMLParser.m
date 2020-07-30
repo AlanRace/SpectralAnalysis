@@ -174,6 +174,31 @@ classdef ImzMLParser < Parser
                 
                 workflow.addPreprocessingMethod(InterpolationPPMRebinZeroFilling(lowerLimit, upperLimit, 5));
             elseif thermoInstrument.isParentOf(instrumentModel.getID())
+                % Check if profile or centroided
+                profile = this.imzML.getFileDescription().getFileContent().getCVParam('MS:1000128');
+                centroid = this.imzML.getFileDescription().getFileContent().getCVParam('MS:1000127');
+                
+                firstSpectrum = this.imzML.getSpectrumList().getSpectrum(0);
+                firstScan = firstSpectrum.getScanList().getScan(0);
+                
+                scanTitle = firstScan.getCVParam('MS:1000512').getValue();
+                
+                if ~isempty(scanTitle)
+                    % Example title: FTMS + p NSI Full ms [100.00-1000.00]
+                    titleSplit = strsplit(scanTitle, '\[');
+                    
+                    massRange = titleSplit{2};
+                    massRange = massRange(1:end-1);
+                    massRange = str2double(strsplit(massRange, '-'));
+                    
+                    lowerLimit = massRange(1);
+                    upperLimit = massRange(2);
+                end
+                % TODO: What if the scanTitle is not there?
+                
+                if ~isempty(profile)                    
+                    workflow.addPreprocessingMethod(InterpolationPPMRebinZeroFilling(lowerLimit, upperLimit, 1));
+                end
             end
         end
         
