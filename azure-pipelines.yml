@@ -10,6 +10,6 @@ pool: 'Default'
 
 steps:
 - script: |
-   matlab -nojvm -nodisplay -nosplash -r "disp('Hello from Matlab!'); quit"
-   echo Successfully run my first MATLAB CI!
+   matlab -nojvm -nodisplay -nosplash -r "run('deploy.m');exit;""
+   ls
 
