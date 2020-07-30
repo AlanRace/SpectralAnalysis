@@ -1033,7 +1033,8 @@ classdef DataViewer < Figure
                 set(obj.handle, 'Units', 'pixels');
                 
                 position = get(obj.handle, 'Position');
-                position(4) = 460;
+                position(3) = 800;
+                position(4) = 500;
                 set(obj.handle, 'Position', position);
                 
                 % Create the menu bar

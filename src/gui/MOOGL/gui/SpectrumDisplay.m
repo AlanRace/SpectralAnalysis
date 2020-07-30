@@ -404,9 +404,6 @@ classdef SpectrumDisplay < Display
                         obj.currentLine = line([obj.startPoint(1) obj.mouseLocation(1)], [yMidPoint yMidPoint], 'Color', [1 0 0]);
                     end
                 end
-                
-                set(obj.currentLine, 'LineWidth', 2);
-                get(obj.currentLine)
             end
             
         end
