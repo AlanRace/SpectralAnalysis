@@ -1,4 +1,8 @@
+<p align="center">
 <img src="https://raw.githubusercontent.com/AlanRace/SpectralAnalysis/master/docs-src/static/images/SpectralAnalysis_logo_nobg.png" width="70%">
+</p>
+
+-----
 
 Software for the analysis and interactive exploration of spectral imaging data, including visualisation of both images and spectra, preprocessing, multivariate analysis and machine learning. 
 
