@@ -4,7 +4,7 @@
 
 -----
 
-Software for the analysis and interactive exploration of spectral imaging data, including visualisation of both images and spectra, preprocessing, multivariate analysis and machine learning. 
+Software for the analysis and interactive exploration of spectral imaging data (such as mass spectrometry imaging and Raman spectroscopy mapping), including visualisation of both images and spectra, preprocessing, multivariate analysis and machine learning. 
 
 [Please read the manual](https://alanrace.github.io/SpectralAnalysis/) for a full list of features and how to use them.
 
