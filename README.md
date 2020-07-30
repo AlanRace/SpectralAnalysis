@@ -19,6 +19,9 @@ Software for the analysis and interactive exploration of spectral imaging data, 
 
 [![View SpectralAnalysis on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://de.mathworks.com/matlabcentral/fileexchange/77942-spectralanalysis)
 
+#### Getting help
+If you are having issues or have questions related to SpectralAnalysis you can write to us on the [SpectralAnalysis Google Group](https://groups.google.com/g/spectralanalysis).
+
 #### Citing SpectralAnalysis
 
 If you find this software useful in your research please cite:  
