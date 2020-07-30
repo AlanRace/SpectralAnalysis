@@ -10,6 +10,6 @@ pool: 'Default'
 
 steps:
 - script: |
-   matlab -nojvm -nodisplay -nosplash -r "run('deploy.m');exit;"
+   matlab -nodisplay -nosplash -r "run('deploy.m');exit;"
    ls
 
