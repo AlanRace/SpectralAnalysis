@@ -158,7 +158,7 @@ classdef DataViewer < Figure
             
             obj.dataRepresentation = dataRepresentation;
             
-            if(~isempty(obj.dataRepresentation.parser))
+            if(~isempty(obj.dataRepresentation.parser) && ~isa(dataRepresentation, 'DataInMemory'))
                 obj.title = obj.dataRepresentation.parser.getShortFilename();
                 
                 obj.spectrumPreprocessingWorkflow = obj.dataRepresentation.parser.getDefaultPreprocessingWorkflow();

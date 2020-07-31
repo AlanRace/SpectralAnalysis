@@ -147,6 +147,10 @@ classdef ImzMLParser < Parser
             
             instrumentModel = this.getMassSpectrometer();
             
+            if isempty(instrumentModel)
+                return;
+            end
+            
             obo = instrumentModel.getOntology();
             sciexInstrument = obo.getTerm('MS:1000121');
             watersInstrument = obo.getTerm('MS:1000126');
@@ -207,7 +211,15 @@ classdef ImzMLParser < Parser
             
             % Check whether the 'instrument model' (MS:1000031) parameter
             % is included
-            instrumentModel = instrumentConfiguration.getCVParamOrChild('MS:1000031').getTerm();
+            instrumentModel = [];
+            
+            if ~isempty(instrumentConfiguration)
+                instrumentModel = instrumentConfiguration.getCVParamOrChild('MS:1000031');
+                
+                if ~isempty(instrumentModel)
+                    instrumentModel = instrumentModel.getTerm();
+                end
+            end
         end
         
         
