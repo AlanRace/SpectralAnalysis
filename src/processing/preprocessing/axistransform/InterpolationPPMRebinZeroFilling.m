@@ -14,9 +14,9 @@ classdef InterpolationPPMRebinZeroFilling < SpectralZeroFilling
     
     methods
         function obj = InterpolationPPMRebinZeroFilling(minSpectralChannel, maxSpectralChannel, binSize)
-            obj.Parameters = Parameter(InterpolationRebinZeroFilling.ParameterDefinitions(1), minSpectralChannel);
-            obj.Parameters(2) = Parameter(InterpolationRebinZeroFilling.ParameterDefinitions(2), maxSpectralChannel);
-            obj.Parameters(3) = Parameter(InterpolationRebinZeroFilling.ParameterDefinitions(3), binSize);
+            obj.Parameters = Parameter(InterpolationPPMRebinZeroFilling.ParameterDefinitions(1), minSpectralChannel);
+            obj.Parameters(2) = Parameter(InterpolationPPMRebinZeroFilling.ParameterDefinitions(2), maxSpectralChannel);
+            obj.Parameters(3) = Parameter(InterpolationPPMRebinZeroFilling.ParameterDefinitions(3), binSize);
             
             
             minmz = obj.Parameters(1).value;
@@ -63,9 +63,9 @@ classdef InterpolationPPMRebinZeroFilling < SpectralZeroFilling
         end                
         
         function Parameters = generateDefaultsFromSpectrum(spectrum)
-            Parameters = Parameter(InterpolationRebinZeroFilling.ParameterDefinitions(1), min(spectrum.spectralChannels));
-            Parameters(2) = Parameter(InterpolationRebinZeroFilling.ParameterDefinitions(2), max(spectrum.spectralChannels));
-            Parameters(3) = Parameter(InterpolationRebinZeroFilling.ParameterDefinitions(3), InterpolationRebinZeroFilling.ParameterDefinitions(3).defaultValue);
+            Parameters = Parameter(InterpolationPPMRebinZeroFilling.ParameterDefinitions(1), min(spectrum.spectralChannels));
+            Parameters(2) = Parameter(InterpolationPPMRebinZeroFilling.ParameterDefinitions(2), max(spectrum.spectralChannels));
+            Parameters(3) = Parameter(InterpolationPPMRebinZeroFilling.ParameterDefinitions(3), InterpolationPPMRebinZeroFilling.ParameterDefinitions(3).defaultValue);
         end
     end
 end
