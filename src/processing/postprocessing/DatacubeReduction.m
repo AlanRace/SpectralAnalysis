@@ -227,25 +227,23 @@ classdef DatacubeReduction < DataReduction
                     % Get the images from the ImageGeneration Java class 
                     images = imageGeneration.getDatacube();
                     
-                    for i = 1:size(pixels, 1)
-                        if(isempty(data))
-                            if(this.processEntireDataset)
-                                data{end+1} = zeros(size(pixels, 1), length(this.peakList));
-                                pixelLists{end+1} = pixels;
-                            end
-                            
-                            for roiIndex = 1:numel(rois)
-                                pixelLists{end+1} = rois{roiIndex}.getPixelList();
-                                data{end+1} = zeros(size(pixelLists{end}, 1), length(this.peakList));
-                            end
+                    if(isempty(data))
+                        if(this.processEntireDataset)
+                            data{end+1} = zeros(size(pixels, 1), length(this.peakList));
+                            pixelLists{end+1} = pixels;
                         end
                         
-                        for pixelListIndex = 1:numel(pixelLists)
-                            [pixel, row, col] = intersect(pixelLists{pixelListIndex}, pixels(i, :), 'rows');
-                            
-                            if(~isempty(row))
-                                data{pixelListIndex}(row, :) = images(i, :);
-                            end
+                        for roiIndex = 1:numel(rois)
+                            pixelLists{end+1} = rois{roiIndex}.getPixelList();
+                            data{end+1} = zeros(size(pixelLists{end}, 1), length(this.peakList));
+                        end
+                    end
+                    
+                    for pixelListIndex = 1:numel(pixelLists)
+                        [pixel, row, col] = intersect(pixelLists{pixelListIndex}, pixels, 'rows');
+                        
+                        if(~isempty(row))
+                            data{pixelListIndex}(row, :) = images(col, :);
                         end
                     end
                 catch err

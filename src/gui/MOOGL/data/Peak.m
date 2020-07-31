@@ -38,10 +38,10 @@ classdef Peak < Data
             if nargin > 3
                 this.minSpectralChannel = minSpectralChannel;
                 this.maxSpectralChannel = maxSpectralChannel;
-
-                this.setDescription([num2str(this.centroid, '%.5f') ' (' num2str(this.minSpectralChannel, '%.5f') ' - ' num2str(this.maxSpectralChannel, '%.5f') ')']);
+                
+                this.setDescription(sprintf('%.5f (%.5f - %.5f)', this.centroid, this.minSpectralChannel, this.minSpectralChannel));
             else
-                this.setDescription(num2str(this.centroid, '%.5f'));
+                this.setDescription(sprintf('%.5f', this.centroid));
             end
         end
         
