@@ -63,6 +63,9 @@ When selecting the `Threshold` button, the following window will be shown, with 
  
 
 ### Calculate statistics {#calculate-statistics}
+Once one or more regions of interest have been defined, it is possible to investigate the differences between these regions further.
+
+![](https://camo.githubusercontent.com/f8b3147640efc495e34d536ac2ddbb4c466e833f/68747470733a2f2f692e696d6775722e636f6d2f446742315553392e706e67)
 
 ### Export ROIs {#export-roi}
 
