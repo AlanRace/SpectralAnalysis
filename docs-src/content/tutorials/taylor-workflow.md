@@ -1,11 +1,11 @@
 +++
 title = "Scripting - datacube / kmeans"
-weight = 3
+weight = 1
 +++
 
-This script was originally written by Adam Taylor and can be used to automatically generate a mean spectrum, detect peaks, reduce the data to the peaks with signal-to-noise greater than 3, perform *k*-means clustering on the reduced data generate mean spectra for each cluster and save out all variables.
+This script was originally written by Adam Taylor and can be used to automatically generate a mean spectrum, detect peaks, reduce the data to the peaks with signal-to-noise greater than 3, perform *k*-means clustering (*k* = 2) on the reduced data, generate mean spectra for each cluster and then save out all variables.
 
-This script shows how SpectralAnalysis can be used without the interface to perform more complex and automatable analysis routines.
+This script demonstrates how SpectralAnalysis can be used without the interface to perform more complex and automatable analysis routines.
 
 ```matlab
 spectralAnalysisPath = 'C:\path\to\SpectralAnalysis';
@@ -61,18 +61,23 @@ for i = 1:length(filesToProcess)
     spectralChannels_all = totalSpectrum.spectralChannels;
     spectralChannels = [peaks.centroid];
 
-    %% Make datacube old
+    %% Make datacube
     disp(['! Generating data cube with ' num2str(length(peaks)) ' peaks...'])
 
+    % If peakTolerance < 0 then the detected peak width is used
     peakTolerance = -1;
 
     reduction = DatacubeReduction(peakTolerance);
     reduction.setPeakList(peaks);
 
+    % Inform the user whether we are using fast methods for processing (i.e. Java methods)
     addlistener(reduction, 'FastMethods', @(src, canUseFastMethods)disp(['! Using fast Methods?   ' num2str(canUseFastMethods.bool)]));
     
-    dataRepresentation = reduction.process(data);
-    dataRepresentation = dataRepresentation.get(1);
+    dataRepresentationList = reduction.process(data);
+
+    % We only requested one data representation, the entire dataset so extract that from the list
+    dataRepresentation = dataRepresentationList.get(1);
+    % Convert class to struct so that if SpectralAnalysis changes the DataRepresentation class, the data can still be loaded in
     dataRepresentation_struct = dataRepresentation.saveobj();
 
     datacube = dataRepresentation.data;
