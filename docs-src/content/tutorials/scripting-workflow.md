@@ -3,7 +3,7 @@ title = "Scripting - datacube / kmeans"
 weight = 1
 +++
 
-This script was originally written by Adam Taylor and can be used to automatically generate a mean spectrum, detect peaks, reduce the data to the peaks with signal-to-noise greater than 3, perform *k*-means clustering (*k* = 2) on the reduced data, generate mean spectra for each cluster and then save out all variables.
+This script was originally written by Adam Taylor, Teresa Murta and Alex Dexter and can be used to automatically generate a mean spectrum, detect peaks, reduce the data to the peaks with signal-to-noise greater than 3, perform *k*-means clustering (*k* = 2) on the reduced data, generate mean spectra for each cluster and then save out all variables.
 
 This script demonstrates how SpectralAnalysis can be used without the interface to perform more complex and automatable analysis routines.
 
@@ -11,11 +11,13 @@ This script demonstrates how SpectralAnalysis can be used without the interface 
 spectralAnalysisPath = 'C:\path\to\SpectralAnalysis';
 
 inputFolder = [spectralAnalysisPath filesep 'example-data' filesep 'mouse-brain']; %location of imzML files to process
-outputFoler = [spectralAnalysisPath 'filesep 'example-data' filesep 'mouse-brain'];
+outputFoler = [spectralAnalysisPath filesep 'example-data' filesep 'mouse-brain'];
 filesToProcess = dir([inputFolder filesep '*.imzML']); %gets all imzML files in folder
 
 % Set up datacube generation variables
-preprocessingWorkflowFile = [spectralAnalysisPath filesep 'example-data' filesep 'mouse-brain' filesep 'mouse-brain-preprocessingWorkflow.sap']; %location of preprocessing file
+
+% Preprocessing file (.sap) location
+preprocessingWorkflowFile = [spectralAnalysisPath filesep 'example-data' filesep 'mouse-brain' filesep 'mouse-brain-preprocessingWorkflow.sap']; 
 nzm_multiple = 3; % multiple of non zero median
 
 % Add SpectralAnalysis to the path - this only needs to be done once per MATLAB session
@@ -37,7 +39,7 @@ for i = 1:length(filesToProcess)
 
     input_file = [filesToProcess(i).folder filesep filesToProcess(i).name];
 
-    %% Get the filename from the path
+    % Get the filename from the path
     [~, filename, ~] = fileparts(input_file);
 
     %% make datacubes from each dataset
