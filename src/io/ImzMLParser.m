@@ -63,7 +63,7 @@ classdef ImzMLParser < Parser
         end
         
         function spectrum = getSpectrum(obj, x, y, z)
-            imzMLSpectrum = obj.imzML.getSpectrum(x, y);
+            imzMLSpectrum = obj.imzML.getSpectrum(int32(x), int32(y));
             
             if(isempty(imzMLSpectrum))
                 spectralChannels = [];
