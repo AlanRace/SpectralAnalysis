@@ -9,6 +9,10 @@ SpectralAnalysis was designed in such a way to enable rapid development and inte
 ### Integration with MATLAB
 To take advantage of the transfer of data between the MATLAB workspace and SpectralAnalysis, the [source code version](/installation/#source-version) of SpectralAnalysis must be used.
 
+Extracting data from the interface to MATLAB is then as simple as right clicking on the data that you want to export and selecting `Export > To Workspace` from the context menu.
+
 
 
 ### Extending SpectralAnalysis
+
+All functions can be extended within SpectralAnalysis. Examples on how to include new preprocessing and processing algorithms can be found in the `examples/SkeletonClasses` folder within the main SpectralAnalysis folder.
