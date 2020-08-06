@@ -164,9 +164,25 @@ classdef ImzMLParser < Parser
 
                         % TODO: Could check multiple spectra to find the best
                         % values for zero filling
-                        spectralData = this.getSpectrum(1, 1);
+                        spectrumList = this.imzML.getSpectrumList();
+                        firstSpectrum = spectrumList.getSpectrum(0);
+                        spectralData = SpectralData(firstSpectrum.getmzArray(), firstSpectrum.getIntensityArray());
+                        
+                        zeroFillingMethod = QSTARZeroFilling.generateFromSpectrum(spectralData);
+                        
+                        spectrumIndex = 1;
+                        while isnan(zeroFillingMethod.Parameters(3).value) && spectrumIndex < spectrumList.size()
+                            spectrum = spectrumList.getSpectrum(spectrumIndex);
+                            spectralData = SpectralData(spectrum.getmzArray(), spectrum.getIntensityArray());
 
-                        workflow.addPreprocessingMethod(QSTARZeroFilling.generateFromSpectrum(spectralData));
+                            zeroFillingMethod = QSTARZeroFilling.generateFromSpectrum(spectralData);
+                            
+                            spectrumIndex = spectrumIndex + 1;
+                        end
+
+                        if ~isnan(zeroFillingMethod.Parameters(3).value)
+                            workflow.addPreprocessingMethod(zeroFillingMethod);
+                        end
                 end
             elseif watersInstrument.isParentOf(instrumentModel.getID()) || instrumentModel.equals(watersInstrument)
                 firstSpectrum = this.imzML.getSpectrumList().getSpectrum(0);

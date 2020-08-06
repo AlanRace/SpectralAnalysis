@@ -6,6 +6,7 @@ classdef DatacubeReduction < DataReduction
         ParameterDefinitions = [...
             ParameterDescription('Peak Tolerance (if < 0, detected peak width used)', ParameterType.Double, 0), ...
             ParameterDescription('Tolerance Unit', ParameterType.Selection, {'PPM', 'Spectrum Unit'}), ...
+            ParameterDescription('Keep original pixel coordinates', ParameterType.Boolean, 1), ...
             ParameterDescription('Output', ParameterType.Selection, {'New Window', 'ImzML'}), ...
             ParameterDescription('Intensity Data Type', ParameterType.Selection, {'Double', 'Single', '64-Bit Integer', ...
             '32-Bit Integer', '16-Bit Integer', '8-Bit Integer'}), ...
@@ -15,13 +16,14 @@ classdef DatacubeReduction < DataReduction
     properties
         peakTolerance;
         toleranceUnit;
+        keepOriginalPixels;
         output;
         intensityDataType;
         storageType;
     end
     
     methods
-        function obj = DatacubeReduction(peakTolerance, toleranceUnit, output, intensityDataType, storageType)
+        function obj = DatacubeReduction(peakTolerance, toleranceUnit, keepOriginalPixels, output, intensityDataType, storageType)
             obj.peakTolerance = peakTolerance;
             
             if nargin > 1
@@ -29,12 +31,18 @@ classdef DatacubeReduction < DataReduction
             end
             
             if nargin > 2
+                obj.keepOriginalPixels = keepOriginalPixels;
+            else
+                obj.keepOriginalPixels = 1;
+            end
+            
+            if nargin > 3
                 obj.output = output;
             else
                 obj.output = 'New Window';
             end
             
-            if nargin > 3
+            if nargin > 4
                 obj.intensityDataType = intensityDataType;
                 obj.storageType = storageType;
             end
@@ -55,6 +63,7 @@ classdef DatacubeReduction < DataReduction
             this.dataRepresentationList = dataRepresentationList;
         end
         
+        
         function resultsViewerList = displayResults(this, dataViewer)
             % displayResults is the callback function, called once
             % DatacubeReduction is complete. This creates a DataViewerList and
@@ -68,9 +77,42 @@ classdef DatacubeReduction < DataReduction
                 resultsViewerList.add(DataViewer(this.dataRepresentationList.get(i)));
             end
         end
+        
+        function spectrum = getProcessedSpectrum(this, dataRepresentation, x, y)
+            spectrum = getProcessedSpectrum@PostProcessing(this, dataRepresentation, x, y);
+            
+            if(~isempty(this.peakList))
+                [centroids, peakWidths] = this.getPeakWidths();
+                minValues = centroids - peakWidths./2;
+                maxValues = centroids + peakWidths./2;
+                
+                intensities = zeros(1, length(this.peakList));
+                
+                for i = 1:length(this.peakList)
+                    intensities(i) = sum(spectrum.intensities(spectrum.spectralChannels >= minValues(i) & spectrum.spectralChannels <= maxValues(i)));
+                end
+                
+                spectrum = SpectralData(centroids, intensities);
+            end
+        end
     end
     
     methods (Access = private)
+        function [centroids, peakWidths] = getPeakWidths(this)
+            peakWidths = [this.peakList.maxSpectralChannel] - [this.peakList.minSpectralChannel];
+            centroids = [this.peakList.minSpectralChannel] + peakWidths./2;
+            
+            if(this.peakTolerance > 0)
+                if(strcmpi(this.toleranceUnit, 'PPM'))
+                    peakWidths = (centroids .* this.peakTolerance) / 1e6;
+                else
+                    peakWidths = ones(size(centroids)) .* this.peakTolerance;
+                end
+            end
+        end
+        
+        
+        
         function dataRepresentationList = processSIMSParser(this, dataRepresentation)
             if(~strcmp(this.output, 'New Window'))
                 exception = MException('DatacubeReduction:InvalidArgument', 'Data must originally be imzML to export to imzML');
@@ -83,13 +125,12 @@ classdef DatacubeReduction < DataReduction
             
             rois = this.regionOfInterestList.getObjects();
             
-            peakWidths = this.peakDetails(:, 3) - this.peakDetails(:, 1);
-            centroids = this.peakDetails(:, 1) + peakWidths ./ 2;
+            [centroids, peakWidths] = this.getPeakWidths();
             
             images = dataRepresentation.parser.simsParser.generateImages(centroids, peakWidths);
             
             assignin('base', 'imagesGeneratedFromJSIMS', images);
-            
+            s
             %             images = dataRepresentation.parser.getImages(centroids, peakWidths);
             
             imageData = zeros(numel(images(1).getImage()), length(images));
@@ -125,10 +166,25 @@ classdef DatacubeReduction < DataReduction
                 if(this.processEntireDataset && i == 1)
                     dataInMemory.setData(data{i}, dataRepresentation.regionOfInterest, ...
                         dataRepresentation.isRowMajor, centroids, [dataRepresentation.name ' (Processed)']);
-                elseif(this.processEntireDataset)
-                    dataInMemory.setData(data{i}, rois{i-1}, dataRepresentation.isRowMajor, centroids, rois{i-1}.getName());
                 else
-                    dataInMemory.setData(data{i}, rois{i}, dataRepresentation.isRowMajor, centroids, rois{i}.getName());
+                    if(this.processEntireDataset)
+                        roi = rois{i-1};
+                    else
+                        roi = rois{i};
+                    end
+                    
+                    if ~this.keepOriginalPixels
+                        newROIPixels = roi.pixelSelection;
+                        newROIPixels(sum(newROIPixels, 2) == 0, :) = [];
+                        newROIPixels(:, sum(newROIPixels, 1) == 0) = [];
+                        
+                        newROI = RegionOfInterest(size(newROIPixels, 2), size(newROIPixels, 1));
+                        newROI.addPixels(newROIPixels);
+                        newROI.setName(roi.getName());
+                        roi = newROI;
+                    end
+                    
+                    dataInMemory.setData(data{i}, roi, dataRepresentation.isRowMajor, centroids, roi.getName());
                 end
                 
                 dataInMemory.setParser(dataRepresentation.parser);
@@ -201,16 +257,7 @@ classdef DatacubeReduction < DataReduction
                     end
                     
                     % Determine peak limits based on supplied options
-                    peakWidths = [this.peakList.maxSpectralChannel] - [this.peakList.minSpectralChannel];
-                    centroids = [this.peakList.centroid];
-                    
-                    if(this.peakTolerance > 0)
-                        if(strcmpi(this.toleranceUnit, 'PPM'))
-                            peakWidths = (centroids .* this.peakTolerance) / 1e6;
-                        else
-                            peakWidths = ones(size(centroids)) .* this.peakTolerance;
-                        end
-                    end
+                    [centroids, peakWidths] = this.getPeakWidths();
                     
                     imageGeneration = com.alanmrace.JSpectralAnalysis.MultithreadedDatacubeGeneration(dataRepresentation.parser.imzML);
                     
@@ -393,7 +440,12 @@ classdef DatacubeReduction < DataReduction
                         curImzML = imzMLList{pixelListIndex};
                         
                         newSpectrum = com.alanmrace.jimzmlparser.mzml.Spectrum(oldImzML.getSpectrum(pixel(1), pixel(2)), curImzML);
-                        newSpectrum.setPixelLocation(pixel(1) - minX + 1, pixel(2) - minY + 1);
+                        
+                        if ~this.keepOriginalPixels
+                            newSpectrum.setPixelLocation(pixel(1) - minX + 1, pixel(2) - minY + 1);
+                        else
+                            newSpectrum.setPixelLocation(pixel(1), pixel(2));
+                        end
                         
                         newSpectrum.updateSpectralData(spectrum.spectralChannels, spectrum.intensities, com.alanmrace.jimzmlparser.mzml.DataProcessing.create());
                         
@@ -401,6 +453,9 @@ classdef DatacubeReduction < DataReduction
                         
                     end
                 end
+                
+                ped = ProgressEventData(i/size(pixels, 1), ['Processing imzML spectra']);
+                notify(this, 'ProcessingProgress', ped);
             end
             
             if(~isempty(imzMLList))

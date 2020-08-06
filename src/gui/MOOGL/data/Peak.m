@@ -39,7 +39,7 @@ classdef Peak < Data
                 this.minSpectralChannel = minSpectralChannel;
                 this.maxSpectralChannel = maxSpectralChannel;
                 
-                this.setDescription(sprintf('%.5f (%.5f - %.5f)', this.centroid, this.minSpectralChannel, this.minSpectralChannel));
+                this.setDescription(sprintf('%.5f (%.5f - %.5f)', this.centroid, this.minSpectralChannel, this.maxSpectralChannel));
             else
                 this.setDescription(sprintf('%.5f', this.centroid));
             end

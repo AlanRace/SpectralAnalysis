@@ -135,6 +135,9 @@ classdef PostProcessingMethodEditor < handle
                         elseif(type == ParameterType.Selection)
                             obj.parameterInterfaceHandles(i) = uicontrol(obj.specificOptionsPanel, 'Style', 'popup', 'String', defaultValue, ...
                                 'Units', 'normalized', 'Position', [.55 yPosition .35 height], 'Callback', @(src, evnt)obj.parameterChanged());
+                        elseif(type == ParameterType.Boolean)
+                            obj.parameterInterfaceHandles(i) = uicontrol(obj.specificOptionsPanel, 'Style', 'checkbox', 'Value', defaultValue, ...
+                                'Units', 'normalized', 'Position', [.55 yPosition .35 height], 'Callback', @(src, evnt)obj.parameterChanged());
                         end
                     end
                     
@@ -276,6 +279,8 @@ classdef PostProcessingMethodEditor < handle
                             options = get(obj.parameterInterfaceHandles(i), 'String');
 
                             parameterString = [parameterString '''' options{selectedIndex} ''', '];
+                        elseif(type == ParameterType.Boolean)
+                            parameterString = [parameterString num2str(get(obj.parameterInterfaceHandles(i), 'Value')) ', '];
                         else
                             parameterString = [parameterString get(obj.parameterInterfaceHandles(i), 'String') ', '];
                         end
