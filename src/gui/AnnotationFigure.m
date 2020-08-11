@@ -5,6 +5,14 @@ classdef AnnotationFigure < Figure
         adducts;
         ppmTolerance;
         
+        ppmToleranceLabel;
+        ppmToleranceEditbox;
+        
+        polarityButtonGroup;
+        positiveButton;
+        negativeButton;
+        matchButton;
+        
         peakListTable;
         toAnnotateLabel;
         possibleAnnotationTable;
@@ -23,11 +31,6 @@ classdef AnnotationFigure < Figure
             this.peaks = peaks;
             
             this.setTitle('Annotate Peaks');
-            
-            this.adducts = [Adduct('+H', 'H', 1.00782503223), Adduct('+Na', 'Na', 22.9897692820), Adduct('+K', 'K',  38.9637064864)];
-            this.ppmTolerance = 30;
-            
-            this.setAnnotationProperties(this.adducts, this.ppmTolerance);
             
             this.sizeChanged();
             
@@ -65,6 +68,16 @@ classdef AnnotationFigure < Figure
             
             this.setWidth(800);
             
+            this.ppmToleranceLabel = uilabel(this.handle, 'Text', 'PPM');
+            this.ppmToleranceEditbox = uieditfield(this.handle, 'numeric', 'Value', 3);
+            
+            this.polarityButtonGroup = uibuttongroup(this.handle);
+            this.positiveButton = uiradiobutton(this.polarityButtonGroup, 'Text', 'Positive (+H, +Na, +K)');
+            this.negativeButton = uiradiobutton(this.polarityButtonGroup, 'Text', 'Negative');
+            
+            this.matchButton = uibutton(this.handle, 'Text', 'Match', ...
+                'ButtonPushedFcn', @(src, event) this.matchButtonPushed(src, event));
+            
             this.peakListTable = uitable('Parent', this.handle, 'RowName', [], ...
                     'ColumnName', {'Peak', 'Assignment', 'Adduct', 'Theoretical m/z', 'Mass Deviation (PPM)', '# Possible Annotations'}, ...
                     'ColumnFormat', {'char', 'char', 'char', 'numeric', 'numeric', 'numeric'}, ...
@@ -91,6 +104,13 @@ classdef AnnotationFigure < Figure
             end
             
             this.structureAxis = uiaxes(this.handle);
+        end
+        
+        function matchButtonPushed(this, src, event)
+            this.adducts = [Adduct('+H', 'H', 1.00782503223), Adduct('+Na', 'Na', 22.9897692820), Adduct('+K', 'K',  38.9637064864)];
+            this.ppmTolerance = get(this.ppmToleranceEditbox, 'Value');
+            
+            this.setAnnotationProperties(this.adducts, this.ppmTolerance);
         end
         
         function peakListTableSelected(this, src, event)
@@ -171,7 +191,21 @@ classdef AnnotationFigure < Figure
                 usableWidth = newPosition(3) - margin*2;
                 usableHeight = newPosition(4) - margin*2;
                 
-                Figure.setObjectPositionInPixels(this.peakListTable, [margin, usableHeight*2/3+margin*2, usableWidth, usableHeight/3]);
+                editBoxSize = this.defaultEditBoxSize;
+                
+                radioGroupWidth = 300;
+                
+                Figure.setObjectPositionInPixels(this.ppmToleranceLabel, [margin, usableHeight-editBoxSize+margin, usableWidth, editBoxSize]);
+                Figure.setObjectPositionInPixels(this.ppmToleranceEditbox, [margin+40, usableHeight-editBoxSize+margin, 50, editBoxSize]);
+                
+                Figure.setObjectPositionInPixels(this.polarityButtonGroup, [margin*2+90, usableHeight-editBoxSize+margin, radioGroupWidth, editBoxSize]);
+                Figure.setObjectPositionInPixels(this.positiveButton, [margin, margin, radioGroupWidth/2-margin, editBoxSize-margin*2]);
+                Figure.setObjectPositionInPixels(this.negativeButton, [radioGroupWidth/2+margin, margin, radioGroupWidth/2-margin, editBoxSize-margin*2]);
+                
+                Figure.setObjectPositionInPixels(this.matchButton, [margin*3+90+radioGroupWidth, usableHeight-editBoxSize+margin, 80, editBoxSize]);
+                
+                
+                Figure.setObjectPositionInPixels(this.peakListTable, [margin, usableHeight*2/3+margin*2, usableWidth, usableHeight/3 - (editBoxSize+margin*2)]);
                 Figure.setObjectPositionInPixels(this.toAnnotateLabel, [margin, usableHeight/3+margin*2, usableWidth, this.defaultLabelSize]);
                 
                 thirdHeight = usableHeight/3-margin;
