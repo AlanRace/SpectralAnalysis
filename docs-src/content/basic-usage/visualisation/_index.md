@@ -22,8 +22,8 @@ The interface has changed appearance in the latest version, but the information 
 
 
 1. Generate a [spectral representation]({{< ref "spectral-representation.md" >}})
-2. Perform [data reduction]({{< ref "data-reduction.md" >}})
-3. Perform [clustering]({{< ref "clustering.md" >}})
+2. Perform data reduction
+3. Perform clustering
 4. Image List panel
 5. Selected image display
 6. Region of Interest panel
