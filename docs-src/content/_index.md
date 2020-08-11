@@ -17,9 +17,13 @@ Alan M. Race, Andrew D. Palmer, Alex Dexter, Rory T. Steven, Iain B. Styles, and
 
 
 #### Download 
-* [Get the latest standalone version](https://github.com/AlanRace/SpectralAnalysis/releases/). 
+* [Download the latest installer](https://github.com/AlanRace/SpectralAnalysis/releases/). This will install SpectralAnalysis and the necessary MATLAB Runtime for you. 
 
-* [Get the latest source code](https://github.com/AlanRace/SpectralAnalysis).
+* [Get the latest standalone version](https://github.com/AlanRace/SpectralAnalysis/releases/) if you already have MATLAB Runtime R2020a installed.
+
+* [Get the latest source code](https://github.com/AlanRace/SpectralAnalysis) if you have MATLAB (any version) installed and want to transfer data between SpectralAnalysis and MATLAB.
+
+[![View SpectralAnalysis on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://de.mathworks.com/matlabcentral/fileexchange/77942-spectralanalysis)
 
 #### Getting help
 If you are having issues or have questions related to SpectralAnalysis you can write to us on the [SpectralAnalysis Google Group](https://groups.google.com/g/spectralanalysis) or [email us](mailto:spectralanalysis@googlegroups.com).
