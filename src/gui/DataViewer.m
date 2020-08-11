@@ -166,7 +166,7 @@ classdef DataViewer < Figure
                 obj.title = obj.dataRepresentation.name;
             end
             
-            obj.setTitle(['DataViewer: ' obj.title]);
+            obj.setTitle(['DataViewer (' saversion '): ' obj.title]);
             
             obj.spectrumList = SpectrumList();
             
@@ -300,7 +300,7 @@ classdef DataViewer < Figure
                 postProcessingMethod.setPeakList(obj.spectrumDisplay.peakList);
             end
             
-            postProcessingMethod.setPreprocessingWorkflow(obj.imageGenPreprocessingWorkflow);
+            postProcessingMethod.setPreprocessingWorkflow(obj.spectrumPreprocessingWorkflow);
             
             obj.progressBar.updateProgress(ProgressEventData(0, ''));
             addlistener(postProcessingMethod, 'ProcessingProgress', @(src, evnt)obj.progressBar.updateProgress(evnt));

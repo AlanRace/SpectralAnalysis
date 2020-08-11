@@ -39,7 +39,7 @@ classdef SpectralAnalysisInterface < Figure
             %
             %   SpectralAnalysisInterface()
             
-            this.setTitle('SpectralAnalysis');
+            this.setTitle(['SpectralAnalysis (' saversion() ')']);
             
             addlistener(this, 'InfoMessage', @(src, evnt) this.updateLog(evnt.message));
             
