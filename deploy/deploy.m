@@ -20,8 +20,6 @@ mex -largeArrayDims synaptReplaceZeros.c
 cd([srcPath filesep 'processing' filesep 'postprocessing' filesep 'mepca'])
 compileMEPCA
 
-cd(curDir)
-
 if ispc
     wOption = "'WinMain:SpectralAnalysis,version=1.4'";
     osText = 'win';
@@ -33,10 +31,13 @@ end
 saFolder = [getSpectralAnalysisFolder() filesep];
 deployFolder = [saFolder filesep 'deploy'];
 
-mccCommand = "mcc -o SpectralAnalysis -W %s -T link:exe -v %sSpectralAnalysis.m -d %s -a %sfiles -a %slib -a %ssrc -a %sversion.txt -r '%s'";
-mccCommand = sprintf(mccCommand, wOption, saFolder, deployFolder, saFolder, saFolder, saFolder, saFolder, [saFolder 'files' filesep 'SA_icon_256.ico']) %'C:\Program Files\MATLAB\R2020a\toolbox\compiler\resources\default_icon.ico')%
 
+mccCommand = "mcc -o SpectralAnalysis -W %s -T link:exe -v SpectralAnalysis.m -d %s -a files -a lib -a src -a version.txt -r '%s'";
+mccCommand = sprintf(mccCommand, wOption, deployFolder, [saFolder 'files' filesep 'SA_icon_256.ico']) %'C:\Program Files\MATLAB\R2020a\toolbox\compiler\resources\default_icon.ico')%
+
+cd(saFolder);
 eval(mccCommand);
+cd(curDir);
 
 matlabVersion = version('-release');
 matlabYear = str2num(matlabVersion(1:end-1));
