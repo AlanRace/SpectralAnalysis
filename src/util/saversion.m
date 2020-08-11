@@ -2,6 +2,10 @@ function version = saversion()
 
 version = '1.4.0';
 
+if(isdeployed())
+    return
+end
+
 curdir = cd();
 
 saFolder = getSpectralAnalysisFolder();
@@ -20,6 +24,8 @@ end
 
 cd(curdir);
 
-fopen([saFolder filesep 'version.txt'], 'r');    
-version = char(fread(fid, Inf, 'char'))';
-fclose(fid);
+fid = fopen([saFolder filesep 'version.txt'], 'r');
+if fid >= 0
+    version = fread(fid, Inf, '*char')';
+    fclose(fid);
+end

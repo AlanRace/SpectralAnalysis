@@ -1,6 +1,8 @@
 disp(['This script compiles SpectralAnalysis, if you instead intended to start SpectralAnalysis, please use the command runSpectralAnalysis']);
 
-path = fileparts(mfilename('fullpath'));
+curDir = pwd;
+
+path = [curDir filesep '..'];
 
 srcPath = [path filesep 'src'];
 
@@ -20,4 +22,4 @@ compileMEPCA
 
 cd(path)
 
-mcc -v -m SpectralAnalysis.m -a lib/ -a src/ -a *.m -a *.mex*
+mcc -v -m SpectralAnalysis.m -a lib/ -a src/ -a *.m -a *.mex* -a version.txt

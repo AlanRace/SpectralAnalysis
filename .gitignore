@@ -23,3 +23,11 @@ SpectralAnalysis
 *.m~
 
 *.ibh
+
+*.mlappinstall
+
+*.prj~
+
+*.install
+
+deploy/SpectralAnalysis_Linux_StandaloneWithInstaller/
