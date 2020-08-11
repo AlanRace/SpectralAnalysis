@@ -25,6 +25,9 @@ cd(curDir)
 if ispc
     wOption = "'WinMain:SpectralAnalysis,version=1.4'";
     osText = 'win';
+    defaultInstallDir = 'C:\Program Files\SpectralAnalysis';
+elseif isunix
+    defaultInstallDir = '/usr/local/SpectralAnalysis';
 end
 
 saFolder = [getSpectralAnalysisFolder() filesep];
@@ -34,12 +37,6 @@ mccCommand = "mcc -o SpectralAnalysis -W %s -T link:exe -v %sSpectralAnalysis.m 
 mccCommand = sprintf(mccCommand, wOption, saFolder, deployFolder, saFolder, saFolder, saFolder, saFolder, [saFolder 'files' filesep 'SA_icon_256.ico']) %'C:\Program Files\MATLAB\R2020a\toolbox\compiler\resources\default_icon.ico')%
 
 eval(mccCommand);
-
-if ispc 
-    defaultInstallDir = 'C:\Program Files\SpectralAnalysis';
-elseif isunix
-    defaultInstallDir = '/usr/local/SpectralAnalysis';
-end
 
 matlabVersion = version('-release');
 matlabYear = str2num(matlabVersion(1:end-1));
