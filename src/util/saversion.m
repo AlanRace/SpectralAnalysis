@@ -1,8 +1,12 @@
-function version = saversion()
+function version = saversion(includeCommit)
 
+if nargin == 0
+    includeCommit = true;
+end
+    
 version = '1.4.0';
 
-if(isdeployed())
+if(isdeployed() || ~includeCommit)
     return
 end
 
