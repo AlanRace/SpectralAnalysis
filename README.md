@@ -13,9 +13,11 @@ Software for the analysis and interactive exploration of spectral imaging data (
 </p>
 
 #### Download 
-* [Get the latest standalone version](https://github.com/AlanRace/SpectralAnalysis/releases/). 
+* [Download the latest installer](https://github.com/AlanRace/SpectralAnalysis/releases/). This will install the necessary MATLAB Runtime for you. 
 
-* [Get the latest source code](https://github.com/AlanRace/SpectralAnalysis).
+* [Get the latest standalone version](https://github.com/AlanRace/SpectralAnalysis/releases/) if you already have MATLAB Runtime R2020a installed.
+
+* [Get the latest source code](https://github.com/AlanRace/SpectralAnalysis) if you have MATLAB (any version) installed and want to transfer data between SpectralAnalysis and MATLAB.
 
 [![View SpectralAnalysis on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://de.mathworks.com/matlabcentral/fileexchange/77942-spectralanalysis)
 
