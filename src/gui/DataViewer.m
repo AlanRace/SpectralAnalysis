@@ -193,7 +193,7 @@ classdef DataViewer < Figure
             
             % If data is in memory, then automatically generate the mean
             % spectrum
-            if(isa(dataRepresentation, 'DataInMemory'))
+            if(isa(dataRepresentation, 'DataInMemory') && ~isa(dataRepresentation, 'ProjectedDataInMemory'))
                 meanSpectrumData = mean(dataRepresentation.data, 1);
                 
                 meanSpectrum = SpectralData(dataRepresentation.spectralChannels, meanSpectrumData);
