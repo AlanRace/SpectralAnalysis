@@ -83,5 +83,16 @@ classdef SpectralAnalysisBinaryParser < Parser
             
             image = Image(imageData);
         end        
+        
+        
+        function dataRepresentation = getDefaultDataRepresentation(this)
+            dataRepresentation = DataInMemory();
+            
+            obj.dataRepresentation.loadData(this, this.getAnalysedRegion(), [], []);
+        end
+        
+        function workflow = getDefaultPreprocessingWorkflow(obj)
+            workflow = PreprocessingWorkflow();
+        end
     end
 end

@@ -31,14 +31,18 @@ classdef Parser < handle
         parse(obj);
         
         spectrum = getSpectrum(obj, x, y);
-%        [image] = getImage(obj, spectralChannel, channelWidth);
         image = getOverviewImage(obj);
+       
+        label = getSpectrumXAxisLabel(this);
+        label = getSpectrumYAxisLabel(this);
         
-        % Get data 
-%         data = getData(obj, pixels, spectralChannels);
-
-%        bool = isProjectedData(obj);
-%        bool = isSparseData(obj);
+        % getDefaultDataRepresentation
+        % Returns: dataRepresentation of type (or subclass) DataRepresentation
+        dataRepresentation = getDefaultDataRepresentation(obj);
+        
+        % getDefaultPreprocessingWorkflow
+        % Returns: workflow of type PreprocessingWorkflow
+        workflow = getDefaultPreprocessingWorkflow(obj);
     end
     
     methods
@@ -146,6 +150,16 @@ classdef Parser < handle
         
         function bool = isSparseData(obj)
             bool = 0;
+        end
+        
+        % getAnalysedRegion
+        % TODO: Check whether the data is row or column major
+        %
+        % Returns: analysedRegion of type RegionOfInterest
+        function analysedRegion = getAnalysedRegion(this)
+            backgroundImage = this.parser.getOverviewImage();
+            analysedRegion = RegionOfInterest(backgroundImage.getWidth(), backgroundImage.getHeight());
+            analysedRegion.addPixels(backgroundImage.imageData ~= 0);
         end
     end
     

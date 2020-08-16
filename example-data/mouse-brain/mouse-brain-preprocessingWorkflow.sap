@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<preprocessingWorkflow version="1.0">
+   <preprocessingMethod class="QSTARZeroFilling">
+      <parameter description="Min Spectral Channel" value="53.319469"/>
+      <parameter description="Max Spectral Channel" value="999.272034"/>
+      <parameter description="Detector Bin Size" value="0.000186"/>
+   </preprocessingMethod>
+</preprocessingWorkflow>

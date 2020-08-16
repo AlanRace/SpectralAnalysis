@@ -11,6 +11,8 @@ classdef DataOnDisk < DataRepresentation
             
             obj.parser = parser;
             
+            obj.setSpectrumLabels(parser.getSpectrumXAxisLabel(), parser.getSpectrumYAxisLabel());
+            
             obj.width = obj.parser.getWidth();
             obj.height = obj.parser.getHeight();
             obj.name = parser.getShortFilename();

@@ -13,6 +13,9 @@ classdef DataRepresentation < handle
         pixels;
         pixelIndicies;
         
+        spectrumXAxisLabel;
+        spectrumYAxisLabel;
+        
         isRowMajor = 1;
     end
     
@@ -39,6 +42,9 @@ classdef DataRepresentation < handle
     methods
         function setParser(this, parser)
             this.parser = parser;
+            
+            this.spectrumXAxisLabel = parser.getSpectrumXAxisLabel();
+            this.spectrumYAxisLabel = parser.getSpectrumYAxisLabel();
         end
         
         function setRegionOfInterest(this, regionOfInterest)
@@ -49,6 +55,11 @@ classdef DataRepresentation < handle
         
         function setIsContinuous(this, isContinuous)
             this.isContinuous = isContinuous;
+        end
+        
+        function setSpectrumLabels(this, xLabel, yLabel)
+            this.spectrumXAxisLabel = xLabel;
+            this.spectrumYAxisLabel = yLabel;
         end
         
         function createPixelList(obj)

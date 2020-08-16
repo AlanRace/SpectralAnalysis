@@ -14,19 +14,40 @@ classdef InterpolationPPMRebinZeroFilling < SpectralZeroFilling
     
     methods
         function obj = InterpolationPPMRebinZeroFilling(minSpectralChannel, maxSpectralChannel, binSize)
-            obj.Parameters = Parameter(InterpolationRebinZeroFilling.ParameterDefinitions(1), minSpectralChannel);
-            obj.Parameters(2) = Parameter(InterpolationRebinZeroFilling.ParameterDefinitions(2), maxSpectralChannel);
-            obj.Parameters(3) = Parameter(InterpolationRebinZeroFilling.ParameterDefinitions(3), binSize);
+            obj.Parameters = Parameter(InterpolationPPMRebinZeroFilling.ParameterDefinitions(1), minSpectralChannel);
+            obj.Parameters(2) = Parameter(InterpolationPPMRebinZeroFilling.ParameterDefinitions(2), maxSpectralChannel);
+            obj.Parameters(3) = Parameter(InterpolationPPMRebinZeroFilling.ParameterDefinitions(3), binSize);
             
             
             minmz = obj.Parameters(1).value;
             maxmz = obj.Parameters(2).value;
             
-            obj.sChannels = minmz;
+            tempArray = zeros(1, 10000);
+            
+            ppmValue = obj.Parameters(3).value / 1e6;
+            
+            tempArray(1) = minmz;
+            lastValue = tempArray(1);
+            currentIndex = 2;
 
-            while(obj.sChannels(end) < maxmz)
-                obj.sChannels(end+1) = obj.sChannels(end) + ((obj.sChannels(end) * obj.Parameters(3).value) / 1e6);
+            while(true)
+                if currentIndex > length(tempArray)
+                    obj.sChannels = [obj.sChannels tempArray];
+                    currentIndex = 1;
+                end
+                
+                newValue = lastValue + (lastValue * ppmValue);
+                tempArray(currentIndex) = newValue;
+                
+                if newValue > maxmz
+                    break
+                end
+                
+                lastValue = newValue;
+                currentIndex = currentIndex + 1;
             end
+            
+            obj.sChannels = [obj.sChannels tempArray(1:currentIndex)];
         end
         
         function [spectralChannels, intensities] = zeroFill(obj, spectralChannels, intensities)
@@ -42,9 +63,9 @@ classdef InterpolationPPMRebinZeroFilling < SpectralZeroFilling
         end                
         
         function Parameters = generateDefaultsFromSpectrum(spectrum)
-            Parameters = Parameter(InterpolationRebinZeroFilling.ParameterDefinitions(1), min(spectrum.spectralChannels));
-            Parameters(2) = Parameter(InterpolationRebinZeroFilling.ParameterDefinitions(2), max(spectrum.spectralChannels));
-            Parameters(3) = Parameter(InterpolationRebinZeroFilling.ParameterDefinitions(3), InterpolationRebinZeroFilling.ParameterDefinitions(3).defaultValue);
+            Parameters = Parameter(InterpolationPPMRebinZeroFilling.ParameterDefinitions(1), min(spectrum.spectralChannels));
+            Parameters(2) = Parameter(InterpolationPPMRebinZeroFilling.ParameterDefinitions(2), max(spectrum.spectralChannels));
+            Parameters(3) = Parameter(InterpolationPPMRebinZeroFilling.ParameterDefinitions(3), InterpolationPPMRebinZeroFilling.ParameterDefinitions(3).defaultValue);
         end
     end
 end

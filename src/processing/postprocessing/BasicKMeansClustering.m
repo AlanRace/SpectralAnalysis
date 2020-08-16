@@ -17,7 +17,7 @@ classdef BasicKMeansClustering < Clustering
     end
     
     methods
-        function this = KMeansClustering(k, replicates, distanceMetric, minFeatureSize)
+        function this = BasicKMeansClustering(k, replicates, distanceMetric, minFeatureSize)
             if nargin < 4
                 minFeatureSize = 0;
             end

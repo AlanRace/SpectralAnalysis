@@ -39,7 +39,7 @@ classdef SpectralAnalysisInterface < Figure
             %
             %   SpectralAnalysisInterface()
             
-            this.setTitle('SpectralAnalysis');
+            this.setTitle(['SpectralAnalysis (' saversion() ')']);
             
             addlistener(this, 'InfoMessage', @(src, evnt) this.updateLog(evnt.message));
             
@@ -78,13 +78,17 @@ classdef SpectralAnalysisInterface < Figure
 
                         parser.parse();
                         
-                        % Show SelectDataRepresentation interface now that
-                        % the header information of the selected file has
-                        % been parsed
-                        sdr = SelectDataRepresentation(parser);
+                        dataRepresentation = parser.getDefaultDataRepresentation();
+                        this.addDataRepresentation(dataRepresentation);                        
                         
-                        addlistener(sdr, 'DataRepresentationSelected', @(src, evnt)this.dataRepresentationSelected(src.dataRepresentation));
-                        addlistener(sdr, 'DataRepresentationLoaded', @(src, evnt)this.addDataRepresentation(src.dataRepresentation));
+                        
+%                         % Show SelectDataRepresentation interface now that
+%                         % the header information of the selected file has
+%                         % been parsed
+%                         sdr = SelectDataRepresentation(parser);
+%                         
+%                         addlistener(sdr, 'DataRepresentationSelected', @(src, evnt)this.dataRepresentationSelected(src.dataRepresentation));
+%                         addlistener(sdr, 'DataRepresentationLoaded', @(src, evnt)this.addDataRepresentation(src.dataRepresentation));
                     else
                         errordlg(['Failed to execute command: ' parserCommand], 'Failed to create parser');
                     end

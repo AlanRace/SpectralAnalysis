@@ -117,6 +117,14 @@ classdef SIMSParser < Parser
             spectrum.setDescription('Total Spectrum');
         end
         
+        function dataRepresentation = getDefaultDataRepresentation(this)
+            dataRepresentation = DataOnDisk(this);
+        end
+        
+        function workflow = getDefaultPreprocessingWorkflow(obj)
+            workflow = PreprocessingWorkflow();
+        end
+        
         % For faster access to data, determine wether the data is stored by
         % spectrum or by image
 %         function bool = isSpectrumOrientated(obj)

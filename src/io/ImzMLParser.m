@@ -30,7 +30,7 @@ classdef ImzMLParser < Parser
             
             if(~strcmpi(ext, '.imzML'))
                 exception = MException('ImzMLParser:FailedToParse', ...
-                    ['Must supply an imzML file (*.imzML)']);
+                    'Must supply an imzML file (*.imzML)');
                 throw(exception);
             end
 
@@ -63,7 +63,7 @@ classdef ImzMLParser < Parser
         end
         
         function spectrum = getSpectrum(obj, x, y, z)
-            imzMLSpectrum = obj.imzML.getSpectrum(x, y);
+            imzMLSpectrum = obj.imzML.getSpectrum(int32(x), int32(y));
             
             if(isempty(imzMLSpectrum))
                 spectralChannels = [];
@@ -133,9 +133,118 @@ classdef ImzMLParser < Parser
             image = Image(obj.imzML.generateTICImage());
             image.setDescription('TIC Image');
         end
-        
+                
         function delete(obj) 
             obj.imzML.close();
+        end
+        
+        function dataRepresentation = getDefaultDataRepresentation(this)
+            dataRepresentation = DataOnDisk(this);
+        end
+        
+        function workflow = getDefaultPreprocessingWorkflow(this)
+            workflow = PreprocessingWorkflow();
+            
+            instrumentModel = this.getMassSpectrometer();
+            
+            if isempty(instrumentModel)
+                return;
+            end
+            
+            obo = instrumentModel.getOntology();
+            sciexInstrument = obo.getTerm('MS:1000121');
+            watersInstrument = obo.getTerm('MS:1000126');
+            thermoInstrument = obo.getTerm('MS:1000494');
+            
+            if sciexInstrument.isParentOf(instrumentModel.getID())
+                switch(char(instrumentModel.getID()))
+                    case {'MS:1000190', 'MS:1000655', 'MS:1000656', 'MS:1000657'}
+                        % QSTAR, QSTAR Elite, QSTAR Pulsar or QSTAR XL
+                        % Add in QSTAR zero filling to the preprocessing list
+
+                        % TODO: Could check multiple spectra to find the best
+                        % values for zero filling
+                        spectrumList = this.imzML.getSpectrumList();
+                        firstSpectrum = spectrumList.getSpectrum(0);
+                        spectralData = SpectralData(firstSpectrum.getmzArray(), firstSpectrum.getIntensityArray());
+                        
+                        zeroFillingMethod = QSTARZeroFilling.generateFromSpectrum(spectralData);
+                        
+                        spectrumIndex = 1;
+                        while isnan(zeroFillingMethod.Parameters(3).value) && spectrumIndex < spectrumList.size()
+                            spectrum = spectrumList.getSpectrum(spectrumIndex);
+                            spectralData = SpectralData(spectrum.getmzArray(), spectrum.getIntensityArray());
+
+                            zeroFillingMethod = QSTARZeroFilling.generateFromSpectrum(spectralData);
+                            
+                            spectrumIndex = spectrumIndex + 1;
+                        end
+
+                        if ~isnan(zeroFillingMethod.Parameters(3).value)
+                            workflow.addPreprocessingMethod(zeroFillingMethod);
+                        end
+                end
+            elseif watersInstrument.isParentOf(instrumentModel.getID()) || instrumentModel.equals(watersInstrument)
+                firstSpectrum = this.imzML.getSpectrumList().getSpectrum(0);
+                firstScan = firstSpectrum.getScanList().getScan(0);
+                scanWindow = firstScan.getScanWindowList().getScanWindow(0);
+                
+                lowerLimit = scanWindow.getCVParam('MS:1000501').getValueAsDouble();
+                upperLimit = scanWindow.getCVParam('MS:1000500').getValueAsDouble();
+                
+                workflow.addPreprocessingMethod(InterpolationPPMRebinZeroFilling(lowerLimit, upperLimit, 5));
+            elseif thermoInstrument.isParentOf(instrumentModel.getID())
+                % Check if profile or centroided
+                profile = this.imzML.getFileDescription().getFileContent().getCVParam('MS:1000128');
+                centroid = this.imzML.getFileDescription().getFileContent().getCVParam('MS:1000127');
+                
+                firstSpectrum = this.imzML.getSpectrumList().getSpectrum(0);
+                firstScan = firstSpectrum.getScanList().getScan(0);
+                
+                scanTitle = firstScan.getCVParam('MS:1000512').getValue();
+                
+                if ~isempty(scanTitle)
+                    % Example title: FTMS + p NSI Full ms [100.00-1000.00]
+                    titleSplit = strsplit(scanTitle, '\[');
+                    
+                    massRange = titleSplit{2};
+                    massRange = massRange(1:end-1);
+                    massRange = str2double(strsplit(massRange, '-'));
+                    
+                    lowerLimit = massRange(1);
+                    upperLimit = massRange(2);
+                end
+                % TODO: What if the scanTitle is not there?
+                
+                if ~isempty(profile)                    
+                    workflow.addPreprocessingMethod(InterpolationPPMRebinZeroFilling(lowerLimit, upperLimit, 1));
+                end
+            end
+        end
+        
+        function instrumentModel = getMassSpectrometer(this)
+            instrumentConfiguration = this.imzML.getInstrumentConfigurationList().getInstrumentConfiguration(0);
+            
+            % Check whether the 'instrument model' (MS:1000031) parameter
+            % is included
+            instrumentModel = [];
+            
+            if ~isempty(instrumentConfiguration)
+                instrumentModel = instrumentConfiguration.getCVParamOrChild('MS:1000031');
+                
+                if ~isempty(instrumentModel)
+                    instrumentModel = instrumentModel.getTerm();
+                end
+            end
+        end
+        
+        
+        function label = getSpectrumXAxisLabel(this)
+            label = '{\it m/z}';
+        end
+        
+        function label = getSpectrumYAxisLabel(this)
+            label = 'Intensity (a.u.)';
         end
         
         % For faster access to data, determine wether the data is stored by

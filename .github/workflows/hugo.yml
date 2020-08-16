@@ -25,12 +25,12 @@ jobs:
           hugo -s docs-src --minify
         
 
-      - name: Deploy
+      - name: Deploy updated documentation
         run: |
           git remote set-url origin https://AlanRace:${{ secrets.GITHUB_TOKEN }}@github.com/AlanRace/SpectralAnalysis.git
           git config --global user.email "alan.m.race@gmail.com"
           git config --global user.name "AlanRace"
           git add docs/*
-          git commit -m "Updated docs"
+          git commit -m "Updated docs" 
           git push origin HEAD:master
         

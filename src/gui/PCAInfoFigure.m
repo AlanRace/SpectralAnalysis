@@ -91,10 +91,8 @@ classdef PCAInfoFigure < Figure
             pcX = get(this.pcXSelectionBox, 'Value');
             pcY = get(this.pcYSelectionBox, 'Value');
             
-            pcXScores = this.projectedDataInMemory.getProjectedImage(pcX)';
-            pcXScores = pcXScores(:);
-            pcYScores = this.projectedDataInMemory.getProjectedImage(pcY)';
-            pcYScores = pcYScores(:);
+            pcXScores = this.projectedDataInMemory.data(:, pcX);
+            pcYScores = this.projectedDataInMemory.data(:, pcY);
 
             if(~isempty(this.roiList) && this.roiList.getSize() > 0)
                 this.plotROIPCvsPC(1, pcXScores, pcYScores);
@@ -143,8 +141,14 @@ classdef PCAInfoFigure < Figure
             %sample(n) and the dimensionality of the data, n-p is therefore the degrees
             %of freedom.
             k = finv(conf,p,n-p)*p*(n-1)/(n-p);
+            
             % principle components analysis, lat gives eigenvalues
-            [pc,score,lat] = princomp(xy);
+            if(exist('pca', 'file'))
+                [pc,score,lat] = pca(xy);
+            else
+                [pc,score,lat] = princomp(xy);
+            end
+            
             ab = diag(sqrt(k*lat));
             exy = [cos(th),sin(th)]*ab*pc' + repmat(mxy,numPts,1);
             

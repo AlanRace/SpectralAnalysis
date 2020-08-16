@@ -43,7 +43,7 @@ Ellipse
 : Assign all pixels which fall within an ellipse drawn by the user.
 
 Poly
-: Define an arbitrary shape .
+: Define an arbitrary shaped region of interest.
 
 Eraser
 : Toggle button. When active, use any shape to define an area to remove from the current region of interest. When deactivated, areas are added to the ROI.
@@ -56,9 +56,17 @@ Move
 
 
 #### Threshold {#threshold}
+When selecting the `Threshold` button, the following window will be shown, with the fields automatically poplated with the minimim and maximum intensity of the displayed ion image.
 
+![Threshold options](/images/roi/roiThreshold.png)
 
+ 
 
 ### Calculate statistics {#calculate-statistics}
+Once one or more regions of interest have been defined, it is possible to investigate the differences between these regions further.
+
+![](https://camo.githubusercontent.com/f8b3147640efc495e34d536ac2ddbb4c466e833f/68747470733a2f2f692e696d6775722e636f6d2f446742315553392e706e67)
 
 ### Export ROIs {#export-roi}
+
+Selecting the 'save' button in the ROI panel will bring up a dialog box for selecting an output location for the .rois file.

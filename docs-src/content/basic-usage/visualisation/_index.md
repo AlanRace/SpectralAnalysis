@@ -14,12 +14,17 @@ weight = 2
 
 ### Interface Overview
 
+{{% notice note %}}
+The interface has changed appearance in the latest version, but the information on this page is still accurate. 
+{{% /notice %}}
+
 ![Data Visualisation Interface](/images/SpectralAnalysis-interface-labelled.png)
 
+
 1. Generate a [spectral representation]({{< ref "spectral-representation.md" >}})
-2. Perform [data reduction]({{< ref "data-reduction.md" >}})
-3. Perform [clustering]({{< ref "clustering.md" >}})
-4. [Image List]({{< ref "image-list.md" >}}) panel
+2. Perform data reduction
+3. Perform clustering
+4. Image List panel
 5. Selected image display
 6. Region of Interest panel
 7. Spectrum List panel
@@ -51,11 +56,11 @@ When a dataset is loaded as ['Data On Disk'](/basic-usage/load-data/data-represe
 
 Various methods of generation ion images are discussed in the following sections.
 
-#### Visually select ion image limits 
+#### Visually select ion image limits
 Select the range by clicking and dragging above the axis in the spectrum.
 
 ![Image Generation](/images/SpectralAnalysis-interface-imageGeneration.gif)
 
 #### Manually select ion image limits 
-2. Type the range manually into the `Image List`, with the minimum and maximum value separated by a hypen (-).
-3. Type a centroid value only into the `Image List`. When the images are generated, SpectralAnalysis will then automatically apply the range (+/-) with the units chosen (either PPM or Da) defined above the `Image List`.
+1. Type the range manually into the `Image List`, with the minimum and maximum value separated by a hypen (-).
+2. Type a centroid value only into the `Image List`. When the images are generated, SpectralAnalysis will then automatically apply the range (+/-) with the units chosen (either PPM or Da) defined above the `Image List`.
