@@ -24,8 +24,15 @@ classdef ImageDisplay < Display
         
         equaliseHistogram = 0;
         
+        pixelSizeX = 0;
+        pixelSizeY = 0;
+        
         colourMaps;
         colourMapMenuItem;
+        
+        scaleBarMenu;
+        scaleBarDisplay;
+        scaleBarText;
         
         dataToVisualise;
     end
@@ -360,6 +367,32 @@ classdef ImageDisplay < Display
                     hold(obj.axisHandle, 'off');
                 end
             end
+            
+            
+            if(strcmp(get(obj.scaleBarMenu, 'Checked'), 'on'))
+                [height, width] = size(obj.data.imageData);
+                widthUm = width * obj.pixelSizeX;
+                heightUm = height * obj.pixelSizeY;
+                
+                roughScaleBarSize = widthUm * 0.1;
+                
+                nearestTen = floor(log10(roughScaleBarSize));
+                roundValueUm = round((roughScaleBarSize / 10^nearestTen) * 4) / 4 * 10^nearestTen;
+                roundValuePixels = roundValueUm/obj.pixelSizeX;
+                
+                units = 'μm';
+                
+                if(roundValueUm > 1000)
+                    roundValueUm = roundValueUm / 1000;
+                    units = 'mm';
+                end
+                
+                rectangle('Position',[round(width * 0.05), round(height * 0.85), roundValuePixels, round(height * 0.025)],...
+                'FaceColor',[1 1 1], 'EdgeColor','w');
+            
+                obj.scaleBarText = text(round(width * 0.05)+roundValuePixels/2, height * 0.8, [num2str(roundValueUm) ' ' units], 'FontSize', 12, 'Color', 'w', ...
+                    'HorizontalAlignment', 'center');
+            end
                 
             axis(obj.axisHandle, 'image', 'ij');
             
@@ -387,6 +420,43 @@ classdef ImageDisplay < Display
                 
                 obj.addColourmapMenu(obj.colourMaps, classNames);
             end
+            
+            % Add in scale bar menu
+            uimenu(obj.contextMenu, 'Label', 'Set pixel size', 'Callback', @(src, evnt)obj.setPixelSize());
+            obj.scaleBarMenu = uimenu(obj.contextMenu, 'Label', 'Scale bar', 'Callback', @(src, evnt)obj.toggleScaleBarDisplay());
+            %obj.scaleBarDisplay = uimenu(obj.scaleBarMenu, 'Label', 'Display', 'Callback', @(src, evnt)obj.toggleScaleBarDisplay());
+        end
+        
+        function toggleScaleBarDisplay(this)
+            if(this.pixelSizeX == 0)
+                this.setPixelSize();
+            end
+            
+            showScaleBar = get(this.scaleBarMenu, 'Checked');
+            
+            if(strcmp(showScaleBar, 'on'))
+                set(this.scaleBarMenu, 'Checked', 'off');
+            else
+                set(this.scaleBarMenu, 'Checked', 'on');
+            end
+            
+            this.updateDisplay();
+        end
+        
+        function setPixelSize(this)
+            prompt = {'Pixel size x (μm):', 'Pixel size y (μm):'};
+            dlgtitle = 'Set pixel size';
+            
+            answer = inputdlg(prompt,dlgtitle);
+            
+            this.pixelSizeX = str2double(answer{1});
+            if ~isempty(answer{2})
+                this.pixelSizeY = str2double(answer{2});
+            else
+                this.pixelSizeY = this.pixelSizeX;
+            end
+            
+            this.updateDisplay();
         end
         
         function addColourmapMenu(obj, colourMaps, classNames)
@@ -394,10 +464,10 @@ classdef ImageDisplay < Display
             %
             %   addColourmapMenu()
             
-            labelPeaks = uimenu(obj.contextMenu, 'Label', 'Colourmaps', 'Separator', 'on');
+            colourmapMenu = uimenu(obj.contextMenu, 'Label', 'Colourmaps', 'Separator', 'on');
             
             for i = 1:length(classNames)
-                obj.colourMapMenuItem(i) = uimenu(labelPeaks, 'Label', classNames{i}, 'Callback', @(src, evnt)obj.setColourMap(eval(colourMaps{i})));
+                obj.colourMapMenuItem(i) = uimenu(colourmapMenu, 'Label', classNames{i}, 'Callback', @(src, evnt)obj.setColourMap(eval(colourMaps{i})));
             end
         end
     end
