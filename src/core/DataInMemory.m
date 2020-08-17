@@ -204,6 +204,22 @@ classdef DataInMemory < DataRepresentation
             end
         end
         
+        function image = getImageAtIndex(this, index)
+            image = zeros(this.height, this.width);
+            
+            pixelMask = this.regionOfInterest.getPixelMask();
+            selectionData = pixelMask(this.minY:this.maxY, this.minX:this.maxX);
+            
+            d = this.data(:, index);
+            
+            for i = 1:length(this.pixels)
+                image(this.pixels(i, 2), this.pixels(i, 1)) = d(i);
+            end
+            
+            image = Image(image);
+            image.setDescription(num2str(this.spectralChannels(index)));
+        end
+        
         function image = getOverviewImage(obj)
             image = zeros(obj.height, obj.width);
             

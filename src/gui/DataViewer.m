@@ -212,6 +212,8 @@ classdef DataViewer < Figure
                     obj.peakList(i) = Peak(meanSpectrum, dataRepresentation.spectralChannels(i), meanSpectrumData(i));
                 end
                 obj.updatePeakList();
+                
+                obj.imageListTabGroup.SelectedTab = obj.peaksImageTab;
             end
             
             obj.spectrumDisplay.setLabels(dataRepresentation.spectrumXAxisLabel, dataRepresentation.spectrumYAxisLabel);
@@ -940,6 +942,17 @@ classdef DataViewer < Figure
                 obj.regionOfInterestPanel.setImageForEditor(obj.imageList(imageIndex));
                 
                 set(obj.imageAxis, 'ButtonDownFcn', @(src, evnt)obj.imageAxisClicked());
+            elseif(isa(imageIndex, 'Image'))
+                if isprop(obj.imageTitleLabel, 'Text')
+                    set(obj.imageTitleLabel, 'Text', imageIndex.getDescription());
+                else
+                    set(obj.imageTitleLabel, 'String', imageIndex.getDescription());
+                end
+                
+                obj.imageDisplay.setData(imageIndex);
+                obj.regionOfInterestPanel.setImageForEditor(imageIndex);
+                
+                set(obj.imageAxis, 'ButtonDownFcn', @(src, evnt)obj.imageAxisClicked());
             end
         end
         
@@ -1189,6 +1202,12 @@ classdef DataViewer < Figure
                 obj.progressBarAxis = axes('Parent', obj.handle, 'Position', [.05 .01 .9 .03], 'Visible', 'off');
                 obj.progressBar = ProgressBar(obj.progressBarAxis);          
                 
+            end
+        end
+        
+        function peakListTableSelected(this, src, event)
+            if(isa(this.dataRepresentation, 'DataInMemory'))
+                this.displayImage(this.dataRepresentation.getImageAtIndex(event.Indices(1, 1)));
             end
         end
         
