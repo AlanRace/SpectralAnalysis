@@ -5,7 +5,8 @@ weight = 2
 
 ### Feature List
 * [View spectrum](#view-spectrum)
-* [Generate ion image](#image-generation)
+* [Generate image](#image-generation)
+* [Customise image display](#customise-ion-image)
 * Generate images from list
 * Save image list
 * Generate RGB composite
@@ -64,3 +65,10 @@ Select the range by clicking and dragging above the axis in the spectrum.
 #### Manually select ion image limits 
 1. Type the range manually into the `Image List`, with the minimum and maximum value separated by a hypen (-).
 2. Type a centroid value only into the `Image List`. When the images are generated, SpectralAnalysis will then automatically apply the range (+/-) with the units chosen (either PPM or Da) defined above the `Image List`.
+
+### Customise Image Display{#customise-ion-image}
+Right-clicking anywhere on the image will open the image context menu (shown below). Here you can set the colourmap to use, the pixel size or whether to display a scale bar.
+
+![Image options](/images/SpectralAnalysis-image-options.png)
+
+If you set the scale bar to be displayed, but the pixel size information has not been captured, then SpectralAnalysis will request the pixel size of the image before displaying a scale bar.

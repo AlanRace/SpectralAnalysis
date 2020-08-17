@@ -377,7 +377,7 @@ classdef ImageDisplay < Display
                 roughScaleBarSize = widthUm * 0.1;
                 
                 nearestTen = floor(log10(roughScaleBarSize));
-                roundValueUm = round((roughScaleBarSize / 10^nearestTen) * 4) / 4 * 10^nearestTen;
+                roundValueUm = round(roughScaleBarSize / 10^nearestTen) * 10^nearestTen;
                 roundValuePixels = roundValueUm/obj.pixelSizeX;
                 
                 units = 'μm';
@@ -387,10 +387,10 @@ classdef ImageDisplay < Display
                     units = 'mm';
                 end
                 
-                rectangle('Position',[round(width * 0.05), round(height * 0.85), roundValuePixels, round(height * 0.025)],...
+                rectangle('Position',[width * 0.05, height * 0.85, roundValuePixels, height * 0.015],...
                 'FaceColor',[1 1 1], 'EdgeColor','w');
             
-                obj.scaleBarText = text(round(width * 0.05)+roundValuePixels/2, height * 0.8, [num2str(roundValueUm) ' ' units], 'FontSize', 12, 'Color', 'w', ...
+                obj.scaleBarText = text(round(width * 0.05)+roundValuePixels/2, height * 0.82, [num2str(roundValueUm) ' ' units], 'FontSize', 13, 'Color', 'w', ...
                     'HorizontalAlignment', 'center');
             end
                 
