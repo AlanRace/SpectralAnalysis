@@ -11,7 +11,7 @@ This script demonstrates how SpectralAnalysis can be used without the interface 
 spectralAnalysisPath = 'C:\path\to\SpectralAnalysis';
 
 inputFolder = [spectralAnalysisPath filesep 'example-data' filesep 'mouse-brain']; %location of imzML files to process
-outputFoler = [spectralAnalysisPath filesep 'example-data' filesep 'mouse-brain'];
+outputFolder = [spectralAnalysisPath filesep 'example-data' filesep 'mouse-brain'];
 filesToProcess = dir([inputFolder filesep '*.imzML']); %gets all imzML files in folder
 
 % Set up datacube generation variables
@@ -106,8 +106,8 @@ for i = 1:length(filesToProcess)
     %% Save all
     disp('Saving files')
 
-    save([outputFoler filesep filename '.mat'], '-struct', 'dataRepresentation_struct', '-v7.3')
-    save([outputFoler filesep filename '.mat'], ...
+    save([outputFolder filesep filename '.mat'], '-struct', 'dataRepresentation_struct', '-v7.3')
+    save([outputFolder filesep filename '.mat'], ...
         'peaks', 'spectralChannels_all', 'spectralChannels', 'kmeans_idx', 'kmeans_c', ...
         'top1000idx', 'mean_intensity_clust1', 'mean_intensity_clust2', 'mean_intensity_all',...
         '-append')
