@@ -30,9 +30,11 @@ classdef PCAInfoFigure < Figure
             this.roiList = roiList;
             
             this.pcXImageDisplay = ImageDisplay(this, Image(projectedDataInMemory.getProjectedImage(1)));
+            this.pcXImageDisplay.setDivergingColourMap();
             this.pcXSpectrumPanel = SpectrumPanel(this, projectedDataInMemory.getProjectedSpectrum(1));
             
             this.pcYImageDisplay = ImageDisplay(this, Image(projectedDataInMemory.getProjectedImage(2)));
+            this.pcYImageDisplay.setDivergingColourMap();
             this.pcYSpectrumPanel = SpectrumPanel(this, projectedDataInMemory.getProjectedSpectrum(2));
             
             this.populateSelectionBoxes();
@@ -54,6 +56,8 @@ classdef PCAInfoFigure < Figure
             end
             
             this.roiPanel.setRegionOfInterestList(roiList);
+            
+            this.roiListChanged();
             
             % Ensure that all proportions are correct
             this.sizeChanged();

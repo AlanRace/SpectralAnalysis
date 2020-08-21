@@ -51,6 +51,8 @@ classdef SpectrumDisplay < Display
                 throw(exception);
             end
             
+            obj.setContinousDisplay(spectrum.isContinuous);
+            
             % Set up the mouse motion and button callbacks for zooming
             addlistener(parent, 'ButtonDown', @(src, evnt)obj.buttonDownCallback());
             addlistener(parent, 'ButtonMotion', @(src,evnt)obj.mouseMovedCallback());
