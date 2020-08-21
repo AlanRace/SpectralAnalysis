@@ -148,10 +148,10 @@ classdef DatacubeReduction < DataReduction
             dataRepresentationList = generateDataRepresentationList(this, dataRepresentation, this.peakList, data, rois);
         end
         
-        function dataRepresentationList = generateDataRepresentationList(this, dataRepresentation, peakList, data, rois)
+        function dataRepresentationList = generateDataRepresentationList(this, dataRepresentation, centroids, data, rois)
             % TODO: Pass peak list to DataRepresentation to keep track of
             % the limits used to generate the data
-            centroids = [peakList.centroid];
+            %centroids = [peakList.centroid];
             
             dataRepresentationList = DataRepresentationList();
             
@@ -236,7 +236,7 @@ classdef DatacubeReduction < DataReduction
             % TODO: this.peakList vs this.peakDetails - which is used and
             % why?
             
-            if(canUseFastMethods && strcmp(this.output, 'New Window') && isa(dataRepresentation, 'DataOnDisk'))
+            if(canUseFastMethods && strcmp(this.output, 'New Window') && isa(dataRepresentation, 'DataOnDisk') && ~isempty(this.peakList))
                 ped = ProgressEventData(0, ['Using fast methods. Generating ' num2str(length(this.peakList)) ' image(s)']);
                 notify(this, 'ProcessingProgress', ped);
                 
@@ -302,9 +302,12 @@ classdef DatacubeReduction < DataReduction
                 ped = ProgressEventData(1, ['Generated ' num2str(length(this.peakList)) ' image(s)']);
                 notify(this, 'ProcessingProgress', ped);
                 
+                centroids = preprocessedSpectrum.spectralChannels;
             else
                 if(strcmp(this.output, 'New Window'))
                     pixels = this.getPixelListToProcess(dataRepresentation);
+                    
+                    dataSize = length(this.peakList);
                     
                     if(isempty(this.peakList))
                         
@@ -312,7 +315,7 @@ classdef DatacubeReduction < DataReduction
                         preprocessedSpectrum = this.getProcessedSpectrum(dataRepresentation, firstPixel(1), firstPixel(2));
                         
                         
-                        this.peakList = preprocessedSpectrum.spectralChannels;
+                        dataSize = length(preprocessedSpectrum.spectralChannels);
                     end
                     
                     for i = 1:size(pixels, 1)
@@ -327,13 +330,13 @@ classdef DatacubeReduction < DataReduction
                         % Create the data based on the first spectrum acquired
                         if(isempty(data))
                             if(this.processEntireDataset)
-                                data{end+1} = zeros(size(pixels, 1), length(this.peakList));
+                                data{end+1} = zeros(size(pixels, 1), dataSize);
                                 pixelLists{end+1} = pixels;
                             end
                             
                             for roiIndex = 1:numel(rois)
                                 pixelLists{end+1} = rois{roiIndex}.getPixelList();
-                                data{end+1} = zeros(size(pixelLists{end}, 1), length(this.peakList));
+                                data{end+1} = zeros(size(pixelLists{end}, 1), dataSize);
                             end
                         end
                         
@@ -349,11 +352,17 @@ classdef DatacubeReduction < DataReduction
                         notify(this, 'ProcessingProgress', progressEvent);
                     end
                     
+                    if(isempty(this.peakList))                        
+                        centroids = preprocessedSpectrum.spectralChannels;
+                    else
+                        centroids = [peakList.centroid];
+                    end
+                    
                 end
                 
             end
             
-            dataRepresentationList = generateDataRepresentationList(this, dataRepresentation, this.peakList, data, rois);
+            dataRepresentationList = generateDataRepresentationList(this, dataRepresentation, centroids, data, rois);
         end
         
         function writeOutimzML(this, dataRepresentation)
