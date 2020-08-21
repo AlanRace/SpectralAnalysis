@@ -17,6 +17,8 @@ classdef Parser < handle
         % 
         rowMajor = 1;
         
+        isContinuous = true;
+        
         filename;
     end
     
@@ -150,6 +152,10 @@ classdef Parser < handle
         
         function bool = isSparseData(obj)
             bool = 0;
+        end
+        
+        function bool = isSpectrumContinuous(this)
+            bool = this.isContinuous;
         end
         
         % getAnalysedRegion

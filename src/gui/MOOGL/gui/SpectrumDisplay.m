@@ -84,6 +84,14 @@ classdef SpectrumDisplay < Display
         end
         
         function setContinousDisplay(this, onoff)
+            if islogical(onoff)
+                if onoff
+                    onoff = 'on';
+                else 
+                    onoff = 'off';
+                end
+            end
+            
             set(this.continuousDisplay, 'Checked', onoff);
             
             this.updateDisplay();

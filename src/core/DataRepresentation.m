@@ -45,6 +45,8 @@ classdef DataRepresentation < handle
             
             this.spectrumXAxisLabel = parser.getSpectrumXAxisLabel();
             this.spectrumYAxisLabel = parser.getSpectrumYAxisLabel();
+            
+            this.isContinuous = parser.isContinuous;
         end
         
         function setRegionOfInterest(this, regionOfInterest)

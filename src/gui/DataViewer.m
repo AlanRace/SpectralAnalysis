@@ -170,6 +170,8 @@ classdef DataViewer < Figure
             
             obj.spectrumList = SpectrumList();
             
+            obj.spectrumDisplay.setContinousDisplay(dataRepresentation.isContinuous);
+            
             obj.imageDisplay = ImageDisplay(obj, Image(1));
             addlistener(obj.imageDisplay, 'PixelSelected', @(src, evnt)obj.pixelSelectedCallback(evnt));
             
@@ -388,8 +390,8 @@ classdef DataViewer < Figure
         
         function peakSelected(obj, peakSelectionEvent)
             if(peakSelectionEvent.selectionType == PeakSelectionEvent.Exact)
-                if(~obj.dataRepresentation.isContinuous)
-                    peakToView = peakSelectionEvent.peakDetails;
+                if(~obj.dataRepresentation.isContinuous && ~isa(obj.dataRepresentation, 'DataOnDisk'))
+                    peakToView = peakSelectionEvent.peakDetails
 
                     [minVal, minLoc] = min(abs(obj.dataRepresentation.spectralChannels - peakToView));
 

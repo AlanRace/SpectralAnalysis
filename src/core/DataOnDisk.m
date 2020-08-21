@@ -20,6 +20,7 @@ classdef DataOnDisk < DataRepresentation
             obj.regionOfInterest = RegionOfInterest(obj.width, obj.height);
             
             obj.isRowMajor = parser.isRowMajor();
+            obj.isContinuous = parser.isSpectrumContinuous();
             
             obj.createPixelList();
         end
