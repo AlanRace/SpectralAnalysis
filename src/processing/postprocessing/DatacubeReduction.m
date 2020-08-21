@@ -302,7 +302,7 @@ classdef DatacubeReduction < DataReduction
                 ped = ProgressEventData(1, ['Generated ' num2str(length(this.peakList)) ' image(s)']);
                 notify(this, 'ProcessingProgress', ped);
                 
-                centroids = preprocessedSpectrum.spectralChannels;
+                centroids = [this.peakList.centroid];
             else
                 if(strcmp(this.output, 'New Window'))
                     pixels = this.getPixelListToProcess(dataRepresentation);
