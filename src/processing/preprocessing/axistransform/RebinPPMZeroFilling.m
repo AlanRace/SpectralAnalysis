@@ -32,6 +32,9 @@ classdef RebinPPMZeroFilling < SpectralZeroFilling
             %[spectralChannels, intensities] = rebin(spectralChannels, intensities, [obj.Parameters(1).value obj.Parameters(2).value], obj.Parameters(3).value);
             y = discretize(spectralChannels, obj.sChannels);
 
+            intensities(isnan(y)) = [];
+            y(isnan(y)) = [];
+            
             newintensities = zeros(size(obj.sChannels));
             newintensities(y) = newintensities(y) + intensities;
 
