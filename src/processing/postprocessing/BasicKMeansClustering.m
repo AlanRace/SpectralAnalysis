@@ -39,6 +39,12 @@ classdef BasicKMeansClustering < Clustering
         end
         
         function [dataRepresentationList, regionOfInterestLists] = process(this, dataRepresentation)
+            if(~isa(dataRepresentation, 'DataInMemory'))
+                exception = MException('InMemoryPCA:DataNotInMemory', ...
+                        'Data must be loaded into memory to use this command.');
+                throw(exception);
+            end
+            
             rois = this.regionOfInterestList.getObjects();
            
             if(this.preprocessEverySpectrum || ~isa(dataRepresentation, 'DataInMemory') || ~isempty(rois))
